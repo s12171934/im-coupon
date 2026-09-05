@@ -1,0 +1,248 @@
+{
+  "schema_version": 1,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "쿠폰 라이프사이클",
+    "quality_profile": "showcase",
+    "viewBox": [
+      830,
+      660
+    ],
+    "legend": {
+      "mode": "auto",
+      "entries": {
+        "start": {
+          "label": "시작 — 발급"
+        },
+        "active": {
+          "label": "진행"
+        },
+        "waiting": {
+          "label": "대기"
+        },
+        "decision": {
+          "label": "판정"
+        },
+        "success": {
+          "label": "성공 종료"
+        },
+        "failure": {
+          "label": "실패 종료"
+        }
+      }
+    }
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "쿠폰 상태"
+    },
+    {
+      "id": "expiry",
+      "label": "기한 소멸"
+    },
+    {
+      "id": "terminal",
+      "label": "지급 결과"
+    }
+  ],
+  "states": [
+    {
+      "id": "owned",
+      "type": "start",
+      "label": "소유자 점유",
+      "sublabel": "가중 결합으로 확정",
+      "lane": "main",
+      "col": 0,
+      "step": "01",
+      "tag": "발급"
+    },
+    {
+      "id": "pool",
+      "type": "waiting",
+      "label": "공개 풀",
+      "sublabel": "기한 경과 시 자동 공개",
+      "lane": "main",
+      "col": 1,
+      "step": "02",
+      "tag": "노선 미결"
+    },
+    {
+      "id": "held",
+      "type": "waiting",
+      "label": "단독 점유",
+      "sublabel": "찜하기 · 1인 1장",
+      "lane": "main",
+      "col": 2,
+      "step": "03",
+      "tag": "노선 미결"
+    },
+    {
+      "id": "used",
+      "type": "active",
+      "label": "사용됨",
+      "sublabel": "가맹점 결제 발생",
+      "lane": "main",
+      "col": 3,
+      "step": "04",
+      "tag": "혜택 확정"
+    },
+    {
+      "id": "pending",
+      "type": "decision",
+      "label": "지급 유보",
+      "sublabel": "이상거래 스크리닝",
+      "lane": "main",
+      "col": 4,
+      "step": "05",
+      "tag": "유보기간"
+    },
+    {
+      "id": "expired",
+      "type": "failure",
+      "label": "만료",
+      "sublabel": "소비 기한 도달",
+      "lane": "expiry",
+      "col": 0,
+      "tag": "종료"
+    },
+    {
+      "id": "blocked",
+      "type": "failure",
+      "label": "지급 보류",
+      "sublabel": "담합 · 무거래 탐지",
+      "lane": "terminal",
+      "col": 1,
+      "tag": "종료"
+    },
+    {
+      "id": "paid",
+      "type": "success",
+      "label": "페이백 지급",
+      "sublabel": "지역화폐 또는 계좌",
+      "lane": "terminal",
+      "col": 2,
+      "tag": "종료"
+    }
+  ],
+  "transitions": [
+    {
+      "id": "owned-pool",
+      "from": "owned",
+      "to": "pool",
+      "label": "점유 기한 경과(3일)",
+      "variant": "emphasis",
+      "route": "straight",
+      "labelDy": -25
+    },
+    {
+      "id": "pool-held",
+      "from": "pool",
+      "to": "held",
+      "label": "시민이 점유",
+      "variant": "emphasis",
+      "route": "straight",
+      "labelDy": -32
+    },
+    {
+      "id": "held-used",
+      "from": "held",
+      "to": "used",
+      "label": "소비자 결제 — 몫 분배",
+      "variant": "emphasis",
+      "route": "straight",
+      "labelDy": -25
+    },
+    {
+      "id": "used-pending",
+      "from": "used",
+      "to": "pending",
+      "label": "유보기간 진입",
+      "variant": "emphasis",
+      "route": "straight",
+      "labelDy": -42
+    },
+    {
+      "id": "owned-used",
+      "from": "owned",
+      "to": "used",
+      "label": "소유자 결제 — 혜택 전액",
+      "variant": "default",
+      "fromSide": "top",
+      "toSide": "top",
+      "route": "top-channel"
+    },
+    {
+      "id": "held-pool",
+      "from": "held",
+      "to": "pool",
+      "label": "3시간 미사용",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "bottom",
+      "route": "bottom-channel",
+      "labelDx": -70
+    },
+    {
+      "id": "pool-expired",
+      "from": "pool",
+      "to": "expired",
+      "label": "소비 기한 도달",
+      "variant": "dashed",
+      "labelDy": 40
+    },
+    {
+      "id": "held-expired",
+      "from": "held",
+      "to": "expired",
+      "label": "소비 기한 도달",
+      "variant": "dashed",
+      "labelDy": 24,
+      "labelDx": 55
+    },
+    {
+      "id": "pending-paid",
+      "from": "pending",
+      "to": "paid",
+      "label": "이상 없음",
+      "variant": "emphasis",
+      "labelDy": 24
+    },
+    {
+      "id": "pending-blocked",
+      "from": "pending",
+      "to": "blocked",
+      "label": "이상거래 탐지",
+      "variant": "security"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "확정된 것",
+      "items": [
+        "발급은 소유자 점유로 시작한다. 소유자가 직접 쓰면 혜택 전액이 그 사람에게 간다",
+        "점유 기한과 유효 소비 기한 두 개가 따로 돈다. 기한 경과는 조작 없이 자동이다",
+        "사용 즉시 지급하지 않고 유보기간 동안 이상거래를 본 뒤 지역화폐로 내보낸다"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "미결 — 공개 풀과 단독 점유",
+      "items": [
+        "두 상태를 존치할지가 아직 닫히지 않았다",
+        "n일 미사용 시 자동 재발급으로 단순화하면 두 상태가 함께 사라지고, 소유자 점유에서 재발급으로 바로 간다",
+        "닫히기 전에 이 구간을 구현하면 버릴 코드가 된다"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "종료로 가는 세 갈래",
+      "items": [
+        "만료 — 유효 소비 기한이 지나 아무도 쓰지 못한 경우",
+        "지급 보류 — 다계정 담합이나 무거래 페이백이 탐지된 경우",
+        "페이백 지급 — 스크리닝을 통과해 실제 지급이 끝난 경우"
+      ]
+    }
+  ]
+}

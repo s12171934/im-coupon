@@ -1,0 +1,255 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "워크스페이스 의존 방향",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1140,
+      720
+    ],
+    "legend": {
+      "mode": "auto",
+      "entries": {
+        "frontend": {
+          "label": "화면"
+        },
+        "backend": {
+          "label": "API 서버"
+        },
+        "cloud": {
+          "label": "공유 계약 타입"
+        },
+        "database": {
+          "label": "JSON 파일 DB"
+        },
+        "security": {
+          "label": "e2e 검증"
+        },
+        "external": {
+          "label": "파일시스템"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "e2e",
+      "type": "security",
+      "label": "e2e",
+      "sublabel": "Playwright",
+      "tag": "루트 독립 워크스페이스",
+      "pos": [
+        60,
+        240
+      ],
+      "size": [
+        160,
+        76
+      ]
+    },
+    {
+      "id": "web",
+      "type": "frontend",
+      "label": "web",
+      "sublabel": "React + Vite",
+      "pos": [
+        320,
+        140
+      ],
+      "size": [
+        160,
+        76
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "api",
+      "sublabel": "NestJS",
+      "pos": [
+        320,
+        340
+      ],
+      "size": [
+        160,
+        76
+      ]
+    },
+    {
+      "id": "contracts",
+      "type": "cloud",
+      "label": "contracts",
+      "sublabel": "계약 타입",
+      "pos": [
+        620,
+        240
+      ],
+      "size": [
+        160,
+        76
+      ]
+    },
+    {
+      "id": "db",
+      "type": "database",
+      "label": "db",
+      "sublabel": "JSON 파일 DB",
+      "pos": [
+        620,
+        440
+      ],
+      "size": [
+        160,
+        76
+      ]
+    },
+    {
+      "id": "files",
+      "type": "external",
+      "label": "data/seed → data/runtime",
+      "sublabel": "시드는 커밋 · 실행 상태는 제외",
+      "pos": [
+        860,
+        440
+      ],
+      "size": [
+        200,
+        76
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "apps/",
+      "wraps": [
+        "web",
+        "api"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "packages/",
+      "wraps": [
+        "contracts",
+        "db"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "e2e-web",
+      "from": "e2e",
+      "to": "web",
+      "label": "브라우저로 두드린다",
+      "variant": "dashed",
+      "fromSide": "top",
+      "toSide": "left"
+    },
+    {
+      "id": "web-api",
+      "from": "web",
+      "to": "api",
+      "label": "HTTP /api/*",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 50
+    },
+    {
+      "id": "web-contracts",
+      "from": "web",
+      "to": "contracts",
+      "label": "타입",
+      "variant": "default",
+      "fromSide": "right",
+      "toSide": "top"
+    },
+    {
+      "id": "api-contracts",
+      "from": "api",
+      "to": "contracts",
+      "label": "타입",
+      "variant": "default",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "api-db",
+      "from": "api",
+      "to": "db",
+      "label": "리포지터리 인터페이스로만",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "left"
+    },
+    {
+      "id": "db-contracts",
+      "from": "db",
+      "to": "contracts",
+      "label": "타입",
+      "variant": "default",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "e2e-db",
+      "from": "e2e",
+      "to": "db",
+      "label": "시드 준비 전용",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "bottom",
+      "labelDx": -200
+    },
+    {
+      "id": "db-files",
+      "from": "db",
+      "to": "files",
+      "label": "읽기 · 쓰기",
+      "variant": "dashed",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "web-db",
+      "from": "web",
+      "to": "db",
+      "label": "금지 — 화면은 파일 DB 의 존재를 몰라야 한다",
+      "variant": "security",
+      "fromSide": "left",
+      "toSide": "bottom",
+      "labelSegment": 2
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "의존은 한 방향으로만",
+      "items": [
+        "화면과 API 는 계약 타입을 함께 가져다 쓴다",
+        "API 는 리포지터리 인터페이스를 통해서만 파일 DB 에 닿는다",
+        "packages/db 가 packages/contracts 를 가져다 쓰는 것은 허용한다"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "e2e 는 저장소 루트의 독립 워크스페이스",
+      "items": [
+        "apps/ 에도 packages/ 에도 넣지 않는다",
+        "브라우저로 화면을 두드려 검증한다",
+        "파일 DB 는 시드를 준비할 때만 직접 만진다"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "금지된 한 줄",
+      "items": [
+        "화면은 파일 DB 의 존재를 몰라야 한다",
+        "화면이 저장 방식을 알면 DB 를 바꿀 때 화면까지 따라 바뀐다",
+        "화면이 필요한 것은 계약 타입이지 저장 형식이 아니다"
+      ]
+    }
+  ]
+}
