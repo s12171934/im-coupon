@@ -92,7 +92,7 @@
 이번 에픽으로 추가·변경되는 것의 전체 목록이다. 항목마다 9장의 구현 브랜치가 붙는다.
 
 - 가상 가맹점·시민 시드 데이터 — `KAN-13/01-seed-and-contracts`
-- 쿠폰·발급 계약 타입과 경로·오류 상수 — `KAN-13/01-seed-and-contracts`
+- 쿠폰·발급 계약 타입과 경로·오류 상수 — `KAN-13/01-seed-and-contracts` (개정은 `KAN-13/02-issuance-engine`)
 - 랜덤 신호와 가중치 결합 발급 엔진, 발급 트리거 인터페이스와 시연 트리거 — `KAN-13/02-issuance-engine`
 - 발급 API 와 coupons 컬렉션 저장 — `KAN-13/03-issue-endpoint`
 - 내 쿠폰 조회 API 와 시민 목록 API — `KAN-13/04-list-endpoints`
@@ -117,6 +117,7 @@
 
 표 셀에 압축되지 않은 근거를 문장으로 푼다.
 
+- 결정 2 — "키만 더해 확장한다"는 응답·엔진뿐 아니라 **요청 계약에 대해서도 참이다.** 발급 요청의 `weights` 는 `SignalWeights` 전체 교체가 아니라 부분 덮어쓰기(`Partial<SignalWeights>`)이므로, 이후 에픽이 신호 키를 더해도 그 키를 모르는 기존 호출자의 요청 본문이 그대로 유효하다. 지정하지 않은 신호는 발급 파라미터 기본값(결정 4)을 쓴다.
 - 결정 5 — 배분 비율과 두 기한은 거래조건 고지 대상이다. 발급 뒤에 파라미터 기본값을 바꿔도 이미 발급된 쿠폰의 고지 내용이 바뀌면 안 되므로, 고지에 필요한 값 전부를 발급 시점에 레코드로 굳힌다. 부수 효과로 내 쿠폰 조회가 `coupons` 컬렉션 하나로 닫혀 조인이 없어진다.
 - 결정 6 — `JsonFileDb` 의 쓰기는 이미 원자적(임시 파일 후 rename)이라 파일이 깨지지는 않지만, 읽고-더하고-쓰는 발급이 겹치면 나중 쓰기가 앞 쓰기를 덮어 레코드가 유실될 수 있다. API 는 단일 프로세스이므로 발급 쓰기를 프로세스 안에서 한 줄로 직렬화하면 충분하다. 프로세스 밖까지 막는 파일 락은 단독 점유(찜하기) 기획이 확정될 때의 몫이며, [저장소 구조와 기술 스택](../저장소-구조와-기술-스택.md) 의 미결로 이미 걸려 있다.
 - 결정 9 — 소비 도달·참여 리워드·가맹점 요청 트리거는 각자 다른 계기에서 발급을 일으키지만, 트리거가 하는 일은 발급 명령(`IssueCommand` — 발급 가중치 덮어쓰기 등)을 만들어 `CouponsService.issue` 에 넘기는 것으로 같다. 신호 확장 구조(결정 2)와 대칭으로 인터페이스에 자리만 남기면 이후 에픽이 같은 틀로 트리거를 추가한다. 쿠폰 레코드에는 발급을 일으킨 발급 트리거 유형을 `trigger` 필드로 남긴다. 구성도는 6장에 있다.
@@ -237,20 +238,29 @@
 
 - 수치는 본문·코드에 박지 않고 파라미터로 둔다. 시연용 기본값은 이 표가 유일한 원본이고, 코드에서는 `apps/api/src/issuance/params.ts` 한 곳이 이 표를 든다 (4장 결정 4).
 - 파라미터 이름과 후보값은 [프로토타입 범위](../프로토타입-범위.md) 의 파라미터 표와 대응한다. 표가 어긋나면 그쪽을 먼저 갱신한다.
+- `ownerHoldDays` 와 `openValidDays` 는 둘 다 **1 이상의 정수**다. 근거는 둘로 나뉜다 — 0 과 음수는 두 기한이 등호 없는 "이후"라는 조건(위 `coupons` 테이블)에서 배제되고, 소수는 그 조건이 아니라 두 기한을 **일 단위 파라미터로 두기로 한 결정**(아래 값 표의 단위)에서 배제된다. 다만 이 둘은 요청 본문으로 들어오지 않고 `params.ts` 상수로만 오므로 런타임 검증은 두지 않는다 — 범위를 지키는 것은 상수를 고치는 쪽의 몫이다.
 
 | 파라미터 | 코드 식별자 | 시연 기본값 |
 | --- | --- | --- |
 | 액면(발급 금액) | `faceValue` | `5000` (원) |
 | 배분 비율 — 소유자 몫 | `benefitSplit.ownerRatio` | `0.2` |
 | 배분 비율 — 소비자 몫 | `benefitSplit.consumerRatio` | `0.8` |
-| 소유자 점유 기한 | `ownerHoldDays` | `3` (일) |
-| 유효 소비 기한 | `openValidDays` | `2` (일) |
+| 소유자 점유 기한 | `ownerHoldDays` | `3` (일, 1 이상의 정수) |
+| 유효 소비 기한 | `openValidDays` | `2` (일, 1 이상의 정수) |
 | 발급 가중치 — 랜덤 신호 | `weights.random` | `1` |
 
 ## 8. API 계약 정의
 
 - 설계 시점의 기준은 이 장이다. 구현 후에는 `packages/contracts` 코드가 SSOT 이고, 구현 중 계약이 바뀌면 이 장을 고치고 14장에 남긴다.
-- 경로 상수·요청·응답·오류 타입은 전부 `packages/contracts/src/issuance.ts` 에 둔다.
+- 경로 상수·쿼리 키 상수·요청·응답·오류 타입은 전부 `packages/contracts/src/issuance.ts` 에 둔다.
+
+| 상수 | 값 | 쓰는 곳 |
+| --- | --- | --- |
+| `ISSUE_COUPON_PATH` | `/api/coupons/issue` | 발급 |
+| `COUPONS_PATH` | `/api/coupons` | 내 쿠폰 조회 |
+| `OWNER_ID_QUERY` | `ownerId` | 내 쿠폰 조회의 소유자 쿼리 키 |
+| `CITIZENS_PATH` | `/api/citizens` | 시민 목록 |
+
 - 오류 응답 본문은 세 엔드포인트 공통으로 다음 형태다.
 
 ```ts
@@ -258,12 +268,22 @@ interface ApiErrorResponse {
   error: { code: ApiErrorCode; message: string };
 }
 type ApiErrorCode =
-  | 'INVALID_WEIGHTS'   // 발급 가중치가 숫자가 아니거나 음수이거나 합이 0, 또는 모르는 신호 키
+  | 'INVALID_BODY'      // 요청 본문이 JSON 으로 파싱되지 않거나 weights 가 객체가 아님
+  | 'INVALID_WEIGHTS'   // 병합된 발급 가중치의 값이 숫자가 아님·음수·합이 0, 또는 요청에 모르는 신호 키
   | 'NO_CANDIDATES'     // merchants 또는 citizens 가 비어 발급 후보가 없음
-  | 'MISSING_OWNER_ID'  // ownerId 쿼리가 없거나 빈 문자열
-  | 'UNKNOWN_OWNER'     // citizens 에 없는 ownerId
+  | 'MISSING_OWNER_ID'  // OWNER_ID_QUERY 쿼리가 없거나 빈 문자열
+  | 'UNKNOWN_OWNER'     // citizens 에 없는 OWNER_ID_QUERY 값
   | 'STORAGE_FAILURE';  // JSON 파일 읽기·쓰기 실패
 ```
+
+- `INVALID_BODY` 와 `INVALID_WEIGHTS` 는 둘 다 `400` 이고 층이 다르다. 본문 자체의 모양이 틀리면(파싱 실패, `weights` 가 객체가 아님) `INVALID_BODY`, 본문은 객체로 읽히는데 가중치 **값**이 규칙을 어기면 `INVALID_WEIGHTS` 다.
+- `INVALID_WEIGHTS` 의 조건은 넷이다 — 병합된 가중치의 값이 숫자가 아님 · 음수 · 합이 0, 그리고 요청에 모르는 신호 키가 있음.
+- **가중치 검증은 병합 후 값에 건다.** 순서는 셋이다.
+  1. 컨트롤러가 본문의 모양만 본다 — 파싱 실패·`weights` 비객체는 `INVALID_BODY`.
+  2. 요청에 없는 신호 키는 `params.ts` 기본값으로 채운다. 따라서 `weights` 를 생략하거나 `{}` 로 보내면 전부 기본값으로 발급된다.
+  3. 병합된 `SignalWeights` 에 값 규칙 셋(숫자가 아님·음수·합이 0)을 적용한다. 이 중 음수·합이 0 은 `TC-02-02` 가 든다 (12장).
+- 예외는 **모르는 신호 키** 하나다. 병합하면 그 키가 사라지므로 이 조건만 병합 전 요청 본문에서 검사한다. 병합과 검증은 둘 다 엔진(`apps/api/src/issuance/`)이 맡으므로 이 검사도 엔진의 몫이다 (`TC-02-02`).
+- 병합 후에도 키가 비는 상황은 `params.ts` 결손이며 요청 오류가 아니다. 요청이 만들 수 없는 상태이므로 `INVALID_WEIGHTS` 의 조건에 두지 않는다.
 
 ### `POST /api/coupons/issue` — 발급
 
@@ -273,12 +293,14 @@ type ApiErrorCode =
 
 ```ts
 interface IssueCouponRequest {
-  weights?: SignalWeights; // 발급 가중치 덮어쓰기
+  weights?: Partial<SignalWeights>; // 발급 가중치 부분 덮어쓰기
 }
 interface SignalWeights {
   random: number; // 제외된 네 신호의 키는 해당 신호를 구현하는 에픽에서 추가한다
 }
 ```
+
+- `weights` 는 **부분 덮어쓰기**다. 지정한 신호만 덮어쓰고, **지정하지 않은 신호는 `apps/api/src/issuance/params.ts` 의 기본값**(7장 값 표)을 쓴다. 신호 키가 늘어도 기존 호출자의 요청 본문이 그대로 유효하다 (4장 결정 2).
 
 - `201` — 발급 성공.
 
@@ -294,16 +316,17 @@ interface IssueDecision {
 }
 ```
 
-- `400 INVALID_WEIGHTS` — `weights` 가 있으나 값이 숫자가 아니거나 음수, 합이 0, 또는 모르는 신호 키가 있음.
+- `400 INVALID_BODY` — 요청 본문이 JSON 으로 파싱되지 않거나 `weights` 가 객체가 아님.
+- `400 INVALID_WEIGHTS` — 병합된 가중치의 값이 숫자가 아니거나 음수이거나 합이 0, 또는 요청 `weights` 에 모르는 신호 키가 있음.
 - `422 NO_CANDIDATES` — `merchants` 또는 `citizens` 컬렉션이 비어 있어 발급 후보를 만들 수 없음.
 - `500 STORAGE_FAILURE` — `coupons` 컬렉션 쓰기 실패.
 
 ### `GET /api/coupons?ownerId=<시민 id>` — 내 쿠폰 조회
 
-- 경로 상수 — `COUPONS_PATH`. 구현 브랜치 — `KAN-13/04-list-endpoints` (10장).
+- 경로 상수 — `COUPONS_PATH`. 쿼리 키 상수 — `OWNER_ID_QUERY`. 구현 브랜치 — `KAN-13/04-list-endpoints` (10장).
 - `200` — `{ coupons: Coupon[] }`. `issuedAt` 내림차순이고, 소유한 쿠폰이 없으면 빈 배열이다.
-- `400 MISSING_OWNER_ID` — `ownerId` 쿼리가 없거나 빈 문자열.
-- `404 UNKNOWN_OWNER` — `citizens` 에 없는 `ownerId`.
+- `400 MISSING_OWNER_ID` — `OWNER_ID_QUERY` 쿼리가 없거나 빈 문자열.
+- `404 UNKNOWN_OWNER` — `citizens` 에 없는 `OWNER_ID_QUERY` 값.
 - `500 STORAGE_FAILURE` — 컬렉션 읽기 실패.
 
 ### `GET /api/citizens` — 시민 목록
@@ -321,6 +344,7 @@ interface IssueDecision {
 - `KAN-13/00-design-doc` 은 이 설계문서 브랜치다. 구현 브랜치가 아니므로 10·12·13장의 브랜치 집합에서 제외한다.
 - 구현 브랜치는 01 부터 07 까지 일곱이고 선형이다. 각 브랜치가 앞 브랜치의 산출물(계약 타입 → 엔진 → API → 화면)을 바로 쓰므로 병렬 분기가 생기지 않는다.
 - 각 브랜치는 단독으로 리뷰·머지할 수 있고, 머지 후에도 `pnpm test`·`pnpm typecheck` 전체가 통과해야 한다.
+- 위 그래프의 레인 표기는 원 계획 기준이라 브랜치 02 를 `apps/api` 로만 둔다. 아래 목록이 기준이고, 그림은 다시 그리지 않는다.
 
 그래프 읽는 법이다.
 
@@ -330,7 +354,7 @@ interface IssueDecision {
 브랜치별 개요 한 줄과 수정하는 워크스페이스다.
 
 - `KAN-13/01-seed-and-contracts` — 시드 데이터(가맹점·시민)와 쿠폰·발급 계약 타입, 시드 검증 테스트를 넣는 브랜치. 수정 — `packages/contracts` · `packages/db`(테스트만) · `data/seed`.
-- `KAN-13/02-issuance-engine` — 랜덤 신호와 가중치 결합 엔진, 발급 트리거 인터페이스와 시연 트리거(전부 순수 함수)를 넣는 브랜치. 수정 — `apps/api`.
+- `KAN-13/02-issuance-engine` — 랜덤 신호와 가중치 결합 엔진, 발급 트리거 인터페이스와 시연 트리거(전부 순수 함수)를 넣는 브랜치. 수정 — `apps/api` · `packages/contracts`(계약 개정, 14장) · `documents/`.
 - `KAN-13/03-issue-endpoint` — 발급 API 와 coupons 컬렉션 저장(직렬화 큐)을 넣는 브랜치. 수정 — `apps/api`.
 - `KAN-13/04-list-endpoints` — 내 쿠폰 조회 API 와 시민 목록 API 를 넣는 브랜치. 수정 — `apps/api`.
 - `KAN-13/05-issue-screen` — 발급 실행 화면과 탭 셸을 넣는 브랜치. 수정 — `apps/web`.
@@ -375,7 +399,7 @@ interface IssueDecision {
 
 ### `KAN-13/02-issuance-engine`
 
-- 파일맵 — 생성: `apps/api/src/issuance/signal.ts`(`Signal`·`Candidate`), `apps/api/src/issuance/random-signal.ts`, `apps/api/src/issuance/engine.ts`(`selectCandidate`), `apps/api/src/issuance/trigger.ts`(`IssueTrigger`·`IssueCommand`), `apps/api/src/issuance/manual-trigger.ts`(+`manual-trigger.test.ts`), `apps/api/src/issuance/params.ts`(7장 값 표의 기본값), `apps/api/src/issuance/engine.test.ts`.
+- 파일맵 — 생성: `apps/api/src/issuance/signal.ts`(`Signal`·`Candidate`), `apps/api/src/issuance/random-signal.ts`, `apps/api/src/issuance/engine.ts`(`selectCandidate`), `apps/api/src/issuance/trigger.ts`(`IssueTrigger`·`IssueCommand`), `apps/api/src/issuance/manual-trigger.ts`(+`manual-trigger.test.ts`), `apps/api/src/issuance/params.ts`(7장 값 표의 기본값), `apps/api/src/issuance/engine.test.ts`. 수정: `packages/contracts/src/issuance.ts`·`packages/contracts/src/coupon.ts`·`documents/KAN-13/design.md`(계약 미결 4건 반영 — 14장).
 - 넣는 것 — 신호 인터페이스와 랜덤 신호, 발급 가중치 결합, 발급 트리거 인터페이스와 시연 트리거. NestJS 에 의존하지 않는 순수 함수로 두고 RNG 는 인자로 주입한다 (4장 결정 1·2·3·9).
 - RED `TC-02-01` — `engine.test.ts`: "발급 가중치 `{ random: 1 }` 과 고정 수열을 반환하는 RNG 스텁으로 `selectCandidate` 를 두 번 호출하면 두 번 모두 같은 발급 후보가 선택되고, 반환된 `scores.random`·`total` 이 스텁 수열에서 계산한 기대값과 일치한다".
 - 완료 조건 — `TC-02-01` 이 GREEN 이고 `TC-02-02`(가중치 거부)·`TC-02-03`(시연 트리거, 12장)을 포함. 기본값 수치가 `params.ts` 밖에 등장하지 않는다.
@@ -385,7 +409,7 @@ interface IssueDecision {
 - 파일맵 — 생성: `apps/api/src/coupons/coupons.module.ts`, `apps/api/src/coupons/coupons.controller.ts`, `apps/api/src/coupons/coupons.service.ts`, `apps/api/src/coupons/coupon.repository.ts`(`JsonFileDb` 래핑 + 직렬화 큐), `apps/api/src/coupons/candidate-source.ts`(`merchants`·`citizens` 를 읽어 발급 후보 생성), `apps/api/src/coupons/coupons.controller.test.ts`. 수정: `apps/api/src/app.module.ts`.
 - 넣는 것 — 8장의 `POST /api/coupons/issue`. 컨트롤러는 요청 본문을 시연 트리거로 옮겨 발급 명령을 만들고 발급 유스케이스에 넘긴다 (4장 결정 9). 쿠폰 생성 시 두 기한 계산과 `trigger`·스냅샷 기록 (4장 결정 5·7), coupons 쓰기의 프로세스 내 직렬화 (4장 결정 6).
 - RED `TC-03-01` — `coupons.controller.test.ts`(supertest): "임시 데이터 디렉터리에 시드를 부트스트랩한 뒤 `POST /api/coupons/issue` 를 보내면 `201` 과 `IssueCouponResponse` 계약을 만족하는 본문이 오고, `coupons` 컬렉션 레코드가 0건에서 1건이 된다".
-- 완료 조건 — `TC-03-01` 이 GREEN 이고 오류 3종 `TC-03-02`~`TC-03-04` 와 동시 발급 유실 없음 `TC-03-05`(12장)를 포함.
+- 완료 조건 — `TC-03-01` 이 GREEN 이고 오류 4종 `TC-03-02`~`TC-03-04`·`TC-03-06` 과 동시 발급 유실 없음 `TC-03-05`(12장)를 포함.
 
 ### `KAN-13/04-list-endpoints`
 
@@ -421,6 +445,8 @@ interface IssueDecision {
 
 ![발급 실행 화면 와이어프레임](./src/발급-실행-화면.svg)
 
+- 이 와이어프레임의 오류 영역 예시도 `INVALID_BODY` 가 8장에 들어오기 전에 그려져 3종만 든다. 기준은 8장의 오류 4종이고, 그림은 발급 실행 화면 브랜치(`KAN-13/05-issue-screen`)에서 다시 그린다.
+
 ![내 쿠폰 화면 와이어프레임](./src/내-쿠폰-화면.svg)
 
 - 발급 실행 화면 — 발급 가중치를 보여주고 덮어쓸 수 있게 하며, 발급 1건 실행 버튼이 `POST /api/coupons/issue` 를 부른다. 결과 카드와 오류 영역이 같은 화면에 있다.
@@ -431,7 +457,8 @@ interface IssueDecision {
 ![발급 흐름 — 정상 경로와 세 가지 실패 경로](./src/발급-흐름.svg)
 
 - 정상 흐름 — 버튼(시연 트리거) → 발급 가중치 검증 → 발급 후보 적재 → 가중치 결합 → 쿠폰 생성 → coupons 컬렉션 저장 → `201` → 발급 결과 카드. 이후 내 쿠폰 화면의 확인은 별도 `GET` 요청이다.
-- 실패 흐름 — 발급 가중치 검증 실패(`400 INVALID_WEIGHTS`), 발급 후보 없음(`422 NO_CANDIDATES`), 쓰기 실패(`500 STORAGE_FAILURE`) 셋이고, 전부 발급 실행 화면의 오류 영역에 코드·메시지로 표시된다.
+- 실패 흐름 — 요청 본문 모양 오류(`400 INVALID_BODY`), 발급 가중치 검증 실패(`400 INVALID_WEIGHTS`), 발급 후보 없음(`422 NO_CANDIDATES`), 쓰기 실패(`500 STORAGE_FAILURE`) 넷이고, 전부 발급 실행 화면의 오류 영역에 코드·메시지로 표시된다.
+- 위 그림은 `INVALID_BODY` 가 8장에 들어오기 전에 그려져 실패 경로를 셋만 그린다. 기준은 이 목록이고, 그림은 발급 API 구현 브랜치(`KAN-13/03-issue-endpoint`)에서 다시 그린다.
 - 이번 에픽에는 기한 만료로 일어나는 전이가 없으므로, 기한 초과 흐름은 그리지 않는다 — 두 기한은 저장·고지까지만 쓰인다 (7장).
 
 ## 12. 테스트 실행계획
@@ -469,6 +496,7 @@ interface IssueDecision {
 | `TC-03-03` | `KAN-13/03-issue-endpoint` | — | `merchants` 가 빈 데이터 디렉터리 | `422` 와 `NO_CANDIDATES` |
 | `TC-03-04` | `KAN-13/03-issue-endpoint` | — | 쓰기가 실패하도록 만든 데이터 디렉터리 | `500` 과 `STORAGE_FAILURE` |
 | `TC-03-05` | `KAN-13/03-issue-endpoint` | — | 동시 `POST` 2건 | `coupons` 에 2건 모두 저장(유실 없음) |
+| `TC-03-06` | `KAN-13/03-issue-endpoint` | — | `weights` 에 객체가 아닌 값(`1`), 그리고 JSON 으로 파싱되지 않는 본문 | 각각 `400` 과 `INVALID_BODY` |
 | `TC-04-01` | `KAN-13/04-list-endpoints` | RED | `cit-001` 쿠폰 1건 기록 후 `?ownerId=cit-001`·`?ownerId=cit-002` 조회 | 앞은 그 1건, 뒤는 빈 배열 |
 | `TC-04-02` | `KAN-13/04-list-endpoints` | — | `ownerId` 쿼리 없는 `GET /api/coupons` | `400` 과 `MISSING_OWNER_ID` |
 | `TC-04-03` | `KAN-13/04-list-endpoints` | — | `?ownerId=cit-999`(시드에 없음) | `404` 와 `UNKNOWN_OWNER` |
@@ -517,14 +545,15 @@ interface IssueDecision {
   1. 쿠폰·발급 계약 타입과 경로·오류 상수 (`packages/contracts`)
   2. 시드 데이터(가맹점·시민)와 시드 검증 테스트, `_meta` 판 올림
 - `KAN-13/02-issuance-engine`
-  1. 신호 인터페이스와 랜덤 신호
-  2. 가중치 결합 엔진과 파라미터 기본값
-  3. 발급 트리거 인터페이스와 시연 트리거
+  1. 설계문서 개정(3·4·7~14장)과 계약 타입 반영 — `packages/contracts` · `documents/`
+  2. 신호 인터페이스와 랜덤 신호
+  3. 가중치 결합 엔진과 파라미터 기본값
+  4. 발급 트리거 인터페이스와 시연 트리거
 - `KAN-13/03-issue-endpoint`
   1. 쿠폰 저장 리포지터리와 직렬화 큐
   2. 발급 후보 적재(`candidate-source`)
   3. 발급 유스케이스와 `POST /api/coupons/issue`
-  4. 오류 응답 3종 처리
+  4. 오류 응답 4종 처리
 - `KAN-13/04-list-endpoints`
   1. 내 쿠폰 조회 API (`GET /api/coupons?ownerId=`)
   2. 시민 목록 API (`GET /api/citizens`)
@@ -555,3 +584,5 @@ interface IssueDecision {
 - 2026-09-06 — 12장 케이스 표에 적용 브랜치 열을 더해 구현 컴포넌트 목록(10장)과 표기 방식을 맞췄다.
 - 2026-09-06 — 13장 티켓맵대로 지라에 티켓 7건(KAN-14~KAN-20, 부모 에픽 KAN-13)을 생성하고 번호 칸을 채웠다. 에픽 KAN-13 본문에 이 문서의 요약을 반영했다.
 - 2026-09-06 — 브랜치 01 이 `_meta` 판 올림으로 기존 e2e `health.spec.ts` 의 스키마 판 단언을 깨뜨려, 그 단언을 판 번호에 무관하도록 완화하는 한 줄을 브랜치 01 에 포함했다. 완화로 놓치는 판 번호 값은 `packages/db/src/seed-data.test.ts` 가 시드의 `schemaVersion` 이 2 임을 단언해 고정한다. 10장 브랜치 01 파일맵과 5장의 수정 파일 목록·구조 변화 그림을 그에 맞춰 고쳤다.
+- 2026-09-06 — KAN-14 리뷰에서 이월된 계약 미결 4건을 닫았다. 8장에 INVALID_BODY 와 OWNER_ID_QUERY 를 더하고 INVALID_WEIGHTS 의 조건에 필수 키 누락을 포함했으며, 발급 가중치를 부분 덮어쓰기(Partial)로 바꿔 4장 결정 2 의 확장 서술을 요청 계약에도 참이 되게 했다. 7장 값 표에 두 기한 일수가 1 이상의 정수임을 적었다. 계약 파일을 고치면 그 위에 쌓이는 브랜치 전부가 영향을 받으므로, 이미 만들어진 브랜치 중 가장 위인 `KAN-13/02-issuance-engine` 에서 닫아 아래 브랜치 01 을 건드리지 않고 03~07 이 이 결과를 물려받게 했다. 그래서 이 커밋은 9장 레인 표기(`apps/api`)와 달리 `packages/contracts` 와 `documents/` 를 함께 건드린다 — 10장 브랜치 02 파일맵과 13장 커밋 계획에도 그렇게 적었다. 정정 — 확정 직후 `INVALID_WEIGHTS` 의 필수 키 누락 조항이 부분 덮어쓰기와 모순된다는 리뷰 지적이 나와, 검증을 병합 후 가중치에 걸고 그 조항을 조건에서 뺐다. 병합 후에도 키가 비는 경우는 `params.ts` 결손이라 요청 오류가 아니고, 죽은 조항을 계약에 남기면 다음 사람이 그것을 구현해 부분 덮어쓰기를 깨뜨린다. `INVALID_WEIGHTS` 의 조건은 넷이 되었고, 그중 '모르는 신호 키'만 병합 전 요청 본문에서 검사한다. 12장 `TC-02-02` 의 거부 3종은 그대로 둔다.
+- 2026-09-06 — 위 줄들의 개정을 리뷰한 결과 하나를 더 닫았다. 발급 엔드포인트의 오류가 셋에서 넷이 된 것을 10장 브랜치 03 완료 조건·11장 실패 흐름·13장 커밋 계획에 반사하고 12장에 `TC-03-06`(INVALID_BODY)을 더했다. 11장 발급 흐름 그림은 실패 경로를 셋만 그린 상태이며, 다시 그리는 것은 `KAN-13/03-issue-endpoint` 의 몫으로 남겼다. 같은 이유로 11장 발급 실행 화면 와이어프레임의 오류 영역 예시도 3종 상태이고, 다시 그리는 것은 `KAN-13/05-issue-screen` 의 몫이다. 브랜치 02 의 수정 범위를 3·9장 본문에도 반사했고(9장 레인 그림은 다시 그리지 않는다), `coupon.ts` 의 `expiresAt` 주석이 두 일수 파라미터를 "양수"로 느슨하게 적던 것을 7장과 같은 "1 이상의 정수"로 좁혔다. 13장 브랜치 02 첫 커밋의 장 열거는 실제로 고친 장에 맞춰 `3·4·7~14장` 으로 적었다 — 대응하는 티켓 체크박스 본문은 처음 계획대로 `4·7·8·14장` 이라 이 괄호만 표기가 다르고, 가리키는 커밋은 같다.
