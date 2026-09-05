@@ -21,7 +21,7 @@
 
   <!-- 정상 레인 -->
   <rect x="60" y="24" width="420" height="40" rx="8" class="ui"/>
-  <text x="270" y="49" text-anchor="middle" class="tb">발급 실행 화면 — 발급 1건 실행 버튼</text>
+  <text x="270" y="49" text-anchor="middle" class="tb">발급 실행 화면 — 발급 1건 실행 버튼 (시연 트리거)</text>
   <line x1="270" y1="64" x2="270" y2="88" class="edge" marker-end="url(#a)"/>
   <text x="280" y="82" class="lbl mono">POST /api/coupons/issue (weights 선택)</text>
 

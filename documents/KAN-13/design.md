@@ -31,6 +31,7 @@
 
 - 정적 시드 — 가상 가맹점 5건·가상 시민 5건을 `data/seed/` 에 JSON 으로 커밋한다.
 - 발급 엔진 — 신호 인터페이스 + 발급 가중치 결합. 구현하는 신호는 랜덤 신호 하나다.
+- 발급 트리거 인터페이스 — 발급을 일으키는 계기의 추상화. 구현하는 발급 트리거는 시연 트리거 하나다.
 - API 3개 — 발급 1개(`POST /api/coupons/issue`), 조회 2개(내 쿠폰·시민 목록). 오류 응답 포함 계약은 8장이다.
 - 웹 화면 2개 — 발급 실행 화면(시연·관리 시점), 내 쿠폰 화면(시민 시점, 거래조건 고지 포함).
 - 발급 e2e 1케이스 — 발급 실행부터 내 쿠폰 확인까지.
@@ -40,7 +41,7 @@
 아래는 이번 에픽에서 만들지 않는다. [프로토타입 범위](../프로토타입-범위.md) 의 전체 범위에는 남아 있는 항목도 있고, 그 경우 이후 에픽의 몫이다.
 
 - 랜덤 외 네 신호(사용자 소비 패턴·쿠폰 사용 패턴·가맹점 매출·가맹점 마케팅 수요) — 가중치 결합 구조에 자리만 남긴다.
-- 발급 트리거 3종(소비 도달·참여 리워드·가맹점 요청) — 시연 버튼으로 대체한다.
+- 소비 도달·참여 리워드·가맹점 요청 트리거 — 발급 트리거 인터페이스에 자리만 남기고, 이번 에픽의 발급은 시연 트리거로만 일으킨다.
 - 발급 이후의 라이프사이클 전이(공개 풀·단독 점유·사용·페이백 지급·만료) — 기획 노선 미결. 발급은 쿠폰 레코드를 소유자 점유 상태와 두 기한으로 만들어 저장하는 데까지다.
 - 모의 데이터 생성기 — 정적 시드로 대체한다.
 - 어뷰징 방지 룰, 이력의 해시 체인 로그, 시뮬레이션 대시보드.
@@ -59,6 +60,9 @@
 | 시민 | 쿠폰을 발급받을 수 있는 가상 사용자 | `Citizen` (`packages/contracts/src/citizen.ts`) |
 | 소유자 | 쿠폰을 발급받은 시민 | `Coupon.ownerId` · `Coupon.ownerName` |
 | 발급 | 발급 후보 하나를 골라 쿠폰 레코드를 만들어 저장하는 것 | `POST /api/coupons/issue` · `CouponsService.issue` |
+| 발급 트리거 | 발급을 일으키는 계기의 추상화. 발급 명령을 만들어 발급 유스케이스에 넘긴다 | `IssueTrigger` · `IssueCommand` (`apps/api/src/issuance/trigger.ts`) |
+| 시연 트리거 | 발급 실행 화면의 버튼이 일으키는, 이번 에픽에서 구현하는 유일한 발급 트리거 | `manualTrigger` (`apps/api/src/issuance/manual-trigger.ts`) · `TriggerType` 의 `'manual'` |
+| 발급 명령 | 발급 트리거가 만들어 넘기는 발급 1건의 입력 — 트리거 유형과 발급 가중치 덮어쓰기 | `IssueCommand` (`apps/api/src/issuance/trigger.ts`) |
 | 발급 후보 | 발급 대상이 될 수 있는 가맹점×시민 쌍 | `Candidate` (`apps/api/src/issuance/signal.ts`) |
 | 신호 | 발급 후보 하나에 0 이상 점수를 주는 단위 함수 | `Signal` (`apps/api/src/issuance/signal.ts`) |
 | 랜덤 신호 | 이력 없이 작동하는 탐색용 신호. 이번 에픽에서 구현하는 유일한 신호 | `randomSignal` (`apps/api/src/issuance/random-signal.ts`) |
@@ -75,6 +79,9 @@
 | 발급 결과 카드 | 발급 실행 화면에서 `201` 응답의 쿠폰·선택 근거를 보여주는 영역 | `IssuePage` 의 결과 표시 영역 |
 | 내 쿠폰 화면 | 시민이 소유한 쿠폰 목록 화면 | `MyCouponsPage` (`apps/web/src/pages/my-coupons-page.tsx`) |
 | 탭 셸 | 두 화면을 전환하는 상단 탭 구조 | `App.tsx` (`apps/web/src/App.tsx`) |
+| UI 전용 컴포넌트 | props 만 받아 그리며 fetch·상태 로직이 없는 컴포넌트 | `apps/web/src/components/` |
+| 로직 훅 | 화면의 fetch·상태 로직을 지는 훅 | `apps/web/src/hooks/` |
+| 테스트 코드 번호 | 테스트 케이스에 부여하는 식별자. 케이스 이름이 이 번호로 시작한다 | `TC-<브랜치 번호>-<일련번호>` (12장) |
 | 시드 | 커밋되는 초기 데이터 | `data/seed/` |
 
 - "이중 기한"은 소유자 점유 기한과 유효 소비 기한 둘을 묶어 부르는 말로만 쓴다. 개별 기한을 가리킬 때는 각 용어를 쓴다.
@@ -85,7 +92,7 @@
 
 - 가상 가맹점·시민 시드 데이터 — `KAN-13/01-seed-and-contracts`
 - 쿠폰·발급 계약 타입과 경로·오류 상수 — `KAN-13/01-seed-and-contracts`
-- 랜덤 신호와 가중치 결합 발급 엔진 — `KAN-13/02-issuance-engine`
+- 랜덤 신호와 가중치 결합 발급 엔진, 발급 트리거 인터페이스와 시연 트리거 — `KAN-13/02-issuance-engine`
 - 발급 API 와 coupons 컬렉션 저장 — `KAN-13/03-issue-endpoint`
 - 내 쿠폰 조회 API 와 시민 목록 API — `KAN-13/04-list-endpoints`
 - 발급 실행 화면과 탭 셸 — `KAN-13/05-issue-screen`
@@ -104,12 +111,16 @@
 | 6 | coupons 동시 쓰기 보호 | 파일 락 / 프로세스 내 직렬화 / 보호 없음 | 프로세스 내 직렬화 + 기존 원자적 쓰기 | 아래 문장 참조 | `apps/api` |
 | 7 | 두 기한의 저장 형태 | 파라미터(일수)만 저장 / 발급 시 절대 시각을 계산해 저장 | ISO 8601 절대 시각 `heldUntil`·`expiresAt` 저장 | 화면·테스트가 계산 없이 판정. 파라미터 변경의 소급 영향 차단 | `packages/contracts` · `apps/api` |
 | 8 | 화면 전환 방식 | react-router 도입 / 탭 상태 전환 | `App.tsx` 의 탭 상태 전환 | 화면이 둘뿐. 의존 추가 없이 Playwright 클릭으로 검증 가능 | `apps/web` |
+| 9 | 발급 트리거 확장 구조 | 컨트롤러가 발급 유스케이스를 직접 호출 / `IssueTrigger` 인터페이스 + 트리거 구현 | 인터페이스 + 시연 트리거 구현 | 아래 문장 참조 | `apps/api` · `packages/contracts` |
+| 10 | 화면 컴포넌트 구조 | 화면당 단일 컴포넌트 / UI 전용 컴포넌트·로직 훅 분리 + 화면 컴포넌트 조립 | 분리 + 조립 | 아래 문장 참조 | `apps/web` |
 
 표 셀에 압축되지 않은 근거를 문장으로 푼다.
 
 - 결정 5 — 배분 비율과 두 기한은 거래조건 고지 대상이다. 발급 뒤에 파라미터 기본값을 바꿔도 이미 발급된 쿠폰의 고지 내용이 바뀌면 안 되므로, 고지에 필요한 값 전부를 발급 시점에 레코드로 굳힌다. 부수 효과로 내 쿠폰 조회가 `coupons` 컬렉션 하나로 닫혀 조인이 없어진다.
 - 결정 6 — `JsonFileDb` 의 쓰기는 이미 원자적(임시 파일 후 rename)이라 파일이 깨지지는 않지만, 읽고-더하고-쓰는 발급이 겹치면 나중 쓰기가 앞 쓰기를 덮어 레코드가 유실될 수 있다. API 는 단일 프로세스이므로 발급 쓰기를 프로세스 안에서 한 줄로 직렬화하면 충분하다. 프로세스 밖까지 막는 파일 락은 단독 점유(찜하기) 기획이 확정될 때의 몫이며, [저장소 구조와 기술 스택](../저장소-구조와-기술-스택.md) 의 미결로 이미 걸려 있다.
-- 이 장의 결정 중 구현 완료 시 `documents/` 주제 문서에 반영할 것 — 결정 6 은 [저장소 구조와 기술 스택](../저장소-구조와-기술-스택.md) 에, 결정 5·7 은 [쿠폰 도메인 규칙](../쿠폰-도메인-규칙.md) 에 `- YYYY-MM-DD — <결정>` 으로 적는다.
+- 결정 9 — 소비 도달·참여 리워드·가맹점 요청 트리거는 각자 다른 계기에서 발급을 일으키지만, 트리거가 하는 일은 발급 명령(`IssueCommand` — 발급 가중치 덮어쓰기 등)을 만들어 `CouponsService.issue` 에 넘기는 것으로 같다. 신호 확장 구조(결정 2)와 대칭으로 인터페이스에 자리만 남기면 이후 에픽이 같은 틀로 트리거를 추가한다. 쿠폰 레코드에는 발급을 일으킨 발급 트리거 유형을 `trigger` 필드로 남긴다. 구성도는 6장에 있다.
+- 결정 10 — 화면 안의 컴포넌트는 최소단위로 나눈다. UI 전용 컴포넌트(`apps/web/src/components/`)는 props 만 받아 그리고 fetch·상태 로직을 갖지 않는다. 로직은 훅(`apps/web/src/hooks/`)이 진다. 화면 컴포넌트(`apps/web/src/pages/`)는 훅과 UI 전용 컴포넌트를 조립만 한다. 이렇게 나누면 단위 테스트가 fetch 스텁 없이 UI 를, 렌더 없이 로직을 각각 검증할 수 있고, 커밋도 단위별로 쪼개진다 (13장).
+- 이 장의 결정 중 구현 완료 시 `documents/` 주제 문서에 반영할 것 — 결정 6 은 [저장소 구조와 기술 스택](../저장소-구조와-기술-스택.md) 에, 결정 5·7·9 는 [쿠폰 도메인 규칙](../쿠폰-도메인-규칙.md) 에, 결정 10 은 [저장소 구조와 기술 스택](../저장소-구조와-기술-스택.md) 에 `- YYYY-MM-DD — <결정>` 으로 적는다.
 
 ## 5. 프로젝트 구조도
 
@@ -123,12 +134,20 @@
 
 ![워크스페이스 내부 변화 — 다섯 워크스페이스와 시드 데이터](./src/워크스페이스-내부-변화.svg)
 
-- `apps/web` — 화면 2개(`pages/`)가 생기고 `App.tsx` 가 탭 셸이 된다. 기존 저장소 상태 표시는 발급 실행 화면(관리 성격)으로 옮긴다.
-- `apps/api` — 모듈 3개가 생긴다. `issuance/`(발급 엔진, NestJS 비의존 순수 함수), `coupons/`(발급·내 쿠폰 API), `citizens/`(시민 목록 API).
+- `apps/web` — 세 층이 생긴다. 화면 조립(`pages/`), UI 전용 컴포넌트(`components/`), 로직 훅(`hooks/`) — 4장 결정 10 의 구조다. `App.tsx` 는 탭 셸이 되고, 기존 저장소 상태 표시는 UI 전용 컴포넌트로 추출해 발급 실행 화면(관리 성격)으로 옮긴다.
+- `apps/api` — 모듈 3개가 생긴다. `issuance/`(발급 엔진과 발급 트리거 인터페이스, NestJS 비의존 순수 함수), `coupons/`(발급·내 쿠폰 API), `citizens/`(시민 목록 API).
 - `packages/contracts` — 계약 파일 4개(`coupon.ts`·`merchant.ts`·`citizen.ts`·`issuance.ts`)가 생긴다.
 - `packages/db` — 구현 변경 없음. `JsonFileDb` 가 그대로 7장의 세 테이블(`merchants`·`citizens`·`coupons`)을 서빙하고, 시드 검증 테스트 1파일만 추가된다.
 - `e2e` — 스펙 1파일(`issuance.spec.ts`)이 추가된다. 기존 스펙은 변경 없음.
 - `data/` 는 워크스페이스가 아니지만 시드 2파일 추가와 `_meta.json` 수정이 있어 그림에 함께 그렸다.
+
+발급의 인터페이스 구성이다 — 확장 축이 트리거와 신호 둘이라는 것이 이 그림의 주장이다.
+
+![발급 트리거·신호 인터페이스 구성](./src/발급-트리거-인터페이스.svg)
+
+- 발급 트리거는 발급을 일으키는 계기이고, 신호는 발급 후보의 점수다. 이번 에픽은 각 축에서 시연 트리거와 랜덤 신호 하나씩만 구현한다 (4장 결정 2·9).
+- 어느 발급 트리거로 발급되든 `IssueTrigger` 아래의 경로는 하나다. 트리거는 발급 명령을 만들 뿐, 발급 후보 선택과 쿠폰 생성 규칙에는 관여하지 않는다.
+- 점선 상자는 이후 에픽이 같은 인터페이스를 구현해 채우는 자리다. 이번 에픽에서 미리 만들지 않는다.
 
 ## 7. 구현에 포함되는 도메인, 테이블
 
@@ -172,6 +191,7 @@
 | --- | --- | --- |
 | `id` | `string` | 컬렉션 안 유일. `cpn-` 접두 + `crypto.randomUUID()` |
 | `status` | `'held'` | 이번 에픽의 유일한 상태 값 |
+| `trigger` | `'manual'` | 발급을 일으킨 발급 트리거 유형. 이번 에픽의 유일한 값 |
 | `ownerId` | `string` | `citizens.id` 참조 |
 | `ownerName` | `string` | 발급 시점 스냅샷 |
 | `merchantId` | `string` | `merchants.id` 참조 |
@@ -186,6 +206,7 @@
 {
   "id": "cpn-9b1c6a2e-3f47-4a6b-8f0e-2d5c7e1a4b93",
   "status": "held",
+  "trigger": "manual",
   "ownerId": "cit-001",
   "ownerName": "김시민",
   "merchantId": "mer-001",
@@ -204,6 +225,7 @@
 - `expiresAt` 은 소유자 점유 기한 끝에 유효 소비 기한 파라미터를 더해 계산한다 — `heldUntil + openValidDays` 일.
 - 이번 에픽에는 기한이 만료를 일으키는 전이가 없다. 두 값은 저장·고지까지만 쓰이고, 전이는 라이프사이클 에픽의 몫이다.
 - `status` 에 `'held'` 외 값을 미리 만들지 않는다. 발급 이후 상태의 이름과 수는 기획 노선 미결이므로, 지금 추측해 넣은 값은 결정을 조용히 닫는 셈이 된다.
+- `trigger` 도 같은 이유로 `'manual'` 외 값을 미리 만들지 않는다. 소비 도달·참여 리워드·가맹점 요청의 유형 값은 각 트리거를 구현하는 에픽에서 `TriggerType` 에 추가한다.
 - 예시 레코드의 수치는 아래 값 표의 시연 기본값을 대입한 것이다.
 
 ### `_meta` — 예약 컬렉션
@@ -245,6 +267,7 @@ type ApiErrorCode =
 ### `POST /api/coupons/issue` — 발급
 
 - 경로 상수 — `ISSUE_COUPON_PATH`. 구현 브랜치 — `KAN-13/03-issue-endpoint` (10장).
+- 이 엔드포인트가 시연 트리거의 진입점이다. 컨트롤러는 요청 본문을 시연 트리거의 발급 명령으로 옮겨 `CouponsService.issue` 에 넘긴다 (4장 결정 9).
 - 요청 본문 — 생략 가능하며, 생략하면 7장 값 표의 기본값으로 발급한다.
 
 ```ts
@@ -298,68 +321,71 @@ interface IssueDecision {
 - 구현 브랜치는 01 부터 07 까지 일곱이고 선형이다. 각 브랜치가 앞 브랜치의 산출물(계약 타입 → 엔진 → API → 화면)을 바로 쓰므로 병렬 분기가 생기지 않는다.
 - 각 브랜치는 단독으로 리뷰·머지할 수 있고, 머지 후에도 `pnpm test`·`pnpm typecheck` 전체가 통과해야 한다.
 
-브랜치별 개요 한 줄.
+브랜치별 개요 한 줄과 수정하는 워크스페이스다. 그래프의 각 상자에도 같은 정보가 있다.
 
-- `KAN-13/01-seed-and-contracts` — 시드 데이터(가맹점·시민)와 쿠폰·발급 계약 타입, 시드 검증 테스트를 넣는 브랜치.
-- `KAN-13/02-issuance-engine` — 랜덤 신호와 가중치 결합 엔진(순수 함수)을 넣는 브랜치.
-- `KAN-13/03-issue-endpoint` — 발급 API 와 coupons 컬렉션 저장(직렬화 큐)을 넣는 브랜치.
-- `KAN-13/04-list-endpoints` — 내 쿠폰 조회 API 와 시민 목록 API 를 넣는 브랜치.
-- `KAN-13/05-issue-screen` — 발급 실행 화면과 탭 셸을 넣는 브랜치.
-- `KAN-13/06-my-coupons-screen` — 내 쿠폰 화면과 거래조건 고지를 넣는 브랜치.
-- `KAN-13/07-issuance-e2e` — 발급부터 내 쿠폰 확인까지의 e2e 를 넣는 브랜치.
+- `KAN-13/01-seed-and-contracts` — 시드 데이터(가맹점·시민)와 쿠폰·발급 계약 타입, 시드 검증 테스트를 넣는 브랜치. 수정 — `packages/contracts` · `packages/db`(테스트만) · `data/seed`.
+- `KAN-13/02-issuance-engine` — 랜덤 신호와 가중치 결합 엔진, 발급 트리거 인터페이스와 시연 트리거(전부 순수 함수)를 넣는 브랜치. 수정 — `apps/api`.
+- `KAN-13/03-issue-endpoint` — 발급 API 와 coupons 컬렉션 저장(직렬화 큐)을 넣는 브랜치. 수정 — `apps/api`.
+- `KAN-13/04-list-endpoints` — 내 쿠폰 조회 API 와 시민 목록 API 를 넣는 브랜치. 수정 — `apps/api`.
+- `KAN-13/05-issue-screen` — 발급 실행 화면과 탭 셸을 넣는 브랜치. 수정 — `apps/web`.
+- `KAN-13/06-my-coupons-screen` — 내 쿠폰 화면과 거래조건 고지를 넣는 브랜치. 수정 — `apps/web`.
+- `KAN-13/07-issuance-e2e` — 발급부터 내 쿠폰 확인까지의 e2e 를 넣는 브랜치. 수정 — `e2e`.
 
 ## 10. 브랜치 별 구현 상세 내용
 
 브랜치마다 첫 커밋 전에 여기 정의된 실패하는 테스트(RED)부터 작성한다. 구현 규율은 저장소의 테스트 우선 원칙을 따른다.
 
+- 화면 브랜치의 RED 는 화면(조립) 수준에 둔다 — RED 를 먼저 쓰고, 그것을 통과시키는 과정에서 훅과 UI 전용 컴포넌트를 각자의 테스트와 함께 만든다 (4장 결정 10).
+- 커밋은 13장의 커밋 계획대로 단위별로 쪼갠다. 각 커밋은 자기 테스트와 함께 초록인 상태로 닫는다 — 실패하는 테스트만 든 커밋을 남기지 않는다.
+
 ### `KAN-13/01-seed-and-contracts`
 
 - 파일맵 — 생성: `data/seed/merchants.json`(가상 가맹점 5건), `data/seed/citizens.json`(가상 시민 5건), `packages/contracts/src/coupon.ts`, `packages/contracts/src/merchant.ts`, `packages/contracts/src/citizen.ts`, `packages/contracts/src/issuance.ts`, `packages/db/src/seed-data.test.ts`. 수정: `data/seed/_meta.json`(`schemaVersion` 1→2), `packages/contracts/src/index.ts`.
 - 넣는 것 — 7장 테이블에 대응하는 계약 타입, 8장의 요청·응답·오류 계약과 경로 상수, 시드 데이터.
-- RED — `packages/db/src/seed-data.test.ts`: "`data/seed` 를 `JsonFileDb` 로 열면 `merchants`·`citizens` 가 각 5건이고, 모든 레코드의 `id`·`name`(가맹점은 `category` 포함)이 비어 있지 않으며 `id` 가 컬렉션 안에서 유일하다". 시드 파일이 아직 없으므로 처음에는 실패한다.
-- 완료 조건 — RED 가 GREEN 이 되고 `pnpm test`·`pnpm typecheck` 전체 통과. 시드의 상호·인명은 실존하지 않는 가상 표본이다.
+- RED `TC-01-01` — `packages/db/src/seed-data.test.ts`: "`data/seed` 를 `JsonFileDb` 로 열면 `merchants`·`citizens` 가 각 5건이고, 모든 레코드의 `id`·`name`(가맹점은 `category` 포함)이 비어 있지 않으며 `id` 가 컬렉션 안에서 유일하다". 시드 파일이 아직 없으므로 처음에는 실패한다.
+- 완료 조건 — `TC-01-01` 이 GREEN 이 되고 `pnpm test`·`pnpm typecheck` 전체 통과. 시드의 상호·인명은 실존하지 않는 가상 표본이다.
 
 ### `KAN-13/02-issuance-engine`
 
-- 파일맵 — 생성: `apps/api/src/issuance/signal.ts`(`Signal`·`Candidate`), `apps/api/src/issuance/random-signal.ts`, `apps/api/src/issuance/engine.ts`(`selectCandidate`), `apps/api/src/issuance/params.ts`(7장 값 표의 기본값), `apps/api/src/issuance/engine.test.ts`.
-- 넣는 것 — 신호 인터페이스와 랜덤 신호, 발급 가중치 결합. NestJS 에 의존하지 않는 순수 함수로 두고 RNG 는 인자로 주입한다 (4장 결정 1·2·3).
-- RED — `engine.test.ts`: "발급 가중치 `{ random: 1 }` 과 고정 수열을 반환하는 RNG 스텁으로 `selectCandidate` 를 두 번 호출하면 두 번 모두 같은 발급 후보가 선택되고, 반환된 `scores.random`·`total` 이 스텁 수열에서 계산한 기대값과 일치한다".
-- 완료 조건 — RED 가 GREEN. 가중치 0 이하·모르는 신호 키를 엔진 수준에서 거부하는 케이스 포함. 기본값 수치가 `params.ts` 밖에 등장하지 않는다.
+- 파일맵 — 생성: `apps/api/src/issuance/signal.ts`(`Signal`·`Candidate`), `apps/api/src/issuance/random-signal.ts`, `apps/api/src/issuance/engine.ts`(`selectCandidate`), `apps/api/src/issuance/trigger.ts`(`IssueTrigger`·`IssueCommand`), `apps/api/src/issuance/manual-trigger.ts`(+`manual-trigger.test.ts`), `apps/api/src/issuance/params.ts`(7장 값 표의 기본값), `apps/api/src/issuance/engine.test.ts`.
+- 넣는 것 — 신호 인터페이스와 랜덤 신호, 발급 가중치 결합, 발급 트리거 인터페이스와 시연 트리거. NestJS 에 의존하지 않는 순수 함수로 두고 RNG 는 인자로 주입한다 (4장 결정 1·2·3·9).
+- RED `TC-02-01` — `engine.test.ts`: "발급 가중치 `{ random: 1 }` 과 고정 수열을 반환하는 RNG 스텁으로 `selectCandidate` 를 두 번 호출하면 두 번 모두 같은 발급 후보가 선택되고, 반환된 `scores.random`·`total` 이 스텁 수열에서 계산한 기대값과 일치한다".
+- 완료 조건 — `TC-02-01` 이 GREEN 이고 `TC-02-02`(가중치 거부)·`TC-02-03`(시연 트리거, 12장)을 포함. 기본값 수치가 `params.ts` 밖에 등장하지 않는다.
 
 ### `KAN-13/03-issue-endpoint`
 
 - 파일맵 — 생성: `apps/api/src/coupons/coupons.module.ts`, `apps/api/src/coupons/coupons.controller.ts`, `apps/api/src/coupons/coupons.service.ts`, `apps/api/src/coupons/coupon.repository.ts`(`JsonFileDb` 래핑 + 직렬화 큐), `apps/api/src/coupons/candidate-source.ts`(`merchants`·`citizens` 를 읽어 발급 후보 생성), `apps/api/src/coupons/coupons.controller.test.ts`. 수정: `apps/api/src/app.module.ts`.
-- 넣는 것 — 8장의 `POST /api/coupons/issue`. 쿠폰 생성 시 두 기한 계산과 스냅샷 기록 (4장 결정 5·7), coupons 쓰기의 프로세스 내 직렬화 (4장 결정 6).
-- RED — `coupons.controller.test.ts`(supertest): "임시 데이터 디렉터리에 시드를 부트스트랩한 뒤 `POST /api/coupons/issue` 를 보내면 `201` 과 `IssueCouponResponse` 계약을 만족하는 본문이 오고, `coupons` 컬렉션 레코드가 0건에서 1건이 된다".
-- 완료 조건 — RED 가 GREEN. 오류 3종(`400 INVALID_WEIGHTS`·`422 NO_CANDIDATES`·`500 STORAGE_FAILURE`) 케이스와, 동시 `POST` 2건이 2건 모두 저장되는(유실 없음) 케이스 포함.
+- 넣는 것 — 8장의 `POST /api/coupons/issue`. 컨트롤러는 요청 본문을 시연 트리거로 옮겨 발급 명령을 만들고 발급 유스케이스에 넘긴다 (4장 결정 9). 쿠폰 생성 시 두 기한 계산과 `trigger`·스냅샷 기록 (4장 결정 5·7), coupons 쓰기의 프로세스 내 직렬화 (4장 결정 6).
+- RED `TC-03-01` — `coupons.controller.test.ts`(supertest): "임시 데이터 디렉터리에 시드를 부트스트랩한 뒤 `POST /api/coupons/issue` 를 보내면 `201` 과 `IssueCouponResponse` 계약을 만족하는 본문이 오고, `coupons` 컬렉션 레코드가 0건에서 1건이 된다".
+- 완료 조건 — `TC-03-01` 이 GREEN 이고 오류 3종 `TC-03-02`~`TC-03-04` 와 동시 발급 유실 없음 `TC-03-05`(12장)를 포함.
 
 ### `KAN-13/04-list-endpoints`
 
 - 파일맵 — 생성: `apps/api/src/citizens/citizens.module.ts`, `apps/api/src/citizens/citizens.controller.ts`, `apps/api/src/citizens/citizens.controller.test.ts`, `apps/api/src/coupons/list-coupons.test.ts`. 수정: `apps/api/src/coupons/coupons.controller.ts`·`coupons.service.ts`(내 쿠폰 조회 추가), `apps/api/src/app.module.ts`.
 - 넣는 것 — 8장의 `GET /api/coupons?ownerId=` 와 `GET /api/citizens`.
-- RED — `list-coupons.test.ts`: "`coupons` 컬렉션에 소유자 `cit-001` 의 쿠폰 1건을 미리 써 두면, `GET /api/coupons?ownerId=cit-001` 은 그 1건을 반환하고 `?ownerId=cit-002` 는 빈 배열을 반환한다".
-- 완료 조건 — RED 가 GREEN. `400 MISSING_OWNER_ID`·`404 UNKNOWN_OWNER` 케이스와 시민 목록 5건 반환 케이스 포함.
+- RED `TC-04-01` — `list-coupons.test.ts`: "`coupons` 컬렉션에 소유자 `cit-001` 의 쿠폰 1건을 미리 써 두면, `GET /api/coupons?ownerId=cit-001` 은 그 1건을 반환하고 `?ownerId=cit-002` 는 빈 배열을 반환한다".
+- 완료 조건 — `TC-04-01` 이 GREEN 이고 오류 2종 `TC-04-02`·`TC-04-03` 과 시민 목록 `TC-04-04`(12장)를 포함.
 
 ### `KAN-13/05-issue-screen`
 
-- 파일맵 — 생성: `apps/web/src/pages/issue-page.tsx`, `apps/web/src/pages/issue-page.test.tsx`. 수정: `apps/web/src/App.tsx`(탭 셸 — 발급 실행·내 쿠폰 두 탭, 저장소 상태 표시를 발급 실행 화면으로 이동), `apps/web/src/App.test.tsx`.
-- 넣는 것 — 발급 실행 화면. 기준은 [발급 실행 화면 와이어프레임](./src/발급-실행-화면.svg) (11장에 임베드) 이다. 내 쿠폰 탭 자리는 만들되 내용은 `KAN-13/06-my-coupons-screen` 의 몫이다.
-- RED — `issue-page.test.tsx`: "`fetch` 를 스텁한 상태에서 발급 1건 실행 버튼을 클릭하면 `POST /api/coupons/issue` 가 1회 호출되고, 스텁 응답의 `merchantName`·`ownerName` 이 발급 결과 카드에 나타난다".
-- 완료 조건 — RED 가 GREEN. 오류 응답 시 `error.code`·`error.message` 가 오류 영역에 표시되는 케이스 포함.
+- 파일맵 — 생성: `apps/web/src/hooks/use-issue-coupon.ts`(+`.test.ts`), `apps/web/src/components/weights-editor.tsx`(+`.test.tsx`), `apps/web/src/components/issued-coupon-card.tsx`(+`.test.tsx`), `apps/web/src/components/error-notice.tsx`(+`.test.tsx`), `apps/web/src/components/storage-status.tsx`(+`.test.tsx` — `App.tsx` 에서 추출), `apps/web/src/pages/issue-page.tsx`(+`.test.tsx`). 수정: `apps/web/src/App.tsx`(탭 셸 — 발급 실행·내 쿠폰 두 탭), `apps/web/src/App.test.tsx`.
+- 넣는 것 — 발급 실행 화면. 기준은 [발급 실행 화면 와이어프레임](./src/발급-실행-화면.svg) (11장에 임베드) 이다. 4장 결정 10 의 구조를 따른다 — UI 전용 컴포넌트 넷(발급 가중치 입력·발급 결과 카드·오류 영역·저장소 상태)과 로직 훅 `useIssueCoupon`, 이를 조립만 하는 `IssuePage`. 내 쿠폰 탭 자리는 만들되 내용은 `KAN-13/06-my-coupons-screen` 의 몫이다.
+- RED `TC-05-01` — `issue-page.test.tsx`: "`fetch` 를 스텁한 상태에서 발급 1건 실행 버튼을 클릭하면 `POST /api/coupons/issue` 가 1회 호출되고, 스텁 응답의 `merchantName`·`ownerName` 이 발급 결과 카드에 나타난다".
+- 완료 조건 — `TC-05-01` 이 GREEN 이고 `TC-05-02`(오류 표시, 12장)를 포함. UI 전용 컴포넌트가 `fetch`·전역 상태에 접근하지 않고, 훅과 UI 전용 컴포넌트가 각자의 테스트를 가진다.
 
 ### `KAN-13/06-my-coupons-screen`
 
-- 파일맵 — 생성: `apps/web/src/pages/my-coupons-page.tsx`, `apps/web/src/pages/my-coupons-page.test.tsx`. 수정: `apps/web/src/App.tsx`(내 쿠폰 탭 연결).
-- 넣는 것 — 내 쿠폰 화면. 기준은 [내 쿠폰 화면 와이어프레임](./src/내-쿠폰-화면.svg) (11장에 임베드) 이다. 배분 비율과 이중 기한은 거래조건 고지이므로 본문과 같은 글자 크기로 표시하고 축소 표기·각주 처리를 하지 않는다.
-- RED — `my-coupons-page.test.tsx`: "시민 목록과 쿠폰 1건 응답을 스텁하면 카드에 액면·배분 비율(소유자 20% / 소비자 80%)·소유자 점유 기한·유효 소비 기한 텍스트가 존재하고, 거래조건 텍스트가 `small` 요소나 축소 클래스 없이 본문 단락으로 렌더된다".
-- 완료 조건 — RED 가 GREEN. 쿠폰이 없을 때 "발급된 쿠폰이 없습니다" 표시 케이스 포함.
+- 파일맵 — 생성: `apps/web/src/hooks/use-citizens.ts`(+`.test.ts`), `apps/web/src/hooks/use-my-coupons.ts`(+`.test.ts`), `apps/web/src/components/owner-select.tsx`(+`.test.tsx`), `apps/web/src/components/coupon-card.tsx`(+`.test.tsx`), `apps/web/src/pages/my-coupons-page.tsx`(+`.test.tsx`). 수정: `apps/web/src/App.tsx`(내 쿠폰 탭 연결).
+- 넣는 것 — 내 쿠폰 화면. 기준은 [내 쿠폰 화면 와이어프레임](./src/내-쿠폰-화면.svg) (11장에 임베드) 이다. 4장 결정 10 의 구조를 따른다 — UI 전용 컴포넌트 둘(소유자 선택·쿠폰 카드)과 로직 훅 `useCitizens`·`useMyCoupons`, 이를 조립만 하는 `MyCouponsPage`. 거래조건 고지는 쿠폰 카드 컴포넌트가 지며, 배분 비율과 이중 기한을 본문과 같은 글자 크기로 표시하고 축소 표기·각주 처리를 하지 않는다.
+- RED `TC-06-01` — `my-coupons-page.test.tsx`: "시민 목록과 쿠폰 1건 응답을 스텁하면 카드에 액면·배분 비율(소유자 20% / 소비자 80%)·소유자 점유 기한·유효 소비 기한 텍스트가 존재하고, 거래조건 텍스트가 `small` 요소나 축소 클래스 없이 본문 단락으로 렌더된다".
+- 완료 조건 — `TC-06-01` 이 GREEN 이고 `TC-06-02`(빈 상태, 12장)를 포함. UI 전용 컴포넌트가 `fetch`·전역 상태에 접근하지 않고, 훅과 UI 전용 컴포넌트가 각자의 테스트를 가진다.
 
 ### `KAN-13/07-issuance-e2e`
 
 - 파일맵 — 생성: `e2e/tests/issuance.spec.ts`.
 - 넣는 것 — 발급부터 내 쿠폰 확인까지의 브라우저 검증. 시작 상태 준비만 `packages/db` 로 직접 하고(저장소의 시드 예외 규칙), 그 뒤는 전부 화면과 HTTP 를 통한다.
-- RED — `issuance.spec.ts`: "`coupons` 컬렉션을 빈 배열로 초기화한 뒤 — 발급 실행 화면에서 발급 1건 실행을 클릭하고, 발급 결과 카드에서 소유자명을 읽고, 내 쿠폰 화면에서 그 소유자를 선택하면 — 쿠폰 카드 1건과 거래조건(배분 비율·소유자 점유 기한·유효 소비 기한) 텍스트가 보인다".
-- 완료 조건 — RED 가 GREEN 이고 `pnpm build && pnpm e2e` 전체 통과.
+- RED `TC-07-01` — `issuance.spec.ts`: "`coupons` 컬렉션을 빈 배열로 초기화한 뒤 — 발급 실행 화면에서 발급 1건 실행을 클릭하고, 발급 결과 카드에서 소유자명을 읽고, 내 쿠폰 화면에서 그 소유자를 선택하면 — 쿠폰 카드 1건과 거래조건(배분 비율·소유자 점유 기한·유효 소비 기한) 텍스트가 보인다".
+- 완료 조건 — `TC-07-01` 이 GREEN 이고 `pnpm build && pnpm e2e` 전체 통과.
 
 ## 11. 플로우 다이어그램 / 유스케이스 다이어그램
 
@@ -376,43 +402,45 @@ interface IssueDecision {
 
 ![발급 흐름 — 정상 경로와 세 가지 실패 경로](./src/발급-흐름.svg)
 
-- 정상 흐름 — 버튼 → 발급 가중치 검증 → 발급 후보 적재 → 가중치 결합 → 쿠폰 생성 → coupons 컬렉션 저장 → `201` → 발급 결과 카드. 이후 내 쿠폰 화면의 확인은 별도 `GET` 요청이다.
+- 정상 흐름 — 버튼(시연 트리거) → 발급 가중치 검증 → 발급 후보 적재 → 가중치 결합 → 쿠폰 생성 → coupons 컬렉션 저장 → `201` → 발급 결과 카드. 이후 내 쿠폰 화면의 확인은 별도 `GET` 요청이다.
 - 실패 흐름 — 발급 가중치 검증 실패(`400 INVALID_WEIGHTS`), 발급 후보 없음(`422 NO_CANDIDATES`), 쓰기 실패(`500 STORAGE_FAILURE`) 셋이고, 전부 발급 실행 화면의 오류 영역에 코드·메시지로 표시된다.
 - 이번 에픽에는 기한 만료로 일어나는 전이가 없으므로, 기한 초과 흐름은 그리지 않는다 — 두 기한은 저장·고지까지만 쓰인다 (7장).
 
 ## 12. 테스트 실행계획
 
+### 테스트 코드 번호
+
+- 케이스마다 테스트 코드 번호 `TC-<브랜치 번호>-<일련번호>` 를 부여한다. 테스트 코드의 케이스 이름은 이 번호로 시작한다 — 예: `test('TC-03-01 발급이 201 과 쿠폰 1건을 만든다')`.
+- 각 브랜치의 첫 케이스(`TC-XX-01`)가 10장에 정의된 그 브랜치의 RED 테스트다. 나머지 번호는 10장 완료 조건이 요구하는 케이스다.
+- 번호는 화면·API·엔진 수준 케이스에 붙인다. 훅·UI 전용 컴포넌트의 단위 테스트는 번호 케이스를 통과시키는 과정에서 커밋 단위로 함께 만들며 번호를 받지 않는다 (10장·13장).
+
 ### 브랜치별 테스트
 
-10장의 RED 테스트와 1:1 로 대응한다. 케이스마다 입력과 기대 결과를 적는다.
-
-- `KAN-13/01-seed-and-contracts` — `packages/db/src/seed-data.test.ts`
-  - 입력 — `data/seed` 디렉터리를 `JsonFileDb` 로 연다.
-  - 기대 — `merchants`·`citizens` 가 각 5건, 모든 `id`·`name`(가맹점은 `category` 포함)이 비어 있지 않고 `id` 가 유일하다.
-  - 명령 — `pnpm --filter @im-coupon/db test`
-- `KAN-13/02-issuance-engine` — `apps/api/src/issuance/engine.test.ts`
-  - 입력 — 발급 후보 목록, 발급 가중치 `{ random: 1 }`, 고정 수열 RNG 스텁.
-  - 기대 — 두 번 호출 모두 같은 발급 후보가 선택되고 `scores.random`·`total` 이 스텁 수열로 계산한 값과 같다.
-  - 명령 — `pnpm --filter @im-coupon/api test`
-- `KAN-13/03-issue-endpoint` — `apps/api/src/coupons/coupons.controller.test.ts`
-  - 입력 — 임시 데이터 디렉터리에 시드 부트스트랩 후 `POST /api/coupons/issue` (본문 없음).
-  - 기대 — `201` 과 `IssueCouponResponse` 계약을 만족하는 본문, `coupons` 컬렉션 0건 → 1건.
-  - 명령 — `pnpm --filter @im-coupon/api test`
-- `KAN-13/04-list-endpoints` — `apps/api/src/coupons/list-coupons.test.ts`
-  - 입력 — `coupons` 컬렉션에 소유자 `cit-001` 의 쿠폰 1건을 미리 기록, `GET /api/coupons?ownerId=cit-001` 과 `?ownerId=cit-002`.
-  - 기대 — 앞 요청은 그 1건, 뒤 요청은 빈 배열.
-  - 명령 — `pnpm --filter @im-coupon/api test`
-- `KAN-13/05-issue-screen` — `apps/web/src/pages/issue-page.test.tsx`
-  - 입력 — `fetch` 스텁 상태에서 발급 1건 실행 버튼 클릭.
-  - 기대 — `POST /api/coupons/issue` 1회 호출, 스텁 응답의 `merchantName`·`ownerName` 이 발급 결과 카드에 표시.
-  - 명령 — `pnpm --filter @im-coupon/web test`
-- `KAN-13/06-my-coupons-screen` — `apps/web/src/pages/my-coupons-page.test.tsx`
-  - 입력 — 시민 목록과 쿠폰 1건 응답 스텁.
-  - 기대 — 카드에 액면·배분 비율(소유자 20% / 소비자 80%)·소유자 점유 기한·유효 소비 기한 텍스트가 있고, 거래조건 텍스트가 축소 표기 없이 본문 단락으로 렌더된다.
-  - 명령 — `pnpm --filter @im-coupon/web test`
-- `KAN-13/07-issuance-e2e` — `e2e/tests/issuance.spec.ts`
-  - 입력·기대 — 아래 "구현 완료 후 E2E" 절의 케이스와 같다.
-  - 명령 — `pnpm build && pnpm e2e`
+- `KAN-13/01-seed-and-contracts` — `packages/db/src/seed-data.test.ts` — 명령 `pnpm --filter @im-coupon/db test`
+  - `TC-01-01` (RED) — 입력: `data/seed` 를 `JsonFileDb` 로 연다. 기대: `merchants`·`citizens` 각 5건, `id`·`name`(가맹점은 `category` 포함)이 비어 있지 않고 `id` 유일.
+- `KAN-13/02-issuance-engine` — `apps/api/src/issuance/engine.test.ts`·`manual-trigger.test.ts` — 명령 `pnpm --filter @im-coupon/api test`
+  - `TC-02-01` (RED) — 입력: 발급 후보 목록, 발급 가중치 `{ random: 1 }`, 고정 수열 RNG 스텁. 기대: 두 번 호출 모두 같은 발급 후보, `scores.random`·`total` 이 스텁 수열 계산값과 일치.
+  - `TC-02-02` — 입력: 음수·전부 0·모르는 신호 키의 발급 가중치 각각. 기대: 엔진이 각각을 거부한다.
+  - `TC-02-03` — 입력: 발급 가중치 덮어쓰기가 든 요청 본문. 기대: 시연 트리거가 트리거 유형 `'manual'` 과 그 가중치를 실은 발급 명령을 만든다.
+- `KAN-13/03-issue-endpoint` — `apps/api/src/coupons/coupons.controller.test.ts` — 명령 `pnpm --filter @im-coupon/api test`
+  - `TC-03-01` (RED) — 입력: 임시 데이터 디렉터리에 시드 부트스트랩 후 `POST /api/coupons/issue`(본문 없음). 기대: `201` 과 `IssueCouponResponse` 계약 만족, `coupons` 0건 → 1건.
+  - `TC-03-02` — 입력: `weights.random` 에 `-1`. 기대: `400` 과 오류 코드 `INVALID_WEIGHTS`.
+  - `TC-03-03` — 입력: `merchants` 가 빈 데이터 디렉터리. 기대: `422` 와 오류 코드 `NO_CANDIDATES`.
+  - `TC-03-04` — 입력: 쓰기가 실패하도록 만든 데이터 디렉터리. 기대: `500` 과 오류 코드 `STORAGE_FAILURE`.
+  - `TC-03-05` — 입력: 동시 `POST` 2건. 기대: `coupons` 에 2건 모두 저장된다(유실 없음).
+- `KAN-13/04-list-endpoints` — `apps/api/src/coupons/list-coupons.test.ts`·`apps/api/src/citizens/citizens.controller.test.ts` — 명령 `pnpm --filter @im-coupon/api test`
+  - `TC-04-01` (RED) — 입력: 소유자 `cit-001` 의 쿠폰 1건 기록 후 `GET /api/coupons?ownerId=cit-001` 과 `?ownerId=cit-002`. 기대: 앞은 그 1건, 뒤는 빈 배열.
+  - `TC-04-02` — 입력: `ownerId` 쿼리 없는 `GET /api/coupons`. 기대: `400` 과 오류 코드 `MISSING_OWNER_ID`.
+  - `TC-04-03` — 입력: `?ownerId=cit-999`(시드에 없음). 기대: `404` 와 오류 코드 `UNKNOWN_OWNER`.
+  - `TC-04-04` — 입력: `GET /api/citizens`. 기대: 시드 순서 그대로 시민 5건.
+- `KAN-13/05-issue-screen` — `apps/web/src/pages/issue-page.test.tsx` — 명령 `pnpm --filter @im-coupon/web test`
+  - `TC-05-01` (RED) — 입력: `fetch` 스텁 상태에서 발급 1건 실행 버튼 클릭. 기대: `POST /api/coupons/issue` 1회 호출, 스텁 응답의 `merchantName`·`ownerName` 이 발급 결과 카드에 표시.
+  - `TC-05-02` — 입력: 오류 응답(`422 NO_CANDIDATES`) 스텁. 기대: 오류 영역에 `error.code`·`error.message` 표시.
+- `KAN-13/06-my-coupons-screen` — `apps/web/src/pages/my-coupons-page.test.tsx` — 명령 `pnpm --filter @im-coupon/web test`
+  - `TC-06-01` (RED) — 입력: 시민 목록과 쿠폰 1건 응답 스텁. 기대: 카드에 액면·배분 비율(소유자 20% / 소비자 80%)·소유자 점유 기한·유효 소비 기한 텍스트가 있고, 거래조건 텍스트가 축소 표기 없이 본문 단락으로 렌더.
+  - `TC-06-02` — 입력: 빈 쿠폰 목록 응답 스텁. 기대: "발급된 쿠폰이 없습니다" 표시.
+- `KAN-13/07-issuance-e2e` — `e2e/tests/issuance.spec.ts` — 명령 `pnpm build && pnpm e2e`
+  - `TC-07-01` (RED) — 아래 "구현 완료 후 E2E" 절의 케이스다.
 
 - 브랜치를 머지하기 전에는 워크스페이스 필터 없이 `pnpm test` 와 `pnpm typecheck` 전체를 돌린다.
 - 단위 테스트는 `IM_COUPON_SEED_DIR`·`IM_COUPON_DATA_DIR` 를 임시 디렉터리로 갈아끼워 실제 `data/` 를 건드리지 않는다.
@@ -420,7 +448,7 @@ interface IssueDecision {
 ### 구현 완료 후 E2E
 
 - 실행 명령 — `pnpm build && pnpm e2e`. Playwright 의 `webServer` 가 빌드 산출물(`node dist/main.js`, `vite preview`)을 띄운다.
-- 케이스 — `e2e/tests/issuance.spec.ts` 하나를 추가한다.
+- 케이스 `TC-07-01` — `e2e/tests/issuance.spec.ts` 하나를 추가한다.
   1. 준비 — `packages/db` 의 `JsonFileDb` 로 `coupons` 컬렉션을 빈 배열로 초기화한다.
   2. 발급 실행 화면에서 발급 1건 실행을 클릭한다.
   3. 기대 — 발급 결과 카드에 가맹점명·소유자명·액면이 나타난다. 소유자명을 변수로 읽어 둔다.
@@ -436,16 +464,49 @@ interface IssueDecision {
 - `KAN-13/00-design-doc` 은 구현 브랜치가 아니므로 티켓을 만들지 않는다.
 - 판단·수치·결정은 티켓에 두지 않는다. 티켓 본문은 이 문서를 가리키고 실행 상태만 든다.
 
-| 브랜치 | 티켓 번호 | 티켓 제목(계획) | 커밋 계획(체크박스 1건씩) |
-| --- | --- | --- | --- |
-| `KAN-13/01-seed-and-contracts` | (미생성) | 시드 데이터와 쿠폰 계약 타입 | 1커밋 — 시드·계약·시드 검증 테스트 |
-| `KAN-13/02-issuance-engine` | (미생성) | 발급 엔진 — 랜덤 신호와 가중치 결합 | 1커밋 — 엔진과 테스트 |
-| `KAN-13/03-issue-endpoint` | (미생성) | 발급 API 와 쿠폰 저장 | 1커밋 — 발급 API·직렬화 큐·테스트 |
-| `KAN-13/04-list-endpoints` | (미생성) | 내 쿠폰·시민 목록 조회 API | 1커밋 — 조회 API 2개와 테스트 |
-| `KAN-13/05-issue-screen` | (미생성) | 발급 실행 화면 | 1커밋 — 화면·탭 셸·테스트 |
-| `KAN-13/06-my-coupons-screen` | (미생성) | 내 쿠폰 화면과 거래조건 고지 | 1커밋 — 화면과 테스트 |
-| `KAN-13/07-issuance-e2e` | (미생성) | 발급 e2e | 1커밋 — e2e 스펙 |
+| 브랜치 | 티켓 번호 | 티켓 제목(계획) |
+| --- | --- | --- |
+| `KAN-13/01-seed-and-contracts` | (미생성) | 시드 데이터와 쿠폰 계약 타입 |
+| `KAN-13/02-issuance-engine` | (미생성) | 발급 엔진 — 랜덤 신호·가중치 결합·발급 트리거 |
+| `KAN-13/03-issue-endpoint` | (미생성) | 발급 API 와 쿠폰 저장 |
+| `KAN-13/04-list-endpoints` | (미생성) | 내 쿠폰·시민 목록 조회 API |
+| `KAN-13/05-issue-screen` | (미생성) | 발급 실행 화면 |
+| `KAN-13/06-my-coupons-screen` | (미생성) | 내 쿠폰 화면과 거래조건 고지 |
+| `KAN-13/07-issuance-e2e` | (미생성) | 발급 e2e |
+
+### 커밋 계획
+
+- 티켓 체크박스는 아래 커밋당 1건씩 만든다. 각 커밋은 자기 테스트와 함께 초록인 상태로 닫는다 (10장).
+- `KAN-13/01-seed-and-contracts`
+  1. 쿠폰·발급 계약 타입과 경로·오류 상수 (`packages/contracts`)
+  2. 시드 데이터(가맹점·시민)와 시드 검증 테스트, `_meta` 판 올림
+- `KAN-13/02-issuance-engine`
+  1. 신호 인터페이스와 랜덤 신호
+  2. 가중치 결합 엔진과 파라미터 기본값
+  3. 발급 트리거 인터페이스와 시연 트리거
+- `KAN-13/03-issue-endpoint`
+  1. 쿠폰 저장 리포지터리와 직렬화 큐
+  2. 발급 후보 적재(`candidate-source`)
+  3. 발급 유스케이스와 `POST /api/coupons/issue`
+  4. 오류 응답 3종 처리
+- `KAN-13/04-list-endpoints`
+  1. 내 쿠폰 조회 API (`GET /api/coupons?ownerId=`)
+  2. 시민 목록 API (`GET /api/citizens`)
+- `KAN-13/05-issue-screen`
+  1. 탭 셸과 저장소 상태 컴포넌트 추출
+  2. UI 전용 컴포넌트 — 발급 가중치 입력·발급 결과 카드·오류 영역
+  3. `useIssueCoupon` 훅
+  4. 발급 실행 화면 조립
+- `KAN-13/06-my-coupons-screen`
+  1. UI 전용 컴포넌트 — 소유자 선택·쿠폰 카드
+  2. `useCitizens`·`useMyCoupons` 훅
+  3. 내 쿠폰 화면 조립
+- `KAN-13/07-issuance-e2e`
+  1. 발급 e2e 스펙
 
 ## 14. 설계 문서 변경 로그
 
 - 2026-09-06 — 최초 작성. 범위 축소 6건(랜덤 신호만 구현, 시연 버튼 트리거, 정적 시드, 티켓맵은 계획만, 화면 2개, 거래조건 본문 크기 고지)을 반영해 14장 전체를 작성했다.
+- 2026-09-06 — 발급 트리거를 `IssueTrigger` 인터페이스로 추상화하고 시연 트리거를 유일 구현으로 정의했다 (4장 결정 9). 쿠폰 레코드에 `trigger` 필드를 더하고 인터페이스 구성도를 6장에 추가했다.
+- 2026-09-06 — 화면 컴포넌트를 UI 전용 컴포넌트·로직 훅·화면 조립으로 나누는 결정을 더했다 (4장 결정 10). 이에 맞춰 10장 화면 브랜치의 파일맵을 다시 썼다.
+- 2026-09-06 — 13장 커밋 계획을 브랜치당 1커밋에서 단위 커밋으로 세분화하고, 9장 그래프에 브랜치별 수정 워크스페이스를 표기하고, 12장에 테스트 코드 번호 `TC-<브랜치 번호>-<일련번호>` 를 도입했다.
