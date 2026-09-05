@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 580" font-family="'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif">
+  <style>
+    .impl { fill: #ddf4ff; stroke: #0969da; stroke-width: 1.4; }
+    .core { fill: #ffffff; stroke: #1f2328; stroke-width: 1.4; }
+    .out { fill: #ffffff; stroke: #8c959f; stroke-width: 1.2; stroke-dasharray: 6 4; }
+    .t { fill: #1f2328; font-size: 12.5px; }
+    .tb { fill: #1f2328; font-size: 12.5px; font-weight: 700; }
+    .tm { fill: #656d76; font-size: 11.5px; }
+    .lbl { fill: #656d76; font-size: 11px; }
+    .edge { stroke: #1f2328; stroke-width: 1.3; fill: none; }
+    .edged { stroke: #8c959f; stroke-width: 1.2; stroke-dasharray: 5 4; fill: none; }
+    .mono { font-family: ui-monospace, Menlo, monospace; }
+    .axis { fill: #1f2328; font-size: 13px; font-weight: 700; }
+  </style>
+  <defs>
+    <marker id="k" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#1f2328"/></marker>
+    <marker id="kd" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#8c959f"/></marker>
+  </defs>
+
+  <!-- 왼쪽 축 — 발급 트리거 -->
+  <text x="30" y="34" class="axis">발급 트리거 축 — 발급을 일으키는 계기</text>
+  <rect x="30" y="48" width="264" height="52" rx="6" class="impl"/>
+  <text x="46" y="70" class="tb">시연 트리거 (이번 에픽 구현)</text>
+  <text x="46" y="90" class="tm mono">POST /api/coupons/issue 가 진입점</text>
+  <rect x="30" y="116" width="264" height="40" rx="6" class="out"/>
+  <text x="46" y="141" class="tm">소비 도달 트리거 — 범위 제외</text>
+  <rect x="30" y="168" width="264" height="40" rx="6" class="out"/>
+  <text x="46" y="193" class="tm">참여 리워드 트리거 — 범위 제외</text>
+  <rect x="30" y="220" width="264" height="40" rx="6" class="out"/>
+  <text x="46" y="245" class="tm">가맹점 요청 트리거 — 범위 제외</text>
+
+  <line x1="294" y1="74" x2="356" y2="84" class="edge" marker-end="url(#k)"/>
+  <text x="300" y="66" class="lbl">발급 명령 생성</text>
+  <line x1="294" y1="136" x2="356" y2="96" class="edged" marker-end="url(#kd)"/>
+  <line x1="294" y1="188" x2="356" y2="102" class="edged" marker-end="url(#kd)"/>
+  <line x1="294" y1="240" x2="356" y2="108" class="edged" marker-end="url(#kd)"/>
+  <text x="300" y="272" class="lbl">점선 — 이후 에픽에서 같은 인터페이스를 구현</text>
+
+  <!-- 가운데 파이프라인 -->
+  <rect x="358" y="60" width="240" height="56" rx="6" class="core"/>
+  <text x="478" y="83" text-anchor="middle" class="tb mono">IssueTrigger 인터페이스</text>
+  <text x="478" y="103" text-anchor="middle" class="tm mono">issuance/trigger.ts · TriggerType</text>
+  <line x1="478" y1="116" x2="478" y2="148" class="edge" marker-end="url(#k)"/>
+  <text x="488" y="140" class="lbl mono">IssueCommand (weights 덮어쓰기 포함)</text>
+
+  <rect x="358" y="150" width="240" height="52" rx="6" class="core"/>
+  <text x="478" y="172" text-anchor="middle" class="tb mono">CouponsService.issue</text>
+  <text x="478" y="192" text-anchor="middle" class="tm">발급 유스케이스 — 검증·후보 적재</text>
+  <line x1="478" y1="202" x2="478" y2="234" class="edge" marker-end="url(#k)"/>
+  <text x="488" y="226" class="lbl">발급 후보 목록</text>
+
+  <rect x="358" y="236" width="240" height="52" rx="6" class="core"/>
+  <text x="478" y="258" text-anchor="middle" class="tb mono">발급 엔진 — selectCandidate</text>
+  <text x="478" y="278" text-anchor="middle" class="tm mono">issuance/engine.ts · 순수 함수</text>
+  <line x1="478" y1="288" x2="478" y2="320" class="edge" marker-end="url(#k)"/>
+  <text x="488" y="312" class="lbl">선택된 발급 후보 1쌍</text>
+
+  <rect x="358" y="322" width="240" height="52" rx="6" class="core"/>
+  <text x="478" y="344" text-anchor="middle" class="tb">쿠폰 생성</text>
+  <text x="478" y="364" text-anchor="middle" class="tm mono">trigger·status·두 기한·스냅샷 기록</text>
+  <line x1="478" y1="374" x2="478" y2="406" class="edge" marker-end="url(#k)"/>
+  <text x="488" y="398" class="lbl">직렬화 큐 + 원자적 쓰기</text>
+
+  <rect x="358" y="408" width="240" height="44" rx="6" class="core"/>
+  <text x="478" y="435" text-anchor="middle" class="tb mono">coupons 컬렉션</text>
+
+  <!-- 오른쪽 축 — 신호 -->
+  <text x="620" y="150" class="axis">신호 축 — 발급 후보의 점수</text>
+  <rect x="620" y="164" width="250" height="44" rx="6" class="impl"/>
+  <text x="636" y="184" class="tb">랜덤 신호 (이번 에픽 구현)</text>
+  <text x="636" y="201" class="tm mono">issuance/random-signal.ts</text>
+  <rect x="620" y="220" width="250" height="36" rx="6" class="out"/>
+  <text x="636" y="243" class="tm">사용자 소비 패턴 — 범위 제외</text>
+  <rect x="620" y="268" width="250" height="36" rx="6" class="out"/>
+  <text x="636" y="291" class="tm">쿠폰 사용 패턴 — 범위 제외</text>
+  <rect x="620" y="316" width="250" height="36" rx="6" class="out"/>
+  <text x="636" y="339" class="tm">가맹점 매출 — 범위 제외</text>
+  <rect x="620" y="364" width="250" height="36" rx="6" class="out"/>
+  <text x="636" y="387" class="tm">가맹점 마케팅 수요 — 범위 제외</text>
+
+  <line x1="620" y1="186" x2="600" y2="250" class="edge" marker-end="url(#k)"/>
+  <text x="530" y="222" class="lbl">점수 × 발급 가중치</text>
+  <line x1="620" y1="238" x2="600" y2="258" class="edged" marker-end="url(#kd)"/>
+  <line x1="620" y1="286" x2="600" y2="268" class="edged" marker-end="url(#kd)"/>
+  <line x1="620" y1="334" x2="600" y2="276" class="edged" marker-end="url(#kd)"/>
+  <line x1="620" y1="382" x2="600" y2="284" class="edged" marker-end="url(#kd)"/>
+
+  <text x="30" y="500" class="lbl">발급의 확장 축은 둘이다 — 트리거(계기)와 신호(점수). 실선·파랑이 이번 에픽 구현이고, 점선은 인터페이스에 자리만 남긴다.</text>
+  <text x="30" y="518" class="lbl">어느 트리거로 발급되든 IssueTrigger 아래의 경로는 하나다 — 검증 → 발급 후보 → 가중치 결합 → 쿠폰 생성 → 저장.</text>
+  <text x="30" y="536" class="lbl">쿠폰 레코드의 trigger 필드가 발급을 일으킨 트리거 유형을 남긴다. 이번 에픽의 유일한 값은 'manual'(시연 트리거)이다.</text>
+</svg>

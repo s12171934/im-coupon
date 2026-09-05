@@ -33,10 +33,10 @@
   <text x="430" y="48" class="h">변경 후 — KAN-13/01~07 머지 뒤</text>
   <text x="430" y="80" class="l">im-coupon/</text>
   <text x="430" y="102" class="l">├ apps/web/src/</text>
-  <text x="430" y="124" class="new">│ └ + pages/ 발급 실행·내 쿠폰 화면</text>
+  <text x="430" y="124" class="new">│ └ + pages/·components/·hooks/ 두 화면</text>
   <text x="430" y="146" class="l">├ apps/api/src/</text>
   <text x="430" y="168" class="l">│ ├ health/</text>
-  <text x="430" y="190" class="new">│ ├ + issuance/ 발급 엔진</text>
+  <text x="430" y="190" class="new">│ ├ + issuance/ 발급 엔진·트리거</text>
   <text x="430" y="212" class="new">│ ├ + coupons/ 발급·내 쿠폰 API</text>
   <text x="430" y="234" class="new">│ └ + citizens/ 시민 목록 API</text>
   <text x="430" y="256" class="l">├ packages/contracts/src/</text>
