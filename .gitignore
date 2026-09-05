@@ -1,8 +1,8 @@
-# Nestjs specific
-/dist
-/node_modules
-/build
-/tmp
+# 빌드 산출물·의존성 (모든 워크스페이스)
+dist/
+node_modules/
+build/
+tmp/
 
 # Logs
 logs
@@ -22,3 +22,14 @@ lerna-debug.log*
 # temp directory
 .temp
 .tmp
+
+# Turborepo
+.turbo
+
+# 런타임 데이터 (시드는 data/seed 에 커밋한다)
+/data/runtime/*
+!/data/runtime/.gitkeep
+
+# Playwright
+/e2e/test-results
+/e2e/playwright-report
