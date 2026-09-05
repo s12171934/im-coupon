@@ -1,0 +1,174 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "만드는 순서와 선행 관계",
+    "quality_profile": "showcase",
+    "legend": {
+      "mode": "auto",
+      "entries": {
+        "backend": {
+          "label": "구현 단계"
+        },
+        "cloud": {
+          "label": "제출 작업"
+        },
+        "external": {
+          "label": "바꿀 수 없는 날짜"
+        },
+        "security": {
+          "label": "닫혀야 착수할 수 있다"
+        }
+      }
+    }
+  },
+  "lanes": [
+    {
+      "id": "build",
+      "label": "구현"
+    },
+    {
+      "id": "submit",
+      "label": "제출"
+    },
+    {
+      "id": "block",
+      "label": "선행 조건",
+      "variant": "exception"
+    }
+  ],
+  "mainPath": [
+    "s1",
+    "s2",
+    "s3"
+  ],
+  "nodes": [
+    {
+      "id": "s1",
+      "lane": "build",
+      "col": 0,
+      "type": "backend",
+      "label": "모의 데이터 생성기",
+      "sublabel": "+ 발급 알고리즘",
+      "tag": "1",
+      "width": 152
+    },
+    {
+      "id": "s2",
+      "lane": "build",
+      "col": 2,
+      "type": "backend",
+      "label": "라이프사이클 상태기계",
+      "sublabel": "+ 점유 락",
+      "tag": "2",
+      "width": 160
+    },
+    {
+      "id": "s3",
+      "lane": "build",
+      "col": 4,
+      "type": "backend",
+      "label": "시뮬레이션 대시보드",
+      "tag": "3",
+      "width": 152
+    },
+    {
+      "id": "doc",
+      "lane": "submit",
+      "col": 4,
+      "type": "cloud",
+      "label": "서류 정리 · 업로드 확인",
+      "sublabel": "마지막 3일 — 구현 기간에서 뺀다",
+      "width": 184
+    },
+    {
+      "id": "dl",
+      "lane": "submit",
+      "col": 5,
+      "type": "external",
+      "label": "접수 마감",
+      "sublabel": "2026-09-20 23:59",
+      "width": 132
+    },
+    {
+      "id": "open",
+      "lane": "block",
+      "col": 1,
+      "type": "security",
+      "label": "노선 미결",
+      "sublabel": "공용 풀 · 점유 존치 여부",
+      "width": 160
+    }
+  ],
+  "edges": [
+    {
+      "id": "s1-s2",
+      "from": "s1",
+      "to": "s2",
+      "variant": "emphasis",
+      "role": "main",
+      "route": "straight"
+    },
+    {
+      "id": "s2-s3",
+      "from": "s2",
+      "to": "s3",
+      "variant": "emphasis",
+      "role": "main"
+    },
+    {
+      "id": "s3-doc",
+      "from": "s3",
+      "to": "doc",
+      "label": "구현을 멈추고 서류로",
+      "variant": "default",
+      "role": "branch",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "doc-dl",
+      "from": "doc",
+      "to": "dl",
+      "variant": "emphasis",
+      "role": "main"
+    },
+    {
+      "id": "open-s2",
+      "from": "open",
+      "to": "s2",
+      "label": "선행 — 닫히기 전에 착수하면 버릴 코드를 만든다",
+      "variant": "security",
+      "role": "error"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "세 단계를 이 순서로 만든다",
+      "items": [
+        "모의 데이터 생성기와 발급 알고리즘이 먼저다 — 뒤의 모든 것이 이 데이터를 쓴다",
+        "라이프사이클 상태기계와 점유 락이 그 다음이다",
+        "시뮬레이션 대시보드는 앞의 둘이 있어야 보여 줄 것이 생긴다"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "2번은 아직 착수할 수 없다",
+      "items": [
+        "공용 풀과 점유(찜하기)를 존치할지가 닫히지 않았다",
+        "닫히기 전에 라이프사이클을 구현하면 버릴 코드를 만든다",
+        "이 미결은 1번을 만드는 동안 닫아야 한다"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "마지막 3일은 구현 기간이 아니다",
+      "items": [
+        "서류 정리와 업로드 확인에 마지막 3일을 통째로 쓴다",
+        "구현 일정에서 이 3일을 빼고 계산한다",
+        "접수 마감 2026-09-20 23:59 은 움직이지 않는다"
+      ]
+    }
+  ]
+}

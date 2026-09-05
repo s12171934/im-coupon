@@ -1,0 +1,263 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "개발 서버 기동과 수명",
+    "quality_profile": "showcase",
+    "legend": {
+      "mode": "auto",
+      "entries": {
+        "external": {
+          "label": "기동 명령"
+        },
+        "backend": {
+          "label": "서버 상태"
+        },
+        "database": {
+          "label": "데이터 디렉터리"
+        },
+        "security": {
+          "label": "종료로 가는 길"
+        },
+        "messagebus": {
+          "label": "감시"
+        },
+        "cloud": {
+          "label": "축소된 정상 상태"
+        }
+      }
+    }
+  },
+  "lanes": [
+    {
+      "id": "boot",
+      "label": "기동"
+    },
+    {
+      "id": "serve",
+      "label": "서비스"
+    },
+    {
+      "id": "reduced",
+      "label": "축소된 정상 상태"
+    },
+    {
+      "id": "exit",
+      "label": "종료",
+      "variant": "exception"
+    }
+  ],
+  "mainPath": [
+    "start",
+    "port",
+    "seed",
+    "copy",
+    "run"
+  ],
+  "nodes": [
+    {
+      "id": "start",
+      "lane": "boot",
+      "col": 0,
+      "type": "external",
+      "label": "pnpm dev",
+      "sublabel": "API 기동",
+      "width": 120
+    },
+    {
+      "id": "port",
+      "lane": "boot",
+      "col": 1,
+      "type": "backend",
+      "label": "포트가 비어 있나",
+      "tag": "판정",
+      "width": 136
+    },
+    {
+      "id": "seed",
+      "lane": "boot",
+      "col": 2,
+      "type": "database",
+      "label": "runtime 이 비어 있나",
+      "tag": "판정",
+      "width": 148
+    },
+    {
+      "id": "copy",
+      "lane": "boot",
+      "col": 3,
+      "type": "database",
+      "label": "seed 를 복사",
+      "width": 124
+    },
+    {
+      "id": "keep",
+      "lane": "serve",
+      "col": 3,
+      "type": "database",
+      "label": "덮어쓰지 않는다",
+      "sublabel": "쌓인 상태를 지우지 않는다",
+      "width": 152
+    },
+    {
+      "id": "run",
+      "lane": "serve",
+      "col": 4,
+      "type": "backend",
+      "label": "서비스 중",
+      "width": 116
+    },
+    {
+      "id": "watch",
+      "lane": "serve",
+      "col": 5,
+      "type": "messagebus",
+      "label": "5초마다 감시",
+      "sublabel": "소스 디렉터리가 있나",
+      "tag": "unref 한 타이머",
+      "width": 140
+    },
+    {
+      "id": "degraded",
+      "lane": "reduced",
+      "col": 4,
+      "type": "cloud",
+      "label": "degraded 응답",
+      "sublabel": "종료 사유가 아니다",
+      "width": 140
+    },
+    {
+      "id": "guide",
+      "lane": "exit",
+      "col": 1,
+      "type": "security",
+      "label": "점유자 안내",
+      "sublabel": "스택 트레이스 대신",
+      "width": 136
+    },
+    {
+      "id": "orphan",
+      "lane": "exit",
+      "col": 5,
+      "type": "security",
+      "label": "고아로 판단하고 종료",
+      "sublabel": "포트를 남기지 않는다",
+      "width": 156
+    }
+  ],
+  "edges": [
+    {
+      "id": "start-port",
+      "from": "start",
+      "to": "port",
+      "variant": "emphasis",
+      "role": "main"
+    },
+    {
+      "id": "port-guide",
+      "from": "port",
+      "to": "guide",
+      "label": "선점됨",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "port-seed",
+      "from": "port",
+      "to": "seed",
+      "label": "비어 있음",
+      "variant": "emphasis",
+      "role": "main"
+    },
+    {
+      "id": "seed-copy",
+      "from": "seed",
+      "to": "copy",
+      "label": "비어 있음",
+      "variant": "emphasis",
+      "role": "main"
+    },
+    {
+      "id": "seed-keep",
+      "from": "seed",
+      "to": "keep",
+      "label": "데이터 있음",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "copy-run",
+      "from": "copy",
+      "to": "run",
+      "variant": "emphasis",
+      "role": "main"
+    },
+    {
+      "id": "keep-run",
+      "from": "keep",
+      "to": "run",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "run-watch",
+      "from": "run",
+      "to": "watch",
+      "variant": "emphasis",
+      "role": "main"
+    },
+    {
+      "id": "watch-run",
+      "from": "watch",
+      "to": "run",
+      "label": "있다 — 계속 서비스",
+      "variant": "default",
+      "role": "return"
+    },
+    {
+      "id": "watch-orphan",
+      "from": "watch",
+      "to": "orphan",
+      "label": "사라졌다",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "run-degraded",
+      "from": "run",
+      "to": "degraded",
+      "label": "데이터 디렉터리만 없음 — 계속 서비스한다",
+      "variant": "dashed",
+      "role": "branch"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "기동은 두 번 묻는다",
+      "items": [
+        "포트가 비어 있나 — 선점되어 있으면 점유자를 찾는 명령을 안내하고 종료한다",
+        "data/runtime 이 비어 있나 — 비어 있을 때만 시드를 복사한다",
+        "데이터가 있으면 덮어쓰지 않는다. 시연 중 쌓인 상태를 재기동이 지우면 안 된다"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "두 갈래의 \"디렉터리가 없다\"",
+      "items": [
+        "소스 디렉터리가 사라지면 고아로 판단하고 스스로 종료한다",
+        "데이터 디렉터리가 없으면 degraded 로 계속 산다 — 종료 사유가 아니다",
+        "이 둘을 구분하지 않으면 정상 상태에서 서버가 죽는다"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "포트를 붙든 채 남지 않는다",
+      "items": [
+        "워크트리를 지워도 그 안에서 돌던 서버가 살아남아 포트를 계속 붙드는 문제를 막는다",
+        "감시 주기는 5초이고, 감시 타이머는 unref 한다",
+        "감시 대상 디렉터리는 IM_COUPON_GUARD_DIR 로 덮어쓸 수 있다"
+      ]
+    }
+  ]
+}

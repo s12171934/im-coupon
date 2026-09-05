@@ -1,0 +1,239 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "혜택 이분화 경로",
+    "quality_profile": "showcase",
+    "legend": {
+      "mode": "auto",
+      "entries": {
+        "external": {
+          "label": "바깥 시스템"
+        },
+        "backend": {
+          "label": "처리 단계"
+        },
+        "messagebus": {
+          "label": "분기"
+        },
+        "cloud": {
+          "label": "미결이 남은 지급 수단"
+        },
+        "security": {
+          "label": "채택하지 않는 경로"
+        }
+      }
+    }
+  },
+  "lanes": [
+    {
+      "id": "judge",
+      "label": "결제와 판정"
+    },
+    {
+      "id": "consumer",
+      "label": "소비자에게 가는 몫"
+    },
+    {
+      "id": "owner",
+      "label": "소유자에게 가는 몫"
+    },
+    {
+      "id": "rejected",
+      "label": "채택하지 않는다",
+      "variant": "exception"
+    }
+  ],
+  "mainPath": [
+    "pay",
+    "q",
+    "split",
+    "own",
+    "closed"
+  ],
+  "nodes": [
+    {
+      "id": "pay",
+      "lane": "judge",
+      "col": 0,
+      "type": "external",
+      "label": "결제 발생",
+      "sublabel": "가맹점에서",
+      "width": 132
+    },
+    {
+      "id": "q",
+      "lane": "judge",
+      "col": 1,
+      "type": "backend",
+      "label": "소유자 = 소비자?",
+      "sublabel": "쿠폰을 쓴 사람이 누구인가",
+      "tag": "판정",
+      "width": 156
+    },
+    {
+      "id": "all",
+      "lane": "judge",
+      "col": 3,
+      "type": "backend",
+      "label": "혜택 전액",
+      "sublabel": "그 사람에게",
+      "width": 132
+    },
+    {
+      "id": "use",
+      "lane": "consumer",
+      "col": 3,
+      "type": "backend",
+      "label": "소비자 몫",
+      "width": 132
+    },
+    {
+      "id": "local",
+      "lane": "consumer",
+      "col": 4,
+      "type": "external",
+      "label": "지역화폐 · 계좌",
+      "sublabel": "페이백으로 지급",
+      "tag": "선불업 등록을 피한다",
+      "width": 156
+    },
+    {
+      "id": "split",
+      "lane": "owner",
+      "col": 2,
+      "type": "messagebus",
+      "label": "배분",
+      "sublabel": "비율은 파라미터",
+      "tag": "논의된 예 20 / 80",
+      "width": 140
+    },
+    {
+      "id": "own",
+      "lane": "owner",
+      "col": 3,
+      "type": "backend",
+      "label": "소유자 몫",
+      "width": 132
+    },
+    {
+      "id": "closed",
+      "lane": "owner",
+      "col": 4,
+      "type": "cloud",
+      "label": "폐쇄형 리워드",
+      "sublabel": "발급 우선권 · 기여도 · 봉사 마일리지",
+      "tag": "택일 미결",
+      "width": 176
+    },
+    {
+      "id": "cash",
+      "lane": "rejected",
+      "col": 5,
+      "type": "security",
+      "label": "현금성 지급",
+      "sublabel": "소유자에게 현금으로",
+      "width": 140
+    }
+  ],
+  "edges": [
+    {
+      "id": "pay-q",
+      "from": "pay",
+      "to": "q",
+      "variant": "emphasis",
+      "role": "main"
+    },
+    {
+      "id": "q-all",
+      "from": "q",
+      "to": "all",
+      "label": "같다",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "q-split",
+      "from": "q",
+      "to": "split",
+      "label": "다르다",
+      "variant": "emphasis",
+      "role": "main"
+    },
+    {
+      "id": "split-use",
+      "from": "split",
+      "to": "use",
+      "label": "소비자 몫",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "split-own",
+      "from": "split",
+      "to": "own",
+      "label": "소유자 몫",
+      "variant": "emphasis",
+      "role": "main"
+    },
+    {
+      "id": "use-local",
+      "from": "use",
+      "to": "local",
+      "variant": "emphasis",
+      "role": "main"
+    },
+    {
+      "id": "all-local",
+      "from": "all",
+      "to": "local",
+      "label": "자체 포인트를 새로 만들지 않는다",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "own-closed",
+      "from": "own",
+      "to": "closed",
+      "variant": "emphasis",
+      "role": "main"
+    },
+    {
+      "id": "own-cash",
+      "from": "own",
+      "to": "cash",
+      "label": "재판매 금지 실질에 접근하고 다계정 자가 담합을 부른다",
+      "variant": "security",
+      "role": "error"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "같은 사람이면 나누지 않는다",
+      "items": [
+        "쿠폰 소유자와 실제 소비자가 같으면 혜택 전액이 그 사람에게 간다",
+        "다르면 소유자 몫과 소비자 몫으로 나눈다",
+        "배분 비율은 코드에 박지 않는 파라미터다 — 논의된 예가 20 / 80 이다"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "소비자 몫은 지역화폐로",
+      "items": [
+        "지역화폐 잔액이나 계좌로 페이백한다",
+        "자체 포인트를 새로 만들면 선불업 등록 문제가 생긴다",
+        "그래서 이 경로는 기존 결제 수단 위에 얹는다"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "소유자 몫은 현금으로 주지 않는다",
+      "items": [
+        "폐쇄형 리워드로 지급한다 — 발급 우선권 · 기여도 점수 · 봉사 마일리지 중 택일은 미결이다",
+        "현금성 지급은 채택하지 않는다",
+        "재판매 금지의 실질에 접근하고, 다계정 자가 담합의 직접 유인이 되기 때문이다"
+      ]
+    }
+  ]
+}

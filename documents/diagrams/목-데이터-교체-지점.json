@@ -1,0 +1,183 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "목 데이터 교체 지점",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1080,
+      700
+    ],
+    "legend": {
+      "mode": "auto",
+      "entries": {
+        "emphasis": {
+          "label": "실제로 흐르는 데이터"
+        },
+        "dashed": {
+          "label": "분포만 참고한다"
+        },
+        "security": {
+          "label": "지금은 없는 원천"
+        },
+        "database": {
+          "label": "교체해도 바뀌지 않는 면"
+        }
+      }
+    }
+  },
+  "stages": [
+    {
+      "label": "원천"
+    },
+    {
+      "label": "생성"
+    },
+    {
+      "label": "고정면"
+    },
+    {
+      "label": "도메인 로직"
+    },
+    {
+      "label": "시연"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "dist",
+      "type": "external",
+      "label": "공개 통계",
+      "sublabel": "행정동 · 업종 분포",
+      "stage": 0,
+      "row": 0
+    },
+    {
+      "id": "real",
+      "type": "security",
+      "label": "실 결제 · 상권 데이터",
+      "sublabel": "이 기간 안에 확보 경로가 없다",
+      "stage": 0,
+      "row": 3,
+      "width": 150
+    },
+    {
+      "id": "mock",
+      "type": "backend",
+      "label": "모의 데이터 생성기",
+      "sublabel": "가상 가맹점 · 시민 · 결제 로그",
+      "stage": 1,
+      "row": 0,
+      "width": 150
+    },
+    {
+      "id": "schema",
+      "type": "database",
+      "label": "목 데이터 스키마",
+      "sublabel": "교체해도 바뀌지 않는 면",
+      "stage": 2,
+      "row": 1,
+      "width": 150
+    },
+    {
+      "id": "algo",
+      "type": "backend",
+      "label": "발급 알고리즘",
+      "stage": 3,
+      "row": 0
+    },
+    {
+      "id": "life",
+      "type": "backend",
+      "label": "라이프사이클 · 점유",
+      "stage": 3,
+      "row": 2,
+      "width": 150
+    },
+    {
+      "id": "dash",
+      "type": "frontend",
+      "label": "시뮬레이션 대시보드",
+      "stage": 4,
+      "row": 1,
+      "width": 150
+    }
+  ],
+  "flows": [
+    {
+      "id": "dist-mock",
+      "from": "dist",
+      "to": "mock",
+      "label": "분포를 맞춘다",
+      "variant": "dashed"
+    },
+    {
+      "id": "mock-schema",
+      "from": "mock",
+      "to": "schema",
+      "label": "생성된 목 데이터",
+      "variant": "emphasis"
+    },
+    {
+      "id": "real-schema",
+      "from": "real",
+      "to": "schema",
+      "label": "나중에 여기서만 갈아 끼운다",
+      "variant": "security"
+    },
+    {
+      "id": "schema-algo",
+      "from": "schema",
+      "to": "algo",
+      "label": "고정된 스키마",
+      "variant": "emphasis"
+    },
+    {
+      "id": "algo-life",
+      "from": "algo",
+      "to": "life",
+      "label": "발급된 쿠폰",
+      "variant": "emphasis",
+      "labelAt": [
+        745,
+        240
+      ]
+    },
+    {
+      "id": "life-dash",
+      "from": "life",
+      "to": "dash",
+      "label": "상태 변화",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "교체 지점을 하나로 모은다",
+      "items": [
+        "실 데이터로 갈아 끼울 곳은 목 데이터 스키마 한 곳뿐이다",
+        "그 뒤의 발급 알고리즘 · 라이프사이클 · 대시보드는 손대지 않는다",
+        "그래서 스키마는 목 데이터의 형태가 아니라 실제 데이터의 형태를 따라야 한다"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "목 데이터는 아무 값이나 쓰지 않는다",
+      "items": [
+        "공개 통계의 행정동 · 업종 분포를 맞춘다",
+        "분포가 맞아야 시뮬레이션 결과가 설명 가능해진다",
+        "생성기가 만드는 것은 가상 가맹점 · 가상 시민 · 결제 로그다"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "실 데이터는 이 기간에 없다",
+      "items": [
+        "실 결제 · 상권 데이터를 확보할 경로가 프로토타입 기간 안에 없다",
+        "없는 것을 기다리지 않고 목 데이터로 먼저 만든다",
+        "확보되면 스키마 뒤쪽을 바꾸지 않고 앞쪽만 갈아 끼운다"
+      ]
+    }
+  ]
+}

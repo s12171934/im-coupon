@@ -1,0 +1,264 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "지라 티켓 계층",
+    "quality_profile": "showcase",
+    "viewBox": [
+      980,
+      760
+    ],
+    "legend": {
+      "mode": "auto",
+      "entries": {
+        "backend": {
+          "label": "기획 허브"
+        },
+        "external": {
+          "label": "대회 단위 작업"
+        },
+        "cloud": {
+          "label": "실행 단위 작업"
+        },
+        "security": {
+          "label": "규칙의 예외"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "k11",
+      "type": "security",
+      "label": "KAN-11 · 서브태스크",
+      "sublabel": "기획적 정의가 필요한 질문 리스트",
+      "tag": "이관 미결",
+      "pos": [
+        50,
+        320
+      ],
+      "size": [
+        200,
+        84
+      ]
+    },
+    {
+      "id": "k4",
+      "type": "backend",
+      "label": "KAN-4 · 작업",
+      "sublabel": "기획 허브",
+      "pos": [
+        330,
+        320
+      ],
+      "size": [
+        180,
+        84
+      ]
+    },
+    {
+      "id": "k2",
+      "type": "external",
+      "label": "KAN-2 · 작업",
+      "sublabel": "소비데이터 경진대회",
+      "pos": [
+        330,
+        60
+      ],
+      "size": [
+        180,
+        84
+      ]
+    },
+    {
+      "id": "k3",
+      "type": "external",
+      "label": "KAN-3 · 작업",
+      "sublabel": "im-challenge",
+      "pos": [
+        330,
+        180
+      ],
+      "size": [
+        180,
+        84
+      ]
+    },
+    {
+      "id": "k5",
+      "type": "cloud",
+      "label": "KAN-5 · 작업",
+      "sublabel": "공모주제 확정",
+      "pos": [
+        650,
+        40
+      ],
+      "size": [
+        200,
+        84
+      ]
+    },
+    {
+      "id": "k6",
+      "type": "cloud",
+      "label": "KAN-6 · 작업",
+      "sublabel": "쿠폰 기획 플로우 보강",
+      "pos": [
+        650,
+        152
+      ],
+      "size": [
+        200,
+        84
+      ]
+    },
+    {
+      "id": "k7",
+      "type": "cloud",
+      "label": "KAN-7 · 작업",
+      "sublabel": "제안요약서",
+      "pos": [
+        650,
+        264
+      ],
+      "size": [
+        200,
+        84
+      ]
+    },
+    {
+      "id": "k8",
+      "type": "cloud",
+      "label": "KAN-8 · 작업",
+      "sublabel": "프로토타입 설계 문서",
+      "pos": [
+        650,
+        376
+      ],
+      "size": [
+        200,
+        84
+      ]
+    },
+    {
+      "id": "k9",
+      "type": "cloud",
+      "label": "KAN-9 · 작업",
+      "sublabel": "프로토타입 구현",
+      "pos": [
+        650,
+        488
+      ],
+      "size": [
+        200,
+        84
+      ]
+    },
+    {
+      "id": "k10",
+      "type": "cloud",
+      "label": "KAN-10 · 작업",
+      "sublabel": "접수 · 제출",
+      "pos": [
+        650,
+        600
+      ],
+      "size": [
+        200,
+        84
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "KAN-1 · 에픽 — 2026 8월 30 공모전",
+      "wraps": [
+        "k2",
+        "k3",
+        "k4",
+        "k5",
+        "k6",
+        "k7",
+        "k8",
+        "k9",
+        "k10"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "k4-k5",
+      "from": "k4",
+      "to": "k5",
+      "variant": "dashed"
+    },
+    {
+      "id": "k4-k6",
+      "from": "k4",
+      "to": "k6",
+      "variant": "dashed"
+    },
+    {
+      "id": "k4-k7",
+      "from": "k4",
+      "to": "k7",
+      "variant": "dashed"
+    },
+    {
+      "id": "k4-k8",
+      "from": "k4",
+      "to": "k8",
+      "variant": "dashed"
+    },
+    {
+      "id": "k4-k9",
+      "from": "k4",
+      "to": "k9",
+      "variant": "dashed"
+    },
+    {
+      "id": "k4-k10",
+      "from": "k4",
+      "to": "k10",
+      "variant": "dashed"
+    },
+    {
+      "id": "k4-k11",
+      "from": "k4",
+      "to": "k11",
+      "label": "서브태스크 — 생성 규칙의 예외",
+      "variant": "security",
+      "labelDy": -36
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "에픽 하나 아래 작업이 평평하게 놓인다",
+      "items": [
+        "KAN-1 이 대회 두 건을 함께 묶는 에픽이다",
+        "대회별 작업과 기획 작업이 같은 계층(작업)으로 놓인다",
+        "보드는 가볍게 운영한다 — 하위 이슈를 세분하지 않는다"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "KAN-4 가 기획 허브다",
+      "items": [
+        "실행 단위 여섯 개는 서브태스크가 아니라 Relates 로 연결되어 있다",
+        "점선 화살표가 그 Relates 링크다",
+        "허브를 열면 여섯 개의 실행 상태를 한 번에 볼 수 있다"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "KAN-11 만 규칙의 예외다",
+      "items": [
+        "에픽이 아니라 KAN-4 아래 서브태스크로 달려 있다",
+        "다른 티켓과 같은 계층으로 옮길지는 아직 정하지 않았다",
+        "새 티켓은 이 예외를 따르지 않고 에픽 아래 작업으로 만든다"
+      ]
+    }
+  ]
+}
