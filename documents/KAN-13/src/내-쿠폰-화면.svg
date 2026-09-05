@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 600" font-family="'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif">
+  <style>
+    .frame { fill: #ffffff; stroke: #d0d7de; stroke-width: 1.5; }
+    .card { fill: #ffffff; stroke: #d0d7de; stroke-width: 1.2; }
+    .input { fill: #ffffff; stroke: #8c959f; stroke-width: 1; }
+    .t { fill: #1f2328; font-size: 13px; }
+    .t-bold { fill: #1f2328; font-size: 13px; font-weight: 700; }
+    .t-title { fill: #1f2328; font-size: 15px; font-weight: 700; }
+    .t-muted { fill: #656d76; font-size: 12px; }
+    .t-note { fill: #656d76; font-size: 11px; }
+    .t-white { fill: #ffffff; font-size: 12px; font-weight: 700; }
+    .mono { font-family: ui-monospace, Menlo, monospace; }
+  </style>
+  <rect x="20" y="20" width="680" height="560" rx="8" class="frame"/>
+  <!-- 헤더와 탭 -->
+  <text x="40" y="53" class="t-title">im-coupon</text>
+  <rect x="150" y="34" width="96" height="26" rx="5" fill="#f6f8fa" stroke="#d0d7de"/>
+  <text x="198" y="51" text-anchor="middle" class="t-muted">발급 실행</text>
+  <rect x="254" y="34" width="88" height="26" rx="5" fill="#0969da"/>
+  <text x="298" y="51" text-anchor="middle" class="t-white">내 쿠폰</text>
+  <line x1="20" y1="74" x2="700" y2="74" stroke="#d0d7de"/>
+
+  <text x="40" y="102" class="t-title">내 쿠폰 — 시민 시점</text>
+
+  <!-- 소유자 선택 -->
+  <text x="40" y="134" class="t">소유자 선택</text>
+  <rect x="126" y="118" width="170" height="26" rx="4" class="input"/>
+  <text x="140" y="136" class="t">{citizen.name} ▾</text>
+  <text x="312" y="136" class="t-note mono">GET /api/citizens 로 채운다</text>
+  <text x="40" y="166" class="t-note mono">목록 조회 — GET /api/coupons?ownerId={citizen.id} · issuedAt 내림차순</text>
+
+  <!-- 쿠폰 카드 -->
+  <rect x="40" y="184" width="520" height="230" rx="8" class="card"/>
+  <text x="60" y="214" class="t-title">{merchantName}</text>
+  <rect x="440" y="198" width="100" height="24" rx="12" fill="#ddf4ff"/>
+  <text x="490" y="214" text-anchor="middle" fill="#0969da" font-size="12" font-weight="700">소유자 점유</text>
+  <text x="60" y="242" class="t">액면 {faceValue}원 페이백</text>
+  <line x1="60" y1="258" x2="540" y2="258" stroke="#d0d7de"/>
+  <text x="60" y="284" class="t-bold">거래조건</text>
+  <text x="60" y="310" class="t">배분 비율 — 소유자 {ownerRatio×100}% / 소비자 {consumerRatio×100}%</text>
+  <text x="60" y="336" class="t">소유자 점유 기한 — {heldUntil} 까지는 소유자만 사용</text>
+  <text x="60" y="362" class="t">유효 소비 기한 — {expiresAt} 에 만료</text>
+  <text x="60" y="394" class="t-note">중괄호 표기는 쿠폰 레코드 필드 자리이고 수치는 7장 값 표의 기본값이 들어간다</text>
+
+  <!-- 거래조건 고지 주석 -->
+  <line x1="560" y1="322" x2="588" y2="322" stroke="#8c959f" stroke-dasharray="4 3"/>
+  <text x="594" y="302" class="t-note">거래조건 고지 —</text>
+  <text x="594" y="318" class="t-note">배분 비율과 이중 기한을</text>
+  <text x="594" y="334" class="t-note">본문과 같은 글자 크기로</text>
+  <text x="594" y="350" class="t-note">표시한다. 축소 표기와</text>
+  <text x="594" y="366" class="t-note">각주 처리를 금지한다</text>
+
+  <!-- 빈 상태 -->
+  <rect x="40" y="440" width="520" height="52" rx="8" fill="#f6f8fa" stroke="#d0d7de" stroke-dasharray="5 3"/>
+  <text x="60" y="471" class="t-muted">쿠폰이 없으면 — “발급된 쿠폰이 없습니다” 문구만 표시</text>
+
+  <text x="40" y="530" class="t-note">같은 소유자의 쿠폰이 여러 건이면 같은 카드가 세로로 반복된다</text>
+</svg>

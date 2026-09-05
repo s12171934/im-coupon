@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 660" font-family="'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif">
+  <style>
+    .base { fill: #f6f8fa; stroke: #656d76; stroke-width: 1.3; }
+    .doc { fill: #ffffff; stroke: #8c959f; stroke-width: 1.3; stroke-dasharray: 6 4; }
+    .br { fill: #ddf4ff; stroke: #0969da; stroke-width: 1.3; }
+    .name { fill: #1f2328; font-size: 13px; font-weight: 700; font-family: ui-monospace, Menlo, monospace; }
+    .desc { fill: #656d76; font-size: 12px; }
+    .lbl { fill: #656d76; font-size: 11px; }
+    .edge { stroke: #1f2328; stroke-width: 1.3; fill: none; }
+  </style>
+  <defs>
+    <marker id="g" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#1f2328"/></marker>
+  </defs>
+
+  <rect x="40" y="20" width="300" height="38" rx="6" class="base"/>
+  <text x="60" y="44" class="name">main</text>
+  <line x1="190" y1="58" x2="190" y2="84" class="edge" marker-end="url(#g)"/>
+  <text x="200" y="78" class="lbl">기반</text>
+
+  <rect x="40" y="86" width="300" height="38" rx="6" class="doc"/>
+  <text x="60" y="110" class="name">KAN-13/00-design-doc</text>
+  <text x="360" y="110" class="desc">이 설계문서. 구현 브랜치 집합에서 제외</text>
+  <line x1="190" y1="124" x2="190" y2="150" class="edge" marker-end="url(#g)"/>
+
+  <rect x="40" y="152" width="300" height="38" rx="6" class="br"/>
+  <text x="60" y="176" class="name">KAN-13/01-seed-and-contracts</text>
+  <text x="360" y="176" class="desc">시드 데이터·계약 타입·시드 검증 테스트</text>
+  <line x1="190" y1="190" x2="190" y2="216" class="edge" marker-end="url(#g)"/>
+
+  <rect x="40" y="218" width="300" height="38" rx="6" class="br"/>
+  <text x="60" y="242" class="name">KAN-13/02-issuance-engine</text>
+  <text x="360" y="242" class="desc">랜덤 신호와 가중치 결합 엔진(순수 함수)</text>
+  <line x1="190" y1="256" x2="190" y2="282" class="edge" marker-end="url(#g)"/>
+
+  <rect x="40" y="284" width="300" height="38" rx="6" class="br"/>
+  <text x="60" y="308" class="name">KAN-13/03-issue-endpoint</text>
+  <text x="360" y="308" class="desc">발급 API 와 coupons 컬렉션 저장</text>
+  <line x1="190" y1="322" x2="190" y2="348" class="edge" marker-end="url(#g)"/>
+
+  <rect x="40" y="350" width="300" height="38" rx="6" class="br"/>
+  <text x="60" y="374" class="name">KAN-13/04-list-endpoints</text>
+  <text x="360" y="374" class="desc">내 쿠폰 조회 API 와 시민 목록 API</text>
+  <line x1="190" y1="388" x2="190" y2="414" class="edge" marker-end="url(#g)"/>
+
+  <rect x="40" y="416" width="300" height="38" rx="6" class="br"/>
+  <text x="60" y="440" class="name">KAN-13/05-issue-screen</text>
+  <text x="360" y="440" class="desc">발급 실행 화면과 탭 셸</text>
+  <line x1="190" y1="454" x2="190" y2="480" class="edge" marker-end="url(#g)"/>
+
+  <rect x="40" y="482" width="300" height="38" rx="6" class="br"/>
+  <text x="60" y="506" class="name">KAN-13/06-my-coupons-screen</text>
+  <text x="360" y="506" class="desc">내 쿠폰 화면과 거래조건 고지</text>
+  <line x1="190" y1="520" x2="190" y2="546" class="edge" marker-end="url(#g)"/>
+
+  <rect x="40" y="548" width="300" height="38" rx="6" class="br"/>
+  <text x="60" y="572" class="name">KAN-13/07-issuance-e2e</text>
+  <text x="360" y="572" class="desc">발급 → 내 쿠폰 확인 e2e</text>
+
+  <text x="40" y="630" class="lbl">선형 스택 하나를 gh-stack 으로 관리한다. 화살표는 “아래 브랜치가 위 브랜치를 기반으로 한다”는 뜻이고,</text>
+  <text x="40" y="646" class="lbl">병렬 분기는 없다 — 각 브랜치가 앞 브랜치의 산출물(타입·엔진·API)을 바로 쓰기 때문이다.</text>
+</svg>
