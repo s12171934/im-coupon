@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" font-family="ui-monospace, Menlo, monospace">
+  <style>
+    .panel { fill: #ffffff; stroke: #d0d7de; stroke-width: 1.5; }
+    .h { fill: #1f2328; font-size: 14px; font-weight: 700; font-family: 'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif; }
+    .l { fill: #1f2328; font-size: 12px; }
+    .new { fill: #0969da; font-size: 12px; font-weight: 700; }
+    .mod { fill: #9a6700; font-size: 12px; font-weight: 700; }
+    .note { fill: #656d76; font-size: 11px; font-family: 'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif; }
+  </style>
+
+  <!-- 변경 전 -->
+  <rect x="20" y="20" width="330" height="330" rx="8" class="panel"/>
+  <text x="36" y="48" class="h">변경 전 — main (2026-09-06)</text>
+  <text x="36" y="80" class="l">im-coupon/</text>
+  <text x="36" y="102" class="l">├ apps/web/src/</text>
+  <text x="36" y="124" class="l">├ apps/api/src/health/</text>
+  <text x="36" y="146" class="l">├ packages/contracts/src/</text>
+  <text x="36" y="168" class="l">│   health.ts</text>
+  <text x="36" y="190" class="l">├ packages/db/src/</text>
+  <text x="36" y="212" class="l">│   json-file-db.ts</text>
+  <text x="36" y="234" class="l">├ e2e/tests/</text>
+  <text x="36" y="256" class="l">├ data/seed/  _meta.json</text>
+  <text x="36" y="278" class="l">└ documents/</text>
+  <text x="36" y="310" class="note">화면은 저장소 상태 표시뿐이고 쿠폰 도메인 코드는 없다</text>
+
+  <!-- 화살표 -->
+  <line x1="356" y1="190" x2="398" y2="190" stroke="#1f2328" stroke-width="1.5"/>
+  <polygon points="398,185 408,190 398,195" fill="#1f2328"/>
+  <text x="382" y="176" text-anchor="middle" class="note">KAN-13 스택 머지</text>
+
+  <!-- 변경 후 -->
+  <rect x="414" y="20" width="366" height="520" rx="8" class="panel"/>
+  <text x="430" y="48" class="h">변경 후 — KAN-13/01~07 머지 뒤</text>
+  <text x="430" y="80" class="l">im-coupon/</text>
+  <text x="430" y="102" class="l">├ apps/web/src/</text>
+  <text x="430" y="124" class="new">│ └ + pages/ 발급 실행·내 쿠폰 화면</text>
+  <text x="430" y="146" class="l">├ apps/api/src/</text>
+  <text x="430" y="168" class="l">│ ├ health/</text>
+  <text x="430" y="190" class="new">│ ├ + issuance/ 발급 엔진</text>
+  <text x="430" y="212" class="new">│ ├ + coupons/ 발급·내 쿠폰 API</text>
+  <text x="430" y="234" class="new">│ └ + citizens/ 시민 목록 API</text>
+  <text x="430" y="256" class="l">├ packages/contracts/src/</text>
+  <text x="430" y="278" class="new">│ └ + coupon·merchant·citizen·issuance.ts</text>
+  <text x="430" y="300" class="l">├ packages/db/src/</text>
+  <text x="430" y="322" class="new">│ └ + seed-data.test.ts (구현 변경 없음)</text>
+  <text x="430" y="344" class="l">├ e2e/tests/</text>
+  <text x="430" y="366" class="new">│ └ + issuance.spec.ts</text>
+  <text x="430" y="388" class="l">├ data/seed/</text>
+  <text x="430" y="410" class="new">│ ├ + merchants.json · + citizens.json</text>
+  <text x="430" y="432" class="mod">│ └ ± _meta.json (schemaVersion 2)</text>
+  <text x="430" y="454" class="l">└ documents/</text>
+  <text x="430" y="476" class="new">  └ + KAN-13/ design.md·src/</text>
+  <text x="430" y="512" class="note">+ 는 새로 생기는 것, ± 는 수정. 파랑이 이번 에픽의 추가분이다</text>
+</svg>
