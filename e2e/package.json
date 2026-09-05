@@ -1,0 +1,16 @@
+{
+  "name": "@im-coupon/e2e",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "e2e": "playwright test",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@im-coupon/contracts": "workspace:*",
+    "@im-coupon/db": "workspace:*",
+    "@playwright/test": "^1.62.1",
+    "@types/node": "^26.4.1",
+    "typescript": "^5.9.3"
+  }
+}

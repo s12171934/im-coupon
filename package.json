@@ -1,0 +1,19 @@
+{
+  "name": "im-coupon",
+  "private": true,
+  "packageManager": "pnpm@11.5.1",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "e2e": "turbo run e2e"
+  },
+  "devDependencies": {
+    "turbo": "^2.10.12",
+    "typescript": "^5.9.3"
+  }
+}
