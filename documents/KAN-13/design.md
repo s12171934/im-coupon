@@ -128,7 +128,7 @@
 ![프로젝트 구조 변화 — 변경 전과 변경 후](./src/프로젝트-구조-변화.svg)
 
 - 왼쪽이 2026-09-06 의 `main`, 오른쪽이 KAN-13 스택이 전부 머지된 뒤다. 파란 항목이 새로 생기는 것이다.
-- 기존 파일 중 수정되는 것은 `apps/web/src/App.tsx`, `apps/api/src/app.module.ts`, `packages/contracts/src/index.ts`, `data/seed/_meta.json` 넷뿐이다.
+- 기존 파일 중 수정되는 것은 `apps/web/src/App.tsx`, `apps/api/src/app.module.ts`, `packages/contracts/src/index.ts`, `data/seed/_meta.json`, `e2e/tests/health.spec.ts` 다섯뿐이다.
 - 워크스페이스 경계와 의존 방향은 바꾸지 않는다 — [저장소 구조와 기술 스택](../저장소-구조와-기술-스택.md) 의 의존 규칙이 그대로 유지된다.
 
 ## 6. app 및 패키지 내부 구조도
@@ -368,7 +368,7 @@ interface IssueDecision {
 
 ### `KAN-13/01-seed-and-contracts`
 
-- 파일맵 — 생성: `data/seed/merchants.json`(가상 가맹점 5건), `data/seed/citizens.json`(가상 시민 5건), `packages/contracts/src/coupon.ts`, `packages/contracts/src/merchant.ts`, `packages/contracts/src/citizen.ts`, `packages/contracts/src/issuance.ts`, `packages/db/src/seed-data.test.ts`. 수정: `data/seed/_meta.json`(`schemaVersion` 1→2), `packages/contracts/src/index.ts`.
+- 파일맵 — 생성: `data/seed/merchants.json`(가상 가맹점 5건), `data/seed/citizens.json`(가상 시민 5건), `packages/contracts/src/coupon.ts`, `packages/contracts/src/merchant.ts`, `packages/contracts/src/citizen.ts`, `packages/contracts/src/issuance.ts`, `packages/db/src/seed-data.test.ts`. 수정: `data/seed/_meta.json`(`schemaVersion` 1→2), `packages/contracts/src/index.ts`, `e2e/tests/health.spec.ts`(스키마 판 단언을 판 번호에 무관하도록 완화).
 - 넣는 것 — 7장 테이블에 대응하는 계약 타입, 8장의 요청·응답·오류 계약과 경로 상수, 시드 데이터.
 - RED `TC-01-01` — `packages/db/src/seed-data.test.ts`: "`data/seed` 를 `JsonFileDb` 로 열면 `merchants`·`citizens` 가 각 5건이고, 모든 레코드의 `id`·`name`(가맹점은 `category` 포함)이 비어 있지 않으며 `id` 가 컬렉션 안에서 유일하다". 시드 파일이 아직 없으므로 처음에는 실패한다.
 - 완료 조건 — `TC-01-01` 이 GREEN 이 되고 `pnpm test`·`pnpm typecheck` 전체 통과. 시드의 상호·인명은 실존하지 않는 가상 표본이다.
@@ -554,3 +554,4 @@ interface IssueDecision {
 - 2026-09-06 — 9장 그래프를 워크스페이스 레인(색 구분)과 의존 화살표·간선 라벨로 다시 그렸다. 12장 테스트 케이스를 표로 정리했다. 10장에 컴포넌트 코드 번호 `CP-<브랜치 번호>-<일련번호>` 를 단 구현 컴포넌트 목록 표를 더하고, 13장 화면 브랜치의 커밋을 컴포넌트당 1커밋으로 바꿨다.
 - 2026-09-06 — 12장 케이스 표에 적용 브랜치 열을 더해 구현 컴포넌트 목록(10장)과 표기 방식을 맞췄다.
 - 2026-09-06 — 13장 티켓맵대로 지라에 티켓 7건(KAN-14~KAN-20, 부모 에픽 KAN-13)을 생성하고 번호 칸을 채웠다. 에픽 KAN-13 본문에 이 문서의 요약을 반영했다.
+- 2026-09-06 — 브랜치 01 이 `_meta` 판 올림으로 기존 e2e `health.spec.ts` 의 스키마 판 단언을 깨뜨려, 그 단언을 판 번호에 무관하도록 완화하는 한 줄을 브랜치 01 에 포함했다. 완화로 놓치는 판 번호 값은 `packages/db/src/seed-data.test.ts` 가 시드의 `schemaVersion` 이 2 임을 단언해 고정한다. 10장 브랜치 01 파일맵과 5장의 수정 파일 목록·구조 변화 그림을 그에 맞춰 고쳤다.
