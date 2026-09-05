@@ -495,21 +495,20 @@ interface IssueDecision {
 
 ## 13. 지라 티켓맵
 
-- 2026-09-06 시점에 티켓은 만들지 않고 계획만 적는다. 번호 칸은 생성 후 채우고 14장에 남긴다.
-- 생성 시 규칙 — 유형은 작업(Task), 브랜치당 티켓 1건, 티켓 본문은 요약 한 문단 + 커밋당 체크박스 1건. 상세 규칙은 [지라 티켓 연결](../지라-티켓-연결.md) 을 따른다.
-- 부모는 에픽 [KAN-13](https://ssong9520.atlassian.net/browse/KAN-13) 으로 둘 계획이다. [지라 티켓 연결](../지라-티켓-연결.md) 의 "부모는 에픽 `KAN-1`" 규칙은 에픽 KAN-13 이 생기기 전의 것이므로, 티켓을 만들기 전에 그 문서를 먼저 갱신해야 한다.
-- `KAN-13/00-design-doc` 은 구현 브랜치가 아니므로 티켓을 만들지 않는다.
+- 티켓은 2026-09-06 에 생성했다. 유형은 작업(Task), 브랜치당 티켓 1건, 부모는 에픽 [KAN-13](https://ssong9520.atlassian.net/browse/KAN-13), 본문은 요약 한 문단 + 커밋당 체크박스 1건이다.
+- 부모를 KAN-1 이 아니라 KAN-13 으로 두는 규칙 변경은 [지라 티켓 연결](../지라-티켓-연결.md) 의 결정에 반영되어 있다.
+- `KAN-13/00-design-doc` 은 구현 브랜치가 아니므로 티켓이 없다.
 - 판단·수치·결정은 티켓에 두지 않는다. 티켓 본문은 이 문서를 가리키고 실행 상태만 든다.
 
-| 브랜치 | 티켓 번호 | 티켓 제목(계획) |
+| 브랜치 | 티켓 번호 | 티켓 제목 |
 | --- | --- | --- |
-| `KAN-13/01-seed-and-contracts` | (미생성) | 시드 데이터와 쿠폰 계약 타입 |
-| `KAN-13/02-issuance-engine` | (미생성) | 발급 엔진 — 랜덤 신호·가중치 결합·발급 트리거 |
-| `KAN-13/03-issue-endpoint` | (미생성) | 발급 API 와 쿠폰 저장 |
-| `KAN-13/04-list-endpoints` | (미생성) | 내 쿠폰·시민 목록 조회 API |
-| `KAN-13/05-issue-screen` | (미생성) | 발급 실행 화면 |
-| `KAN-13/06-my-coupons-screen` | (미생성) | 내 쿠폰 화면과 거래조건 고지 |
-| `KAN-13/07-issuance-e2e` | (미생성) | 발급 e2e |
+| `KAN-13/01-seed-and-contracts` | [KAN-14](https://ssong9520.atlassian.net/browse/KAN-14) | 시드 데이터와 쿠폰 계약 타입 |
+| `KAN-13/02-issuance-engine` | [KAN-15](https://ssong9520.atlassian.net/browse/KAN-15) | 발급 엔진 — 랜덤 신호·가중치 결합·발급 트리거 |
+| `KAN-13/03-issue-endpoint` | [KAN-16](https://ssong9520.atlassian.net/browse/KAN-16) | 발급 API 와 쿠폰 저장 |
+| `KAN-13/04-list-endpoints` | [KAN-17](https://ssong9520.atlassian.net/browse/KAN-17) | 내 쿠폰·시민 목록 조회 API |
+| `KAN-13/05-issue-screen` | [KAN-18](https://ssong9520.atlassian.net/browse/KAN-18) | 발급 실행 화면 |
+| `KAN-13/06-my-coupons-screen` | [KAN-19](https://ssong9520.atlassian.net/browse/KAN-19) | 내 쿠폰 화면과 거래조건 고지 |
+| `KAN-13/07-issuance-e2e` | [KAN-20](https://ssong9520.atlassian.net/browse/KAN-20) | 발급 e2e |
 
 ### 커밋 계획
 
@@ -554,3 +553,4 @@ interface IssueDecision {
 - 2026-09-06 — 13장 커밋 계획을 브랜치당 1커밋에서 단위 커밋으로 세분화하고, 9장 그래프에 브랜치별 수정 워크스페이스를 표기하고, 12장에 테스트 코드 번호 `TC-<브랜치 번호>-<일련번호>` 를 도입했다.
 - 2026-09-06 — 9장 그래프를 워크스페이스 레인(색 구분)과 의존 화살표·간선 라벨로 다시 그렸다. 12장 테스트 케이스를 표로 정리했다. 10장에 컴포넌트 코드 번호 `CP-<브랜치 번호>-<일련번호>` 를 단 구현 컴포넌트 목록 표를 더하고, 13장 화면 브랜치의 커밋을 컴포넌트당 1커밋으로 바꿨다.
 - 2026-09-06 — 12장 케이스 표에 적용 브랜치 열을 더해 구현 컴포넌트 목록(10장)과 표기 방식을 맞췄다.
+- 2026-09-06 — 13장 티켓맵대로 지라에 티켓 7건(KAN-14~KAN-20, 부모 에픽 KAN-13)을 생성하고 번호 칸을 채웠다. 에픽 KAN-13 본문에 이 문서의 요약을 반영했다.
