@@ -456,28 +456,28 @@ interface IssueDecision {
 | `KAN-13/06-my-coupons-screen` | `apps/web/src/pages/my-coupons-page.test.tsx` | `pnpm --filter @im-coupon/web test` |
 | `KAN-13/07-issuance-e2e` | `e2e/tests/issuance.spec.ts` | `pnpm build && pnpm e2e` |
 
-케이스 전체다. 번호의 가운데 두 자리가 브랜치 번호다.
+케이스 전체다. 구현 컴포넌트 목록(10장)과 같은 방식으로 적용 브랜치를 열로 적는다.
 
-| 번호 | RED | 입력 | 기대 결과 |
-| --- | --- | --- | --- |
-| `TC-01-01` | RED | `data/seed` 를 `JsonFileDb` 로 연다 | `merchants`·`citizens` 각 5건, `id`·`name`(가맹점은 `category` 포함) 비어 있지 않음, `id` 유일 |
-| `TC-02-01` | RED | 발급 후보 목록 + 발급 가중치 `{ random: 1 }` + 고정 수열 RNG 스텁 | 두 번 호출 모두 같은 발급 후보, `scores.random`·`total` 이 스텁 계산값과 일치 |
-| `TC-02-02` | — | 음수·전부 0·모르는 신호 키의 발급 가중치 각각 | 엔진이 각각을 거부 |
-| `TC-02-03` | — | 발급 가중치 덮어쓰기가 든 요청 본문 | 시연 트리거가 `'manual'` 과 그 가중치를 실은 발급 명령 생성 |
-| `TC-03-01` | RED | 시드 부트스트랩 후 `POST /api/coupons/issue`(본문 없음) | `201`, `IssueCouponResponse` 계약 만족, `coupons` 0건 → 1건 |
-| `TC-03-02` | — | `weights.random` 에 `-1` | `400` 과 `INVALID_WEIGHTS` |
-| `TC-03-03` | — | `merchants` 가 빈 데이터 디렉터리 | `422` 와 `NO_CANDIDATES` |
-| `TC-03-04` | — | 쓰기가 실패하도록 만든 데이터 디렉터리 | `500` 과 `STORAGE_FAILURE` |
-| `TC-03-05` | — | 동시 `POST` 2건 | `coupons` 에 2건 모두 저장(유실 없음) |
-| `TC-04-01` | RED | `cit-001` 쿠폰 1건 기록 후 `?ownerId=cit-001`·`?ownerId=cit-002` 조회 | 앞은 그 1건, 뒤는 빈 배열 |
-| `TC-04-02` | — | `ownerId` 쿼리 없는 `GET /api/coupons` | `400` 과 `MISSING_OWNER_ID` |
-| `TC-04-03` | — | `?ownerId=cit-999`(시드에 없음) | `404` 와 `UNKNOWN_OWNER` |
-| `TC-04-04` | — | `GET /api/citizens` | 시드 순서 그대로 시민 5건 |
-| `TC-05-01` | RED | `fetch` 스텁 상태에서 발급 1건 실행 버튼 클릭 | `POST /api/coupons/issue` 1회 호출, 응답의 `merchantName`·`ownerName` 이 발급 결과 카드에 표시 |
-| `TC-05-02` | — | 오류 응답(`422 NO_CANDIDATES`) 스텁 | 오류 영역에 `error.code`·`error.message` 표시 |
-| `TC-06-01` | RED | 시민 목록과 쿠폰 1건 응답 스텁 | 액면·배분 비율(소유자 20% / 소비자 80%)·소유자 점유 기한·유효 소비 기한이 축소 표기 없이 본문 단락으로 표시 |
-| `TC-06-02` | — | 빈 쿠폰 목록 응답 스텁 | "발급된 쿠폰이 없습니다" 표시 |
-| `TC-07-01` | RED | 아래 "구현 완료 후 E2E" 절의 절차 | 절차 3·5단계의 기대 충족 |
+| 번호 | 브랜치 | RED | 입력 | 기대 결과 |
+| --- | --- | --- | --- | --- |
+| `TC-01-01` | `KAN-13/01-seed-and-contracts` | RED | `data/seed` 를 `JsonFileDb` 로 연다 | `merchants`·`citizens` 각 5건, `id`·`name`(가맹점은 `category` 포함) 비어 있지 않음, `id` 유일 |
+| `TC-02-01` | `KAN-13/02-issuance-engine` | RED | 발급 후보 목록 + 발급 가중치 `{ random: 1 }` + 고정 수열 RNG 스텁 | 두 번 호출 모두 같은 발급 후보, `scores.random`·`total` 이 스텁 계산값과 일치 |
+| `TC-02-02` | `KAN-13/02-issuance-engine` | — | 음수·전부 0·모르는 신호 키의 발급 가중치 각각 | 엔진이 각각을 거부 |
+| `TC-02-03` | `KAN-13/02-issuance-engine` | — | 발급 가중치 덮어쓰기가 든 요청 본문 | 시연 트리거가 `'manual'` 과 그 가중치를 실은 발급 명령 생성 |
+| `TC-03-01` | `KAN-13/03-issue-endpoint` | RED | 시드 부트스트랩 후 `POST /api/coupons/issue`(본문 없음) | `201`, `IssueCouponResponse` 계약 만족, `coupons` 0건 → 1건 |
+| `TC-03-02` | `KAN-13/03-issue-endpoint` | — | `weights.random` 에 `-1` | `400` 과 `INVALID_WEIGHTS` |
+| `TC-03-03` | `KAN-13/03-issue-endpoint` | — | `merchants` 가 빈 데이터 디렉터리 | `422` 와 `NO_CANDIDATES` |
+| `TC-03-04` | `KAN-13/03-issue-endpoint` | — | 쓰기가 실패하도록 만든 데이터 디렉터리 | `500` 과 `STORAGE_FAILURE` |
+| `TC-03-05` | `KAN-13/03-issue-endpoint` | — | 동시 `POST` 2건 | `coupons` 에 2건 모두 저장(유실 없음) |
+| `TC-04-01` | `KAN-13/04-list-endpoints` | RED | `cit-001` 쿠폰 1건 기록 후 `?ownerId=cit-001`·`?ownerId=cit-002` 조회 | 앞은 그 1건, 뒤는 빈 배열 |
+| `TC-04-02` | `KAN-13/04-list-endpoints` | — | `ownerId` 쿼리 없는 `GET /api/coupons` | `400` 과 `MISSING_OWNER_ID` |
+| `TC-04-03` | `KAN-13/04-list-endpoints` | — | `?ownerId=cit-999`(시드에 없음) | `404` 와 `UNKNOWN_OWNER` |
+| `TC-04-04` | `KAN-13/04-list-endpoints` | — | `GET /api/citizens` | 시드 순서 그대로 시민 5건 |
+| `TC-05-01` | `KAN-13/05-issue-screen` | RED | `fetch` 스텁 상태에서 발급 1건 실행 버튼 클릭 | `POST /api/coupons/issue` 1회 호출, 응답의 `merchantName`·`ownerName` 이 발급 결과 카드에 표시 |
+| `TC-05-02` | `KAN-13/05-issue-screen` | — | 오류 응답(`422 NO_CANDIDATES`) 스텁 | 오류 영역에 `error.code`·`error.message` 표시 |
+| `TC-06-01` | `KAN-13/06-my-coupons-screen` | RED | 시민 목록과 쿠폰 1건 응답 스텁 | 액면·배분 비율(소유자 20% / 소비자 80%)·소유자 점유 기한·유효 소비 기한이 축소 표기 없이 본문 단락으로 표시 |
+| `TC-06-02` | `KAN-13/06-my-coupons-screen` | — | 빈 쿠폰 목록 응답 스텁 | "발급된 쿠폰이 없습니다" 표시 |
+| `TC-07-01` | `KAN-13/07-issuance-e2e` | RED | 아래 "구현 완료 후 E2E" 절의 절차 | 절차 3·5단계의 기대 충족 |
 
 - 브랜치를 머지하기 전에는 워크스페이스 필터 없이 `pnpm test` 와 `pnpm typecheck` 전체를 돌린다.
 - 단위 테스트는 `IM_COUPON_SEED_DIR`·`IM_COUPON_DATA_DIR` 를 임시 디렉터리로 갈아끼워 실제 `data/` 를 건드리지 않는다.
@@ -553,3 +553,4 @@ interface IssueDecision {
 - 2026-09-06 — 화면 컴포넌트를 UI 전용 컴포넌트·로직 훅·화면 조립으로 나누는 결정을 더했다 (4장 결정 10). 이에 맞춰 10장 화면 브랜치의 파일맵을 다시 썼다.
 - 2026-09-06 — 13장 커밋 계획을 브랜치당 1커밋에서 단위 커밋으로 세분화하고, 9장 그래프에 브랜치별 수정 워크스페이스를 표기하고, 12장에 테스트 코드 번호 `TC-<브랜치 번호>-<일련번호>` 를 도입했다.
 - 2026-09-06 — 9장 그래프를 워크스페이스 레인(색 구분)과 의존 화살표·간선 라벨로 다시 그렸다. 12장 테스트 케이스를 표로 정리했다. 10장에 컴포넌트 코드 번호 `CP-<브랜치 번호>-<일련번호>` 를 단 구현 컴포넌트 목록 표를 더하고, 13장 화면 브랜치의 커밋을 컴포넌트당 1커밋으로 바꿨다.
+- 2026-09-06 — 12장 케이스 표에 적용 브랜치 열을 더해 구현 컴포넌트 목록(10장)과 표기 방식을 맞췄다.
