@@ -1,35 +1,47 @@
-# 빌드 산출물·의존성 (모든 워크스페이스)
-dist/
+# 의존성
 node_modules/
+.pnpm-store/
+
+# 빌드 산출물 (모든 워크스페이스)
+dist/
 build/
-tmp/
-
-# Logs
-logs
-*.log
-npm-debug.log*
-pnpm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
-
-# dotenv environment variable files
-.env
-.env.development
-.env.test
-.env.production
-
-# temp directory
-.temp
-.tmp
+*.tsbuildinfo
 
 # Turborepo
 .turbo
+
+# 테스트 산출물
+coverage/
+/e2e/test-results/
+/e2e/playwright-report/
+/e2e/blob-report/
+/e2e/playwright/.cache/
 
 # 런타임 데이터 (시드는 data/seed 에 커밋한다)
 /data/runtime/*
 !/data/runtime/.gitkeep
 
-# Playwright
-/e2e/test-results
-/e2e/playwright-report
+# 임시 파일. JSON 파일 DB 는 원자적 쓰기에 `<컬렉션>.<pid>.tmp` 를 거친다
+*.tmp
+tmp/
+.tmp
+.temp
+
+# 환경 변수. 템플릿(.env.example)만 커밋한다
+.env
+.env.*
+!.env.example
+
+# 로그
+logs/
+*.log
+
+# 편집기
+.idea/
+.vscode/
+*.swp
+
+# 운영체제
+.DS_Store
+._*
+Thumbs.db
