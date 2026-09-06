@@ -1,22 +1,13 @@
 import type { SignalWeights } from '@im-coupon/contracts';
 
+import { SIGNAL_KEYS, SIGNAL_LABELS } from './signal-labels';
+
 /**
  * 입력 중인 발급 가중치. 값을 문자열로 들어, 빈 칸("지정하지 않음")과 `0` 을 가른다.
  * 문자열을 숫자로 바꾸고 요청 본문을 만드는 것은 발급 호출 훅의 몫이고,
  * 여기서는 검증도 변환도 하지 않는다 — 값 규칙 위반은 서버가 `INVALID_WEIGHTS` 로 거부한다 (설계문서 8장).
  */
 export type WeightsDraft = Record<keyof SignalWeights, string>;
-
-/**
- * 신호별 화면 라벨. 키 집합을 `SignalWeights` 에서 끌어와, 이후 에픽이 신호를 더하면
- * 이 표가 컴파일 오류로 그 사실을 알린다 (설계문서 4장 결정 2).
- */
-const SIGNAL_LABELS: Record<keyof SignalWeights, string> = {
-  random: '랜덤 신호',
-};
-
-/** 신호 키 문자열이 흩어지지 않도록 라벨 표 하나에서 끌어온다. */
-const SIGNAL_KEYS = Object.keys(SIGNAL_LABELS) as (keyof SignalWeights)[];
 
 /** 가중치 결합 구조에 자리만 남아 있는 신호들. 이번 에픽은 구현하지 않는다 (설계문서 1장 범위 — 제외). */
 const OUT_OF_SCOPE_SIGNALS = '사용자 소비 패턴 · 쿠폰 사용 패턴 · 가맹점 매출 · 가맹점 마케팅 수요';
