@@ -1,30 +1,13 @@
-import { useEffect, useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router';
-import { HEALTH_PATH, type HealthResponse } from '@im-coupon/contracts';
 
 import { AppLayout } from '../AppLayout/AppLayout';
 import { APP_PATHS } from '../routes';
-import type { StorageStatusState } from '../../features/storage/components/StorageStatus/StorageStatus';
+import { useStorageHealth } from '../../features/storage/hooks/use-storage-health';
 import { IssuePage } from '../../pages/IssuePage/IssuePage';
 import { NotFoundPage } from '../../pages/NotFoundPage/NotFoundPage';
 
 export function App() {
-  const [storage, setStorage] = useState<StorageStatusState>({ kind: 'loading' });
-
-  useEffect(() => {
-    let cancelled = false;
-    fetch(HEALTH_PATH)
-      .then((response) => response.json() as Promise<HealthResponse>)
-      .then((health) => {
-        if (!cancelled) setStorage({ kind: 'loaded', health });
-      })
-      .catch(() => {
-        if (!cancelled) setStorage({ kind: 'failed' });
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const { state: storage } = useStorageHealth();
 
   return (
     <Routes>
