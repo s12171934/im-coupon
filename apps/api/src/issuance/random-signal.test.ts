@@ -43,7 +43,7 @@ describe('randomSignal', () => {
     expect(scoreAll(sequence)).toEqual(scoreAll(sequence));
   });
 
-  it('결합 엔진이 곱할 발급 가중치를 찾도록 자기 키를 밝힌다', () => {
+  it('가중치에 없는 키를 쓰지 않도록 자기 키를 `SignalWeights` 의 키로 선언한다', () => {
     expect(randomSignal.key).toBe('random');
   });
 });

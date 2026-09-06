@@ -25,10 +25,13 @@ export interface SignalContext {
 /** 발급 후보 하나에 `0` 이상 점수를 주는 단위. 신호가 늘면 이 인터페이스의 구현이 는다. */
 export interface Signal {
   /**
-   * 결합 엔진이 어느 발급 가중치와 곱할지 아는 키. 키 집합을 계약의 `SignalWeights`
-   * 에서 끌어와, 신호가 가중치에 없는 키를 쓰면 컴파일 오류가 나게 한다. 반대 방향 —
-   * 가중치에 키를 더하고 신호를 빠뜨리는 것 — 은 이 타입이 막지 못하며, 결합 엔진이
-   * 신호 목록을 받는 형태로 막는다.
+   * 이 신호가 어느 발급 가중치와 짝인지에 대한 신호 자신의 선언. 키 집합을 계약의
+   * `SignalWeights` 에서 끌어와, 신호가 가중치에 없는 키를 쓰면 여기서 컴파일 오류가
+   * 난다. 반대 방향 — 가중치에 키를 더하고 신호 구현을 빠뜨리는 것 — 은 이 타입이 막지
+   * 못하며, 결합 엔진이 신호를 `Record<keyof SignalWeights, Signal>` 로 받는 형태
+   * (`SelectCandidateInput.signals`)가 막는다.
+   *
+   * 두 자리가 어긋날 수 있으므로 엔진은 맵의 키만 신뢰하고 이 필드를 조회에 쓰지 않는다.
    */
   key: keyof SignalWeights;
   score(candidate: Candidate, context: SignalContext): number;
