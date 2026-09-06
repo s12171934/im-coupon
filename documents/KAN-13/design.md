@@ -320,6 +320,7 @@ interface IssueDecision {
 ```
 
 - 총점이 가장 높은 발급 후보 하나를 발급한다. **최고점이 여럿이면 발급 후보 목록에서 먼저 온 쪽을 고른다.** 동점은 실제로 일어난다 — 랜덤 신호가 같은 값을 두 번 낼 수 있고, `TC-02-02` 가 막지 않는 가중치 조합(예: 어떤 신호의 가중치가 `0`)에서도 총점이 겹친다. 규칙을 적어 두지 않으면 어느 발급 후보가 나오는지가 목록 순서와 구현 세부에 조용히 매달린다. `decision` 은 그렇게 고른 발급 후보의 점수를 싣는다.
+- 그 "먼저"가 무엇인지는 발급 후보 목록의 만드는 순서가 정한다 — `merchants` 를 바깥, `citizens` 를 안쪽 순회로 두어 가맹점×시민 쌍을 만들고, 각 컬렉션 안은 시드 파일에 든 순서 그대로 쓴다(정렬하지 않는다). 순회 방향을 이렇게 정한 것은 발급 후보를 가리키는 표기가 이미 가맹점을 앞에 두기 때문이다(2장 용어, 11장 그림 라벨). 동점 규칙만 적고 이 순서를 비워 두면 어느 쿠폰이 발급되는지가 위 문장이 경고한 대로 구현 세부에 매달린다.
 - `400 INVALID_BODY` — 요청 본문이 JSON 으로 파싱되지 않거나 `weights` 가 객체가 아님.
 - `400 INVALID_WEIGHTS` — 병합된 가중치의 값이 숫자가 아니거나 음수이거나 합이 0, 또는 요청 `weights` 에 모르는 신호 키가 있음.
 - `422 NO_CANDIDATES` — `merchants` 또는 `citizens` 컬렉션이 비어 있어 발급 후보를 만들 수 없음.
@@ -359,7 +360,7 @@ interface IssueDecision {
 
 - `KAN-13/01-seed-and-contracts` — 시드 데이터(가맹점·시민)와 쿠폰·발급 계약 타입, 시드 검증 테스트를 넣는 브랜치. 수정 — `packages/contracts` · `packages/db`(테스트만) · `data/seed`.
 - `KAN-13/02-issuance-engine` — 랜덤 신호와 가중치 결합 엔진, 발급 트리거 인터페이스와 시연 트리거(전부 순수 함수)를 넣는 브랜치. 수정 — `apps/api` · `packages/contracts`(계약 개정, 14장) · `documents/`.
-- `KAN-13/03-issue-endpoint` — 발급 API 와 coupons 컬렉션 저장(직렬화 큐)을 넣는 브랜치. 수정 — `apps/api`.
+- `KAN-13/03-issue-endpoint` — 발급 API 와 coupons 컬렉션 저장(직렬화 큐)을 넣는 브랜치. 수정 — `apps/api` · `documents/`(8장 발급 후보 목록 순서, 14장).
 - `KAN-13/04-list-endpoints` — 내 쿠폰 조회 API 와 시민 목록 API 를 넣는 브랜치. 수정 — `apps/api`.
 - `KAN-13/05-issue-screen` — 발급 실행 화면과 탭 셸을 넣는 브랜치. 수정 — `apps/web`.
 - `KAN-13/06-my-coupons-screen` — 내 쿠폰 화면과 거래조건 고지를 넣는 브랜치. 수정 — `apps/web`.
@@ -410,7 +411,7 @@ interface IssueDecision {
 
 ### `KAN-13/03-issue-endpoint`
 
-- 파일맵 — 생성: `apps/api/src/coupons/coupons.module.ts`, `apps/api/src/coupons/presentation/coupons.controller.ts`, `apps/api/src/coupons/application/coupons.service.ts`, `apps/api/src/coupons/infrastructure/json-coupon.repository.ts`(`JsonFileDb` 래핑 + 직렬화 큐), `apps/api/src/coupons/infrastructure/json-candidate-source.ts`(`merchants`·`citizens` 를 읽어 발급 후보 생성), `apps/api/src/coupons/presentation/coupons.controller.test.ts`. 수정: `apps/api/src/app.module.ts`.
+- 파일맵 — 생성: `apps/api/src/coupons/coupons.module.ts`, `apps/api/src/coupons/coupons.controller.ts`, `apps/api/src/coupons/coupons.service.ts`, `apps/api/src/coupons/coupon.repository.ts`(`JsonFileDb` 래핑 + 직렬화 큐), `apps/api/src/coupons/candidate-source.ts`(`merchants`·`citizens` 를 읽어 발급 후보 생성), `apps/api/src/coupons/coupons.controller.test.ts`. 수정: `apps/api/src/app.module.ts`, `documents/KAN-13/design.md`(발급 후보 목록 순서 — 8장·14장).
 - 넣는 것 — 8장의 `POST /api/coupons/issue`. 컨트롤러는 요청 본문을 시연 트리거로 옮겨 발급 명령을 만들고 발급 유스케이스에 넘긴다 (4장 결정 9). 쿠폰 생성 시 두 기한 계산과 `trigger`·스냅샷 기록 (4장 결정 5·7), coupons 쓰기의 프로세스 내 직렬화 (4장 결정 6). 발급의 실패는 전부 `IssuanceError` 로 올린다 — 엔진이 던지는 `INVALID_WEIGHTS`·`NO_CANDIDATES` 에 더해, 발급 후보 적재와 쿠폰 저장의 파일 IO 실패도 `candidate-source.ts`·`coupon.repository.ts` 가 `IssuanceError('STORAGE_FAILURE')` 로 감싸 올린다. 컨트롤러 층은 그래서 `IssuanceError` 하나만 잡아 `code` 를 8장의 HTTP 상태와 오류 응답 본문으로 옮긴다 (4장 결정 11).
 - RED `TC-03-01` — `coupons.controller.test.ts`(supertest): "임시 데이터 디렉터리에 시드를 부트스트랩한 뒤 `POST /api/coupons/issue` 를 보내면 `201` 과 `IssueCouponResponse` 계약을 만족하는 본문이 오고, `coupons` 컬렉션 레코드가 0건에서 1건이 된다".
 - 완료 조건 — `TC-03-01` 이 GREEN 이고 오류 4종 `TC-03-02`~`TC-03-04`·`TC-03-06` 과 동시 발급 유실 없음 `TC-03-05`(12장)를 포함.
@@ -555,7 +556,7 @@ interface IssueDecision {
   4. 발급 트리거 인터페이스와 시연 트리거, 구현 중 굳은 결정의 설계문서 반영 — `apps/api` · `documents/`
 - `KAN-13/03-issue-endpoint`
   1. 쿠폰 저장 리포지터리와 직렬화 큐
-  2. 발급 후보 적재(`candidate-source`)
+  2. 발급 후보 적재(`candidate-source`)와 발급 후보 목록 순서의 설계문서 반영 — `apps/api` · `documents/`
   3. 발급 유스케이스와 `POST /api/coupons/issue`
   4. 오류 응답 4종 처리
 - `KAN-13/04-list-endpoints`
@@ -591,3 +592,4 @@ interface IssueDecision {
 - 2026-09-06 — KAN-14 리뷰에서 이월된 계약 미결 4건을 닫았다. 8장에 INVALID_BODY 와 OWNER_ID_QUERY 를 더하고 INVALID_WEIGHTS 의 조건에 필수 키 누락을 포함했으며, 발급 가중치를 부분 덮어쓰기(Partial)로 바꿔 4장 결정 2 의 확장 서술을 요청 계약에도 참이 되게 했다. 7장 값 표에 두 기한 일수가 1 이상의 정수임을 적었다. 계약 파일을 고치면 그 위에 쌓이는 브랜치 전부가 영향을 받으므로, 이미 만들어진 브랜치 중 가장 위인 `KAN-13/02-issuance-engine` 에서 닫아 아래 브랜치 01 을 건드리지 않고 03~07 이 이 결과를 물려받게 했다. 그래서 이 커밋은 9장 레인 표기(`apps/api`)와 달리 `packages/contracts` 와 `documents/` 를 함께 건드린다 — 10장 브랜치 02 파일맵과 13장 커밋 계획에도 그렇게 적었다. 정정 — 확정 직후 `INVALID_WEIGHTS` 의 필수 키 누락 조항이 부분 덮어쓰기와 모순된다는 리뷰 지적이 나와, 검증을 병합 후 가중치에 걸고 그 조항을 조건에서 뺐다. 병합 후에도 키가 비는 경우는 `params.ts` 결손이라 요청 오류가 아니고, 죽은 조항을 계약에 남기면 다음 사람이 그것을 구현해 부분 덮어쓰기를 깨뜨린다. `INVALID_WEIGHTS` 의 조건은 넷이 되었고, 그중 '모르는 신호 키'만 병합 전 요청 본문에서 검사한다. 12장 `TC-02-02` 의 거부 3종은 그대로 둔다.
 - 2026-09-06 — 위 줄들의 개정을 리뷰한 결과 하나를 더 닫았다. 발급 엔드포인트의 오류가 셋에서 넷이 된 것을 10장 브랜치 03 완료 조건·11장 실패 흐름·13장 커밋 계획에 반사하고 12장에 `TC-03-06`(INVALID_BODY)을 더했다. 11장 발급 흐름 그림은 실패 경로를 셋만 그린 상태이며, 다시 그리는 것은 `KAN-13/03-issue-endpoint` 의 몫으로 남겼다. 같은 이유로 11장 발급 실행 화면 와이어프레임의 오류 영역 예시도 3종 상태이고, 다시 그리는 것은 `KAN-13/05-issue-screen` 의 몫이다. 브랜치 02 의 수정 범위를 3·9장 본문에도 반사했고(9장 레인 그림은 다시 그리지 않는다), `coupon.ts` 의 `expiresAt` 주석이 두 일수 파라미터를 "양수"로 느슨하게 적던 것을 7장과 같은 "1 이상의 정수"로 좁혔다. 13장 브랜치 02 첫 커밋의 장 열거는 실제로 고친 장에 맞춰 `3·4·7~14장` 으로 적었다 — 대응하는 티켓 체크박스 본문은 처음 계획대로 `4·7·8·14장` 이라 이 괄호만 표기가 다르고, 가리키는 커밋은 같다.
 - 2026-09-06 — 브랜치 02 의 구현에서 굳은 결정 넷을 반영했다. 엔진의 거부를 결과 타입이 아니라 `IssuanceError` 예외로 표현하고 `code` 를 HTTP 상태로 옮기는 것은 브랜치 03 의 몫으로 남기는 결정 11 을 4장에 더했다. 엔진이 신호 맵의 키만 신뢰하고 `Signal.key` 를 조회에 쓰지 않는다는 것은 4장 결정 2 의 근거에 붙였다. 8장 병합 단계에는 알려진 키의 `undefined` 를 걷어내 기본값으로 채우고 `null` 은 걷어내지 않아 값 규칙이 거부한다는 세부와, "숫자가 아님"을 `!Number.isFinite` 로 판정해 `NaN`·`±Infinity` 까지 거부한다는 것을 적었다. 최고점이 여럿일 때 발급 후보 목록에서 먼저 온 쪽을 고른다는 규칙은 8장에 없던 것이라 새 문장으로 더했다. 결정 11 이 가리키는 자리가 비지 않도록 10장 브랜치 03 "넣는 것"에 `IssuanceError` 를 잡아 HTTP 상태로 옮기는 절을 더했고, 10장 브랜치 02 파일맵·결정 열거(`1·2·3·9·11`)와 13장 커밋 4 제목에도 반사했다. 13장 커밋 4 문구는 KAN-15 체크박스 본문과 표기가 다르고 가리키는 커밋은 같다. 리뷰에서 트리거의 유형 선언과 명령의 `trigger` 가 서로 독립이라는 지적이 나와 둘을 타입 매개변수로 묶고 그 서술을 4장 결정 9 에 적었다 — `TriggerType` 이 아직 값 하나라 지금은 어긋난 값을 쓸 수 없지만, 이후 에픽이 값을 늘리는 순간 열리는 자리다. 이어 10장에 더한 그 절이 엔진 밖 파일 IO 실패를 누가 `IssuanceError('STORAGE_FAILURE')` 로 감싸는지 말하지 않아 결정 11 의 채널 통일이 절반만 서 있다는 지적이 나와, 감싸는 자리를 4장 결정 11 과 10장 브랜치 03 양쪽에 지목했다. 같은 그림을 8장도 말하도록 발급 엔드포인트의 `500 STORAGE_FAILURE` 를 쓰기 실패만이 아니라 발급 후보 읽기 실패까지로 넓혔다 — 계약의 `ApiErrorCode` 주석이 이미 두던 범위다. 감싸기의 구현은 브랜치 03 의 몫으로 남는다. 마지막으로 8장·결정 11 의 개정이 11장을 옛 서술로 남긴 것을 반사했다 — 실패 흐름의 `STORAGE_FAILURE` 를 8장과 같은 범위로 넓히고, 정상 흐름의 "가중치 검증 → 후보 적재" 순서를 코드가 강제하는 "후보 적재 → 검증·결합"으로 바로잡았다(검증과 결합을 `selectCandidate` 하나가 맡아 문서 순서를 구현할 진입점이 없다). 트리거 유형을 묶는 타입 매개변수에서는 기본값을 뺐다 — 기본값이 있으면 매개변수를 생략한 구현이 묶음 없이 통과해, 1라운드에 고른 "규칙 대신 타입이 든다"가 도로 규칙이 된다.
+- 2026-09-06 — 브랜치 03 의 발급 후보 적재 구현에서 굳은 결정 하나를 8장에 반영했다. 8장의 동점 규칙이 "발급 후보 목록에서 먼저 온 쪽"을 말하면서 그 목록의 순서를 정하지 않아, 동점일 때 발급되는 쿠폰이 구현 세부에 매달려 있었다 — 8장 자신이 경고한 상태다. 순회 방향(가맹점 바깥·시민 안쪽)과 각 컬렉션이 시드 파일 순서를 그대로 쓴다는 것을 문장으로 적어 닫았다. 4장 결정표에 올리지 않은 것은 이 선택이 아키텍처가 아니라 8장 한 규칙의 세부이기 때문이다. 이 커밋도 9장 레인 표기(`apps/api`)와 달리 `documents/` 를 함께 건드리므로, 브랜치 02 가 같은 상황에 잡은 표기대로 9장 레인·10장 브랜치 03 파일맵·13장 커밋 계획에 그 사실을 반사했다.

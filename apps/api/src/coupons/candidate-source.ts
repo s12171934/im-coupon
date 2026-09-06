@@ -1,0 +1,90 @@
+import { Inject, Injectable } from '@nestjs/common';
+import type { Citizen, Merchant } from '@im-coupon/contracts';
+import { JsonFileDb } from '@im-coupon/db';
+
+import { DATA_DIR } from '../data-dir.token';
+import { IssuanceError } from '../issuance/engine';
+import type { Candidate } from '../issuance/signal';
+
+/** 시드로만 들어오고 발급은 읽기만 한다. 쓰기가 없으므로 직렬화 큐도 필요 없다. */
+const MERCHANTS_COLLECTION = 'merchants';
+const CITIZENS_COLLECTION = 'citizens';
+
+/**
+ * 발급 후보를 만드는 자리 — `merchants`·`citizens` 를 읽어 가맹점×시민 전체 쌍을 낸다.
+ *
+ * 발급 후보가 0건인 것은 여기서 실패로 다루지 않는다. 컬렉션이 비면 빈 목록을 그대로
+ * 내보내고 `NO_CANDIDATES` 는 그 목록을 받은 엔진이 던진다. 엔진은 가중치 검증과 후보
+ * 선택을 `selectCandidate` 한 자리에서 하고 검증을 먼저 하므로, 빈 목록의 거부는 가중치
+ * 거부 뒤에 선다. 적재가 그 앞에서 먼저 던지면 순서가 뒤집혀, `merchants` 가 비고 가중치도
+ * 틀린 요청이 `400 INVALID_WEIGHTS` 대신 `422 NO_CANDIDATES` 를 받는다 — 적재는 늘
+ * 선택보다 먼저 도므로 이 뒤집힘은 우연이 아니라 항상이다.
+ *
+ * 파일 IO 실패는 `IssuanceError('STORAGE_FAILURE')` 로 감싸 올린다. 쿠폰 저장과 같은
+ * 이유다 — 발급의 실패를 한 예외로 모아야 API 층이 한 종류만 잡아 오류 응답으로 옮긴다.
+ */
+@Injectable()
+export class CandidateSource {
+  private readonly db: JsonFileDb;
+
+  constructor(@Inject(DATA_DIR) dataDir: string) {
+    this.db = new JsonFileDb(dataDir);
+  }
+
+  /**
+   * 가맹점을 바깥, 시민을 안쪽 순회로 둔다.
+   *
+   * 어느 쪽이 바깥이든 쌍의 집합은 같지만 순서는 갈리고, 그 순서가 곧 계약이다 —
+   * 최고점이 여럿일 때 발급되는 쿠폰을 "목록에서 먼저 온 쪽"이 정하기 때문이다.
+   * 둘 중 이 순서를 고른 것은 `Candidate` 의 필드 순서와 발급 후보를 부르는 말
+   * ("가맹점×시민 전체 쌍")이 이미 가맹점을 앞에 두고 있어서다. 읽는 쪽이 코드를 열지
+   * 않고도 순서를 맞게 짚으려면 세 자리가 같은 방향이어야 한다.
+   *
+   * 각 컬렉션 안의 순서는 파일에 든 순서 그대로다 — 정렬하지 않으므로 시드를 고치지
+   * 않는 한 같은 목록이 나온다.
+   */
+  async load(): Promise<Candidate[]> {
+    const [merchants, citizens] = await Promise.all([
+      this.read<Merchant>(MERCHANTS_COLLECTION),
+      this.read<Citizen>(CITIZENS_COLLECTION),
+    ]);
+
+    const candidates: Candidate[] = [];
+    for (const merchant of merchants) {
+      for (const citizen of citizens) {
+        candidates.push({ merchant, citizen });
+      }
+    }
+    return candidates;
+  }
+
+  /**
+   * 컬렉션이 아직 없는 것은 실패가 아니다 — `JsonFileDb` 가 빈 배열로 읽는다. 시드
+   * 부트스트랩 전의 디렉터리가 그 상태이고, 그때 나오는 것은 오류가 아니라 발급 후보 0건이다.
+   *
+   * 배열인지는 여기서 확인한다. `JsonFileDb` 는 파싱 결과를 캐스트만 하고 모양을 보지
+   * 않아, 손으로 고쳐 배열이 아니게 된 파일이 그대로 올라온다. 그냥 두면 `null` 은 순회에서
+   * 감싸지지 않은 `TypeError` 로 새고, 문자열은 글자 하나하나가 가맹점·시민 행세를 해
+   * 거부 없이 발급 후보를 오염시킨다 — 둘 다 읽기 실패이므로 같은 예외로 모은다.
+   */
+  private async read<T>(collection: string): Promise<T[]> {
+    let rows: T[];
+    try {
+      rows = await this.db.readCollection<T>(collection);
+    } catch (error) {
+      throw new IssuanceError(
+        'STORAGE_FAILURE',
+        `${collection} 컬렉션을 읽지 못했다 — ${messageOf(error)}`,
+      );
+    }
+    if (!Array.isArray(rows)) {
+      throw new IssuanceError('STORAGE_FAILURE', `${collection} 컬렉션이 레코드 배열이 아니다`);
+    }
+    return rows;
+  }
+}
+
+/** 감싼 예외가 원인을 삼키지 않게 원래 오류의 말을 메시지에 남긴다. */
+function messageOf(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
