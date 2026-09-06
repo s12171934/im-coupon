@@ -1,0 +1,18 @@
+[
+  {
+    "id": "coupon-welcome-01",
+    "issuerName": "iM 상생 쿠폰",
+    "ownerName": "민지",
+    "reservedBy": null,
+    "merchantName": "동성로 커피연구소",
+    "title": "동네 카페 응원 쿠폰",
+    "requiredSpendAmount": 8000,
+    "rewardAmount": 1000,
+    "status": "owner_hold",
+    "issuedAt": "2026-09-06T09:00:00.000Z",
+    "usedAt": null,
+    "ownerExclusiveUntil": "2026-09-09T09:00:00.000Z",
+    "expiresAt": "2026-09-11T09:00:00.000Z",
+    "reservationExpiresAt": null
+  }
+]
