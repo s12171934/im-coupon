@@ -337,6 +337,11 @@ interface IssueDecision {
 - `404 UNKNOWN_OWNER` — `citizens` 에 없는 `OWNER_ID_QUERY` 값.
 - `500 STORAGE_FAILURE` — 컬렉션 읽기 실패.
 
+위 두 코드는 실제 쿼리 입력의 나머지를 비워 둔 채 조건만 적고 있어, 그 나머지를 문장으로 닫는다. 상태 번호와 조건을 바꾸는 것이 아니라 비어 있던 자리를 채우는 것이다 — 적어 두지 않으면 다음 사람이 트림을 넣어 계약에 없는 관대함을 들인다.
+
+- **쿼리가 소유자 id 하나로 읽히지 않으면 `MISSING_OWNER_ID`** 다. 부재·빈 문자열·배열(`?ownerId=a&ownerId=b`) 셋이 같은 코드로 가며, 셋 다 "이 요청에서 소유자를 하나로 정할 수 없다"로 같다. 배열은 키를 두 번 실은 요청에서 온다. 첫 값을 골라 진행하면 호출자가 지정한 나머지가 소리 없이 버려진 채 `200` 이 나가, 부르지 않은 시민의 쿠폰을 자기 것으로 읽는다 — 발급의 `INVALID_BODY` 가 막은 것과 같은 종류의 실수다.
+- **공백만 든 값은 트림하지 않는다.** `?ownerId=%20` 은 빈 문자열이 아니므로 위 판정을 지나 `UNKNOWN_OWNER` 로 떨어진다. 트림을 넣으면 이 값이 `400` 으로 옮겨 갈 뿐 아니라 `' cit-001 '` 까지 조용히 유효해지는데, 시민 id 는 정확 일치로 다루는 값이다.
+
 ### `GET /api/citizens` — 시민 목록
 
 - 경로 상수 — `CITIZENS_PATH`. 구현 브랜치 — `KAN-13/04-list-endpoints` (10장).
@@ -364,7 +369,7 @@ interface IssueDecision {
 - `KAN-13/01-seed-and-contracts` — 시드 데이터(가맹점·시민)와 쿠폰·발급 계약 타입, 시드 검증 테스트를 넣는 브랜치. 수정 — `packages/contracts` · `packages/db`(테스트만) · `data/seed`.
 - `KAN-13/02-issuance-engine` — 랜덤 신호와 가중치 결합 엔진, 발급 트리거 인터페이스와 시연 트리거(전부 순수 함수)를 넣는 브랜치. 수정 — `apps/api` · `packages/contracts`(계약 개정, 14장) · `documents/`.
 - `KAN-13/03-issue-endpoint` — 발급 API 와 coupons 컬렉션 저장(직렬화 큐)을 넣는 브랜치. 수정 — `apps/api` · `documents/`(8장 발급 후보 목록 순서, 14장).
-- `KAN-13/04-list-endpoints` — 내 쿠폰 조회 API 와 시민 목록 API 를 넣는 브랜치. 수정 — `apps/api`.
+- `KAN-13/04-list-endpoints` — 내 쿠폰 조회 API 와 시민 목록 API 를 넣는 브랜치. 수정 — `apps/api` · `documents/`(소유자 쿼리 판단 — 8장, 14장).
 - `KAN-13/05-issue-screen` — 발급 실행 화면과 탭 셸을 넣는 브랜치. 수정 — `apps/web`.
 - `KAN-13/06-my-coupons-screen` — 내 쿠폰 화면과 거래조건 고지를 넣는 브랜치. 수정 — `apps/web`.
 - `KAN-13/07-issuance-e2e` — 발급부터 내 쿠폰 확인까지의 e2e 를 넣는 브랜치. 수정 — `e2e`.
@@ -421,7 +426,7 @@ interface IssueDecision {
 
 ### `KAN-13/04-list-endpoints`
 
-- 파일맵 — 생성: `apps/api/src/citizens/citizens.module.ts`, `apps/api/src/citizens/presentation/citizens.controller.ts`, `apps/api/src/citizens/presentation/citizens.controller.test.ts`, `apps/api/src/coupons/presentation/list-coupons.test.ts`. 수정: `apps/api/src/coupons/presentation/coupons.controller.ts`·`coupons.service.ts`(내 쿠폰 조회 추가), `apps/api/src/app.module.ts`.
+- 파일맵 — 생성: `apps/api/src/read-collection.ts`(컬렉션 하나를 읽어 파일 IO 실패를 `IssuanceError` 로 감싸는 공용 함수), `apps/api/src/coupons/owner-directory.ts`(소유자가 `citizens` 에 있는지 확인), `apps/api/src/coupons/list-coupons.test.ts`, `apps/api/src/citizens/citizen-directory.ts`(시민 목록 API 가 `citizens` 를 읽는 자리), `apps/api/src/citizens/citizens.controller.ts`, `apps/api/src/citizens/citizens.module.ts`, `apps/api/src/citizens/citizens.controller.test.ts`. 수정: `apps/api/src/coupons/coupons.controller.ts`·`coupons.service.ts`(내 쿠폰 조회 추가), `apps/api/src/coupons/coupon.repository.ts`·`candidate-source.ts`(각자 쓰던 읽기·배열 확인·감싸기를 `read-collection.ts` 한 곳으로 모음), `apps/api/src/coupons/coupons.module.ts`(소유자 확인 등록), `apps/api/src/app.module.ts`(시민 모듈 등록), `documents/KAN-13/design.md`(소유자 쿼리 판단 — 8장, 이 브랜치의 수정 범위 — 9·10·13장, 14장).
 - 넣는 것 — 8장의 `GET /api/coupons?ownerId=` 와 `GET /api/citizens`.
 - RED `TC-04-01` — `list-coupons.test.ts`: "`coupons` 컬렉션에 소유자 `cit-001` 의 쿠폰 1건을 미리 써 두면, `GET /api/coupons?ownerId=cit-001` 은 그 1건을 반환하고 `?ownerId=cit-002` 는 빈 배열을 반환한다".
 - 완료 조건 — `TC-04-01` 이 GREEN 이고 오류 2종 `TC-04-02`·`TC-04-03` 과 시민 목록 `TC-04-04`(12장)를 포함.
@@ -564,7 +569,7 @@ interface IssueDecision {
   4. 오류 응답 4종 처리와 11장 발급 흐름 그림 재작성 — `apps/api` · `documents/`
 - `KAN-13/04-list-endpoints`
   1. 내 쿠폰 조회 API (`GET /api/coupons?ownerId=`)
-  2. 시민 목록 API (`GET /api/citizens`)
+  2. 시민 목록 API (`GET /api/citizens`)와 구현 중 굳은 판단의 설계문서 반영 — `apps/api` · `documents/`
 - `KAN-13/05-issue-screen` — 컴포넌트당 1커밋 (10장 구현 컴포넌트 목록)
   1. `CP-05-01` — 탭 셸
   2. `CP-05-02` — 저장소 상태 컴포넌트 추출
@@ -597,3 +602,4 @@ interface IssueDecision {
 - 2026-09-06 — 브랜치 02 의 구현에서 굳은 결정 넷을 반영했다. 엔진의 거부를 결과 타입이 아니라 `IssuanceError` 예외로 표현하고 `code` 를 HTTP 상태로 옮기는 것은 브랜치 03 의 몫으로 남기는 결정 11 을 4장에 더했다. 엔진이 신호 맵의 키만 신뢰하고 `Signal.key` 를 조회에 쓰지 않는다는 것은 4장 결정 2 의 근거에 붙였다. 8장 병합 단계에는 알려진 키의 `undefined` 를 걷어내 기본값으로 채우고 `null` 은 걷어내지 않아 값 규칙이 거부한다는 세부와, "숫자가 아님"을 `!Number.isFinite` 로 판정해 `NaN`·`±Infinity` 까지 거부한다는 것을 적었다. 최고점이 여럿일 때 발급 후보 목록에서 먼저 온 쪽을 고른다는 규칙은 8장에 없던 것이라 새 문장으로 더했다. 결정 11 이 가리키는 자리가 비지 않도록 10장 브랜치 03 "넣는 것"에 `IssuanceError` 를 잡아 HTTP 상태로 옮기는 절을 더했고, 10장 브랜치 02 파일맵·결정 열거(`1·2·3·9·11`)와 13장 커밋 4 제목에도 반사했다. 13장 커밋 4 문구는 KAN-15 체크박스 본문과 표기가 다르고 가리키는 커밋은 같다. 리뷰에서 트리거의 유형 선언과 명령의 `trigger` 가 서로 독립이라는 지적이 나와 둘을 타입 매개변수로 묶고 그 서술을 4장 결정 9 에 적었다 — `TriggerType` 이 아직 값 하나라 지금은 어긋난 값을 쓸 수 없지만, 이후 에픽이 값을 늘리는 순간 열리는 자리다. 이어 10장에 더한 그 절이 엔진 밖 파일 IO 실패를 누가 `IssuanceError('STORAGE_FAILURE')` 로 감싸는지 말하지 않아 결정 11 의 채널 통일이 절반만 서 있다는 지적이 나와, 감싸는 자리를 4장 결정 11 과 10장 브랜치 03 양쪽에 지목했다. 같은 그림을 8장도 말하도록 발급 엔드포인트의 `500 STORAGE_FAILURE` 를 쓰기 실패만이 아니라 발급 후보 읽기 실패까지로 넓혔다 — 계약의 `ApiErrorCode` 주석이 이미 두던 범위다. 감싸기의 구현은 브랜치 03 의 몫으로 남는다. 마지막으로 8장·결정 11 의 개정이 11장을 옛 서술로 남긴 것을 반사했다 — 실패 흐름의 `STORAGE_FAILURE` 를 8장과 같은 범위로 넓히고, 정상 흐름의 "가중치 검증 → 후보 적재" 순서를 코드가 강제하는 "후보 적재 → 검증·결합"으로 바로잡았다(검증과 결합을 `selectCandidate` 하나가 맡아 문서 순서를 구현할 진입점이 없다). 트리거 유형을 묶는 타입 매개변수에서는 기본값을 뺐다 — 기본값이 있으면 매개변수를 생략한 구현이 묶음 없이 통과해, 1라운드에 고른 "규칙 대신 타입이 든다"가 도로 규칙이 된다.
 - 2026-09-06 — 브랜치 03 의 발급 후보 적재 구현에서 굳은 결정 하나를 8장에 반영했다. 8장의 동점 규칙이 "발급 후보 목록에서 먼저 온 쪽"을 말하면서 그 목록의 순서를 정하지 않아, 동점일 때 발급되는 쿠폰이 구현 세부에 매달려 있었다 — 8장 자신이 경고한 상태다. 순회 방향(가맹점 바깥·시민 안쪽)과 각 컬렉션이 시드 파일 순서를 그대로 쓴다는 것을 문장으로 적어 닫았다. 4장 결정표에 올리지 않은 것은 이 선택이 아키텍처가 아니라 8장 한 규칙의 세부이기 때문이다. 이 커밋도 9장 레인 표기(`apps/api`)와 달리 `documents/` 를 함께 건드리므로, 브랜치 02 가 같은 상황에 잡은 표기대로 9장 레인·10장 브랜치 03 파일맵·13장 커밋 계획에 그 사실을 반사했다.
 - 2026-09-06 — 브랜치 03 의 오류 응답 4종 구현에서 굳은 것을 반영했다. 8장에 "JSON 으로 파싱되지 않는 본문"이 JSON 이 아닌 형식으로 선언된 본문까지 든다는 것을 적었다 — 파서가 그런 본문을 건너뛰어 본문 없는 요청과 구별되지 않게 되고, 그대로 두면 요청이 실은 발급 가중치가 조용히 버려진 채 기본값으로 발급된 `201` 이 나가기 때문이다. 같은 자리에 `null`·배열이 `weights` 의 비객체 판정에 든다는 것도 적었다 — 타입 검사 하나로는 이 둘이 객체와 갈리지 않아, 판정을 좁게 두면 `null`·`[]` 는 "가중치 없음"으로 읽혀 발급되고 원소가 든 배열은 인덱스가 모르는 신호 키 행세를 해 `INVALID_WEIGHTS` 로 갈려, 같은 종류의 잘못된 본문이 세 갈래로 흩어진다. 7장의 세 시각은 제약을 "ISO 8601, UTC(`Z`)"로 좁히고 예시 레코드의 `+09:00` 표기를 `Z` 로 바꿨다 — 저장하는 자리가 `toISOString()` 하나라 실제 값이 늘 `Z` 인데 예시만 오프셋을 달고 있었고, 이 예시를 본으로 픽스처를 만들 화면 브랜치와 `issuedAt` 내림차순을 문자열 정렬로 구현할 브랜치 04 가 그 차이에서 갈린다. 코드는 바꾸지 않았다. 12장의 격리 기법 문장은 실제 기법(`DATA_DIR` 프로바이더 덮어쓰기, 시드는 커밋된 `data/seed` 읽기)으로 고치고, `resolveSeedDir()` 이 `IM_COUPON_SEED_DIR` 를 우선해 그 환경변수가 설정된 머신에서만 다른 시드를 읽는 재현성 구멍을 닫지 않는 이유와 함께 적었다. 10장 브랜치 03 파일맵을 실제 파일 집합(테스트 파일 셋과 오류 필터)에 맞추고, 13장 커밋 4 줄에 수정 워크스페이스 표기를 넣었다. 11장 발급 흐름 그림은 실패 경로 넷과 `STORAGE_FAILURE` 가 나는 두 자리(발급 후보 읽기·쿠폰 쓰기)를 싣고 정상 흐름을 본문과 같은 "후보 적재 → 검증·결합" 순서로 다시 그렸다 — 캡션의 "세 가지"와, 다시 그리는 것을 브랜치 03 의 몫으로 남겨 두었던 줄도 함께 닫았다.
+- 2026-09-06 — 브랜치 04 의 구현에서 굳은 판단을 반영하고, 이 브랜치의 실제 파일 집합을 파일맵에 맞췄다. 8장 내 쿠폰 조회 절이 `MISSING_OWNER_ID` 를 "없거나 빈 문자열"로만 정해 실제 쿼리 입력의 나머지를 비워 두고 있어 둘을 문장으로 닫았다 — 쿼리가 소유자 id 하나로 읽히지 않는 셋(부재·빈 문자열·배열)이 같은 코드로 가고, 공백만 든 값은 트림하지 않아 `UNKNOWN_OWNER` 로 떨어진다는 것이다. 배열의 첫 값을 고르면 호출자가 지정한 나머지가 소리 없이 버려진 채 `200` 이 나가고, 트림을 넣으면 `' cit-001 '` 까지 조용히 유효해지는데 시민 id 는 정확 일치로 다루는 값이다. 상태 번호와 조건은 그대로이고 비어 있던 자리를 채운 것이라, 브랜치 03 이 `INVALID_BODY` 에서 같은 자리를 닫은 것과 같은 방식이다. 10장 브랜치 04 파일맵에는 커밋 1 이 만든 `read-collection.ts`·`owner-directory.ts` 와 이번 커밋의 시민 쪽 파일 넷이 빠져 있어 실제 집합으로 다시 썼다 — 시민 컬렉션을 읽는 자리를 `citizens/` 하나로 모으지 않고 셋째 자리를 더한 것은 읽기·배열 확인·감싸기를 `read-collection.ts` 가 이미 한 곳에 두어 모아서 얻을 것이 컬렉션 이름 문자열뿐인데, 모으면 `coupons` 모듈이 시민 모듈에 매달리기 때문이다. 이 브랜치도 `documents/` 를 함께 건드리므로 9장 레인 표기와 13장 커밋 2 줄에 그 사실을 반사했다(9장 레인 그림은 다시 그리지 않는다) — 브랜치 02·03 이 같은 상황에 잡은 표기 그대로다.
