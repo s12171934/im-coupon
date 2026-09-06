@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { HEALTH_PATH, type HealthResponse } from '@im-coupon/contracts';
 
-import { StorageStatus, type StorageStatusState } from './components/storage-status';
+import type { StorageStatusState } from './components/storage-status';
+import { IssuePage } from './pages/issue-page';
 
 const TABS = [
   { id: 'issue', label: '발급 실행' },
@@ -49,7 +50,7 @@ export function App() {
       </div>
       {activeTab === 'issue' ? (
         <section role="tabpanel" id={panelId('issue')} aria-labelledby={tabId('issue')}>
-          <StorageStatus state={storage} />
+          <IssuePage storage={storage} />
         </section>
       ) : (
         <section role="tabpanel" id={panelId('my-coupons')} aria-labelledby={tabId('my-coupons')}>

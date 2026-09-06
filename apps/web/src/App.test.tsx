@@ -60,6 +60,16 @@ describe('App', () => {
     expect(await screen.findByText('정상')).toBeInTheDocument();
   });
 
+  it('발급 실행 탭 패널에 발급 실행 화면이 붙어 있다', async () => {
+    stubHealthyStorage();
+
+    render(<App />);
+
+    expect(await screen.findByText('정상')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '발급 1건 실행' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '발급 가중치' })).toBeInTheDocument();
+  });
+
   it('내 쿠폰 탭을 누르면 그 탭이 선택되고 준비 중 안내로 바뀐다', async () => {
     stubHealthyStorage();
     const user = userEvent.setup();
