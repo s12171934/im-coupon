@@ -1,10 +1,10 @@
+import { readCollection } from '../../read-collection';
 import type { CandidateSource } from '../application/ports/candidate-source';
 import { Inject, Injectable } from '@nestjs/common';
 import type { Citizen, Merchant } from '@im-coupon/contracts';
 import { JsonFileDb } from '@im-coupon/db';
 
 import { DATA_DIR } from '../../shared/infrastructure/data-dir.token';
-import { IssuanceError } from '../../issuance/domain/services/engine';
 import type { Candidate } from '../../issuance/domain/signals/signal';
 
 /** 시드로만 들어오고 발급은 읽기만 한다. 쓰기가 없으므로 직렬화 큐도 필요 없다. */
@@ -46,8 +46,8 @@ export class JsonCandidateSource implements CandidateSource {
    */
   async load(): Promise<Candidate[]> {
     const [merchants, citizens] = await Promise.all([
-      this.read<Merchant>(MERCHANTS_COLLECTION),
-      this.read<Citizen>(CITIZENS_COLLECTION),
+      readCollection<Merchant>(this.db, MERCHANTS_COLLECTION),
+      readCollection<Citizen>(this.db, CITIZENS_COLLECTION),
     ]);
 
     const candidates: Candidate[] = [];
@@ -58,34 +58,4 @@ export class JsonCandidateSource implements CandidateSource {
     }
     return candidates;
   }
-
-  /**
-   * 컬렉션이 아직 없는 것은 실패가 아니다 — `JsonFileDb` 가 빈 배열로 읽는다. 시드
-   * 부트스트랩 전의 디렉터리가 그 상태이고, 그때 나오는 것은 오류가 아니라 발급 후보 0건이다.
-   *
-   * 배열인지는 여기서 확인한다. `JsonFileDb` 는 파싱 결과를 캐스트만 하고 모양을 보지
-   * 않아, 손으로 고쳐 배열이 아니게 된 파일이 그대로 올라온다. 그냥 두면 `null` 은 순회에서
-   * 감싸지지 않은 `TypeError` 로 새고, 문자열은 글자 하나하나가 가맹점·시민 행세를 해
-   * 거부 없이 발급 후보를 오염시킨다 — 둘 다 읽기 실패이므로 같은 예외로 모은다.
-   */
-  private async read<T>(collection: string): Promise<T[]> {
-    let rows: T[];
-    try {
-      rows = await this.db.readCollection<T>(collection);
-    } catch (error) {
-      throw new IssuanceError(
-        'STORAGE_FAILURE',
-        `${collection} 컬렉션을 읽지 못했다 — ${messageOf(error)}`,
-      );
-    }
-    if (!Array.isArray(rows)) {
-      throw new IssuanceError('STORAGE_FAILURE', `${collection} 컬렉션이 레코드 배열이 아니다`);
-    }
-    return rows;
-  }
-}
-
-/** 감싼 예외가 원인을 삼키지 않게 원래 오류의 말을 메시지에 남긴다. */
-function messageOf(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
 }

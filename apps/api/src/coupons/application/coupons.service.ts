@@ -1,8 +1,15 @@
+import { OwnerDirectory } from '../owner-directory';
 import { Inject, Injectable } from '@nestjs/common';
-import type { Coupon, IssueCouponResponse, SignalWeights, TriggerType } from '@im-coupon/contracts';
+import type {
+  Coupon,
+  IssueCouponResponse,
+  ListCouponsResponse,
+  SignalWeights,
+  TriggerType,
+} from '@im-coupon/contracts';
 import { randomUUID } from 'node:crypto';
 
-import { selectCandidate } from '../../issuance/domain/services/engine';
+import { IssuanceError, selectCandidate } from '../../issuance/domain/services/engine';
 import { DEFAULT_ISSUANCE_PARAMS } from '../../issuance/domain/params';
 import { randomSignal } from '../../issuance/domain/signals/implementations/random-signal';
 import type { Candidate, Signal } from '../../issuance/domain/signals/signal';
@@ -47,6 +54,7 @@ export class CouponsService {
   constructor(
     @Inject(CANDIDATE_SOURCE) private readonly candidates: CandidateSource,
     @Inject(COUPON_REPOSITORY) private readonly coupons: CouponRepository,
+    private readonly owners: OwnerDirectory,
     @Inject(ISSUE_CLOCK) private readonly now: () => Date,
     @Inject(ISSUE_RANDOM) private readonly random: () => number,
   ) {}
@@ -64,6 +72,20 @@ export class CouponsService {
     await this.coupons.append(coupon);
 
     return { coupon, decision };
+  }
+
+  /**
+   * 내 쿠폰 조회 — 소유자가 든 쿠폰을 모은다.
+   *
+   * 소유자 확인을 먼저 한다. 쿠폰을 먼저 읽으면 없는 소유자도 빈 배열을 받아 `404` 가
+   * 사라지고, 화면은 "쿠폰이 아직 없다"와 "그런 시민이 없다"를 가르지 못한다. 확인이
+   * 앞서므로 `UNKNOWN_OWNER` 는 쿠폰이 0건인지와 무관하게 늘 같은 답을 낸다.
+   */
+  async listByOwner(ownerId: string): Promise<ListCouponsResponse> {
+    if (!(await this.owners.has(ownerId))) {
+      throw new IssuanceError('UNKNOWN_OWNER', `${ownerId} 는 시민 컬렉션에 없는 소유자다`);
+    }
+    return { coupons: await this.coupons.findByOwner(ownerId) };
   }
 
   /**

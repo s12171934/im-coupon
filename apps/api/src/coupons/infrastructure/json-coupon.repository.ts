@@ -1,3 +1,4 @@
+import { readCollection } from '../../read-collection';
 import type { CouponRepository } from '../application/ports/coupon.repository';
 import { Inject, Injectable } from '@nestjs/common';
 import type { Coupon } from '@im-coupon/contracts';
@@ -8,6 +9,24 @@ import { IssuanceError } from '../../issuance/domain/services/engine';
 
 /** 발급된 쿠폰이 담기는 컬렉션. 시드에 없고 발급의 최초 쓰기가 이 파일을 만든다. */
 const COUPONS_COLLECTION = 'coupons';
+
+/**
+ * 발급 시각 내림차순. 세 시각이 UTC `Z` 로 굳어 있으므로(7장) 문자열 비교가 곧 시각
+ * 비교이고, `Date` 로 되돌릴 필요가 없다.
+ *
+ * 같은 시각에는 `0` 을 돌려 저장 순서를 그대로 남긴다. `Array.prototype.sort` 가 안정
+ * 정렬이라 비교가 `0` 인 두 레코드의 앞뒤가 바뀌지 않기 때문이다. 저장은 뒤에 이어
+ * 붙이므로 그 순서가 곧 발급 순서이고, 같은 밀리초 발급 2건은 겹친 요청 둘이 같은 시각을
+ * 읽으면 실제로 난다 — 여기서 순서를 정해 두지 않으면 어느 쿠폰이 위에 오는지가 정렬
+ * 구현에 매달린다.
+ *
+ * 그래서 오름차순으로 정렬한 뒤 뒤집지 않는다. 뒤집기는 안정 정렬이 지켜 준 동률 구간의
+ * 앞뒤까지 함께 뒤집어, 같은 시각 2건이 발급 순서의 역순으로 나온다.
+ */
+function byIssuedAtDesc(left: Coupon, right: Coupon): number {
+  if (left.issuedAt === right.issuedAt) return 0;
+  return left.issuedAt < right.issuedAt ? 1 : -1;
+}
 
 /**
  * `coupons` 컬렉션의 유일한 출입구.
@@ -44,31 +63,32 @@ export class JsonCouponRepository implements CouponRepository {
   }
 
   /**
-   * 컬렉션이 아직 없는 것은 실패가 아니다 — `JsonFileDb` 가 빈 배열로 읽는다.
+   * 한 소유자의 쿠폰을 발급 시각 내림차순으로 모은다 (8장).
    *
-   * 배열인지는 여기서 확인한다. `JsonFileDb` 는 파싱 결과를 캐스트만 하고 모양을 보지
-   * 않아, 손으로 고쳐 배열이 아니게 된 파일이 그대로 올라온다. 그냥 두면 `null`·`{}` 는
-   * 퍼뜨릴 때 감싸지지 않은 `TypeError` 로 새고, 문자열은 글자로 쪼개져 거부 없이
-   * 컬렉션을 오염시킨다 — 둘 다 읽기 실패이므로 같은 예외로 모은다.
+   * 직렬화 큐를 타지 않는다. 큐가 막는 것은 읽고-더하고-쓰기가 겹쳐 나는 유실인데 조회는
+   * 쓰지 않고, `JsonFileDb` 의 쓰기가 rename 으로 끝나므로 저장과 겹쳐도 읽히는 것은 저장
+   * 전이나 후의 파일 하나다. 조회를 큐에 세우면 앞선 저장이 끝날 때까지 기다리기만 한다.
+   *
+   * 거른 뒤에 정렬한다. 결과는 어느 쪽을 먼저 해도 같지만, 거르기가 앞서면 정렬이 다루는
+   * 것이 늘 응답에 실릴 목록 그대로다.
    */
-  private async read(): Promise<Coupon[]> {
-    let rows: Coupon[];
-    try {
-      rows = await this.db.readCollection<Coupon>(COUPONS_COLLECTION);
-    } catch (error) {
-      throw new IssuanceError('STORAGE_FAILURE', `쿠폰 컬렉션을 읽지 못했다 — ${messageOf(error)}`);
-    }
-    if (!Array.isArray(rows)) {
-      throw new IssuanceError('STORAGE_FAILURE', '쿠폰 컬렉션이 레코드 배열이 아니다');
-    }
-    return rows;
+  async findByOwner(ownerId: string): Promise<Coupon[]> {
+    const rows = await this.read();
+    return rows.filter((coupon) => coupon.ownerId === ownerId).sort(byIssuedAtDesc);
+  }
+
+  private read(): Promise<Coupon[]> {
+    return readCollection<Coupon>(this.db, COUPONS_COLLECTION);
   }
 
   private async write(rows: readonly Coupon[]): Promise<void> {
     try {
       await this.db.writeCollection(COUPONS_COLLECTION, rows);
     } catch (error) {
-      throw new IssuanceError('STORAGE_FAILURE', `쿠폰 컬렉션을 쓰지 못했다 — ${messageOf(error)}`);
+      throw new IssuanceError(
+        'STORAGE_FAILURE',
+        `쿠폰 컬렉션을 쓰지 못했다 — ${messageOf(error)}`,
+      );
     }
   }
 
