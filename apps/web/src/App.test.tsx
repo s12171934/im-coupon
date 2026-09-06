@@ -21,15 +21,15 @@ describe('App', () => {
 
     render(<MemoryRouter initialEntries={['/consumption']}><App /></MemoryRouter>);
 
-    expect(await screen.findByText('쿠폰을 움직여 보세요')).toBeInTheDocument();
-    expect(await screen.findByText('지역화폐 페이백')).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '내 리워드 미션' })).toBeInTheDocument();
+    expect((await screen.findAllByText('지역화폐')).length).toBeGreaterThan(0);
   });
 
-  it('API 오류를 메시지로 안내한다', async () => {
+  it('혜택 정보를 불러오지 못하면 안내한다', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => { throw new Error('offline'); }));
 
     render(<MemoryRouter initialEntries={['/consumption']}><App /></MemoryRouter>);
 
-    expect(await screen.findByText(/API에 연결하지 못했습니다/)).toBeInTheDocument();
+    expect(await screen.findByText(/혜택 정보를 불러오지 못했습니다/)).toBeInTheDocument();
   });
 });
