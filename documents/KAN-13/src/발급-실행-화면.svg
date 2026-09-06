@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 570" font-family="'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 590" font-family="'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif">
   <style>
     .frame { fill: #ffffff; stroke: #d0d7de; stroke-width: 1.5; }
     .panel { fill: #f6f8fa; stroke: #d0d7de; stroke-width: 1; }
@@ -12,7 +12,7 @@
     .t-err { fill: #cf222e; font-size: 13px; }
     .mono { font-family: ui-monospace, Menlo, monospace; }
   </style>
-  <rect x="20" y="20" width="680" height="530" rx="8" class="frame"/>
+  <rect x="20" y="20" width="680" height="550" rx="8" class="frame"/>
   <!-- 헤더와 탭 -->
   <text x="40" y="53" class="t-title">im-coupon</text>
   <rect x="150" y="34" width="96" height="26" rx="5" fill="#0969da"/>
@@ -49,7 +49,8 @@
   <text x="56" y="443" class="t-note">중괄호 표기는 응답 필드 자리이고 수치는 7장 값 표의 기본값이 들어간다</text>
 
   <!-- 오류 표시 영역 -->
-  <rect x="40" y="470" width="640" height="56" rx="6" fill="#fff5f5" stroke="#cf222e" stroke-dasharray="5 3"/>
+  <rect x="40" y="470" width="640" height="76" rx="6" fill="#fff5f5" stroke="#cf222e" stroke-dasharray="5 3"/>
   <text x="56" y="494" class="t-err">오류 시 — {error.code}: {error.message} 를 이 자리에 표시</text>
-  <text x="56" y="514" class="t-note">400 INVALID_WEIGHTS · 422 NO_CANDIDATES · 500 STORAGE_FAILURE (8장 오류 응답)</text>
+  <text x="56" y="514" class="t-note">400 INVALID_BODY · 400 INVALID_WEIGHTS</text>
+  <text x="56" y="534" class="t-note">422 NO_CANDIDATES · 500 STORAGE_FAILURE (8장 발급 엔드포인트의 오류 4종)</text>
 </svg>
