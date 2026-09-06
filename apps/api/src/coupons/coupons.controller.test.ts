@@ -1,18 +1,26 @@
-import type { Citizen, Coupon, IssueCouponResponse, Merchant } from '@im-coupon/contracts';
+import type {
+  ApiErrorResponse,
+  Citizen,
+  Coupon,
+  IssueCouponResponse,
+  Merchant,
+} from '@im-coupon/contracts';
 import { ISSUE_COUPON_PATH } from '@im-coupon/contracts';
 import { JsonFileDb } from '@im-coupon/db';
 import type { INestApplication } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { mkdtemp } from 'node:fs/promises';
+import { chmod, mkdtemp, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import request from 'supertest';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { AppModule } from '../app.module';
 import { resolveSeedDir } from '../data-dir';
 import { DATA_DIR } from '../data-dir.token';
 import { DEFAULT_ISSUANCE_PARAMS } from '../issuance/params';
+import { STORAGE_FAILURE_MESSAGE } from './issuance-error.filter';
 import { ISSUE_CLOCK, ISSUE_RANDOM } from './coupons.service';
 
 let app: INestApplication;
@@ -36,6 +44,17 @@ const COUPON_ID = /^cpn-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[
 /** 하루의 길이. 두 기한 파라미터가 일 단위라 기대 시각을 만들 때 쓴다. */
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+interface BootOptions {
+  random?: () => number;
+  /** 데이터 디렉터리를 채우는 단계. 생략하면 커밋된 시드를 그대로 부트스트랩한다 */
+  prepare?: (dataDir: string) => Promise<void>;
+}
+
+/** 기본 준비 — 커밋된 시드를 임시 디렉터리로 부트스트랩한다. */
+function bootstrapSeed(dir: string): Promise<void> {
+  return new JsonFileDb(dir).bootstrapFromSeed(resolveSeedDir());
+}
+
 /**
  * 커밋된 시드를 임시 디렉터리에 부트스트랩한 앱을 띄운다.
  *
@@ -47,10 +66,15 @@ const DAY_MS = 24 * 60 * 60 * 1000;
  * 발급 후보 선택과 두 기한을 결정적으로 만들기 위한 것이다 — `coupon.id` 의 UUID 는
  * 주입하지 않으므로 값까지 결정적이지는 않다. 값을 못 박지 못하는 것이지 모양을 보지 못하는
  * 것은 아니므로, 아래 단언은 값 대신 접두와 UUID 모양을 본다.
+ *
+ * `prepare` 는 데이터 디렉터리를 채우는 단계를 통째로 갈아끼운다. 오류 경로의 케이스들이
+ * 시드에 더해 컬렉션을 비우거나 깨뜨리거나 권한을 막아야 해서, 부트스트랩 뒤에 손대는
+ * 훅이 아니라 단계 자체를 대신하게 두었다 — 부트스트랩을 아예 하지 않는 준비도 같은
+ * 자리에서 표현된다.
  */
-async function boot(options: { random?: () => number } = {}): Promise<void> {
+async function boot(options: BootOptions = {}): Promise<void> {
   dataDir = await mkdtemp(join(tmpdir(), 'im-coupon-api-'));
-  await new JsonFileDb(dataDir).bootstrapFromSeed(resolveSeedDir());
+  await (options.prepare ?? bootstrapSeed)(dataDir);
 
   const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
     .overrideProvider(DATA_DIR)
@@ -80,6 +104,14 @@ function storedCoupons(): Promise<Coupon[]> {
 
 function issue(): request.Test {
   return request(app.getHttpServer()).post(ISSUE_COUPON_PATH);
+}
+
+/**
+ * JSON 으로 파싱되지 않는 본문을 보낸다. 본문을 문자열로 넘기면 superagent 가 그대로
+ * 실어 보내므로 헤더만 JSON 으로 선언해 파서가 파싱을 시도하다 실패하게 만든다.
+ */
+function unparsableBody(raw: string): request.Test {
+  return issue().set('Content-Type', 'application/json').send(raw);
 }
 
 function daysAfter(instant: Date, days: number): Date {
@@ -197,5 +229,193 @@ describe('요청이 실은 발급 가중치', () => {
     const { decision } = response.body as IssueCouponResponse;
     expect(decision.scores.random).toBe(SCORE);
     expect(decision.total).toBe(SCORE * weight);
+  });
+});
+
+describe('오류 4종의 HTTP 매핑', () => {
+  it('TC-03-02 가중치가 음수면 400 과 INVALID_WEIGHTS 를 낸다', async () => {
+    // 시드를 그대로 부트스트랩해 발급 후보는 넉넉히 둔다 — 가중치 거부와 발급 후보 없음이
+    // 한 요청에 겹치면 어느 쪽이 상태를 정했는지 이 케이스가 가리지 못한다.
+    await boot();
+
+    const response = await issue().send({ weights: { random: -1 } });
+
+    expect(response.status).toBe(400);
+    const { error } = response.body as ApiErrorResponse;
+    expect(error.code).toBe('INVALID_WEIGHTS');
+    // 메시지는 요청 내용에서 나오므로 그대로 내보낸다. 빈 문자열이면 화면 오류 영역이
+    // 코드만 든 채 뜨므로 자리를 비워 두지 않았는지 본다.
+    expect(error.message).not.toBe('');
+    expect(await storedCoupons()).toHaveLength(0);
+  });
+
+  it('TC-03-03 발급 후보가 없으면 422 와 NO_CANDIDATES 를 낸다', async () => {
+    // `merchants` 만 비운다. 곱의 한쪽이 비면 쌍이 0건이므로 8장의 "또는"이 실제로 서는지
+    // 보이고, 가중치는 기본값 그대로여서 이 요청에 겹치는 거부가 없다.
+    await boot({
+      prepare: async (dir) => {
+        await bootstrapSeed(dir);
+        await new JsonFileDb(dir).writeCollection('merchants', []);
+      },
+    });
+
+    const response = await issue();
+
+    expect(response.status).toBe(422);
+    const { error } = response.body as ApiErrorResponse;
+    expect(error.code).toBe('NO_CANDIDATES');
+    expect(error.message).not.toBe('');
+    expect(await storedCoupons()).toHaveLength(0);
+  });
+
+  /**
+   * 쓰기만 막는다 — 데이터 디렉터리에서 쓰기 비트를 걷으면 시드 읽기는 그대로 되고
+   * `coupons.json` 을 만드는 자리만 막힌다. 그래서 이 케이스가 짚는 것은 쓰기 실패다.
+   *
+   * root 는 디렉터리의 권한 비트를 무시하므로 그때는 쓰기가 성공해 버린다. 건너뛰지 않으면
+   * root 로 도는 환경에서 이 케이스가 거짓 RED 를 낸다 — 구현이 아니라 실행 사용자가 원인이다.
+   */
+  it.skipIf(process.getuid?.() === 0)(
+    'TC-03-04 쿠폰 쓰기가 실패하면 500 과 STORAGE_FAILURE 를 내고 원인은 서버 로그에만 남긴다',
+    async () => {
+      const logged = vi.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
+      await boot({
+        prepare: async (dir) => {
+          await bootstrapSeed(dir);
+          await chmod(dir, 0o555);
+        },
+      });
+
+      const response = await issue();
+
+      expect(response.status).toBe(500);
+      const { error } = response.body as ApiErrorResponse;
+      expect(error.code).toBe('STORAGE_FAILURE');
+      // Node 의 fs 오류 메시지는 절대 경로를 싣는다. 그대로 내보내면 심사 대상인 시연 화면의
+      // 오류 영역에 서버 파일시스템 경로가 뜨므로, 이 코드만 고정 문구로 바꿔 내보낸다.
+      expect(error.message).not.toContain(dataDir);
+      expect(error.message).toBe(STORAGE_FAILURE_MESSAGE);
+      // 가린 원인이 어디에도 남지 않으면 이 실패는 디버깅할 수 없다. 응답에서 걷어낸 만큼
+      // 서버 로그가 받아야 하므로, 원 메시지가 로그로 갔는지까지 본다.
+      expect(logged.mock.calls.flat().join(' ')).toContain('쿠폰 컬렉션을 쓰지 못했다');
+      logged.mockRestore();
+      await chmod(dataDir, 0o755);
+    },
+  );
+
+  /**
+   * 읽기 실패는 컬렉션 파일을 깨뜨려 만든다. 권한으로 막지 않으므로 실행 사용자와 무관하고,
+   * 그래서 이 케이스에는 root 가드가 필요 없다 — root 도 깨진 JSON 은 파싱하지 못한다.
+   */
+  it('발급 후보 읽기가 실패해도 같은 500 과 STORAGE_FAILURE 로 모인다', async () => {
+    const logged = vi.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
+    await boot({
+      prepare: async (dir) => {
+        await bootstrapSeed(dir);
+        await writeFile(join(dir, 'merchants.json'), '{깨진 JSON', 'utf8');
+      },
+    });
+
+    const response = await issue();
+
+    expect(response.status).toBe(500);
+    const { error } = response.body as ApiErrorResponse;
+    expect(error.code).toBe('STORAGE_FAILURE');
+    expect(error.message).toBe(STORAGE_FAILURE_MESSAGE);
+    expect(logged.mock.calls.flat().join(' ')).toContain('merchants 컬렉션을 읽지 못했다');
+    logged.mockRestore();
+  });
+
+  it('TC-03-06 weights 가 객체가 아니거나 본문이 JSON 으로 파싱되지 않으면 400 과 INVALID_BODY 를 낸다', async () => {
+    await boot();
+
+    const notObject = await issue().send({ weights: 1 });
+    const notJson = await unparsableBody('{발급');
+
+    for (const response of [notObject, notJson]) {
+      expect(response.status).toBe(400);
+      const { error } = response.body as ApiErrorResponse;
+      expect(error.code).toBe('INVALID_BODY');
+      expect(error.message).not.toBe('');
+    }
+    expect(await storedCoupons()).toHaveLength(0);
+  });
+
+  /**
+   * `weights` 자리에 올 수 있는 비객체 값들. `null`·`[]`·`true` 는 판정을 `typeof` 하나로
+   * 두면 "가중치 없음"으로 읽혀 `201` 이 나가고, `[1]`·`'abc'` 는 인덱스나 글자가 모르는 신호
+   * 키 행세를 해 `INVALID_WEIGHTS` 로 갈린다. 같은 종류의 잘못된 본문이 값에 따라 세 갈래로
+   * 흩어지는 것을 막는 것이 이 목록의 목적이라, 대표 하나가 아니라 다섯을 모두 든다.
+   */
+  it.each([
+    { label: 'null', weights: null },
+    { label: '빈 배열', weights: [] },
+    { label: '원소 있는 배열', weights: [1] },
+    { label: '참', weights: true },
+    { label: '문자열', weights: 'abc' },
+  ])('weights 가 $label 이면 400 과 INVALID_BODY 를 낸다', async ({ weights }) => {
+    await boot();
+
+    const response = await issue().send({ weights });
+
+    expect(response.status).toBe(400);
+    expect((response.body as ApiErrorResponse).error.code).toBe('INVALID_BODY');
+  });
+
+  /**
+   * JSON 이 아닌 형식으로 선언된 본문. 파서가 건너뛰어 본문이 없는 것과 구별되지 않으므로
+   * 판정하지 않으면 그대로 기본값 발급이 된다 — 요청이 실은 가중치가 소리 없이 사라진 채
+   * `201` 이 나가는 경로다. 기본값과 다른 가중치를 실어, 통과했다면 발급이 되어 버리는
+   * 본문으로 보낸다.
+   */
+  it('JSON 이 아닌 형식으로 선언된 본문은 400 과 INVALID_BODY 를 낸다', async () => {
+    await boot();
+    const weight = DEFAULT_ISSUANCE_PARAMS.weights.random + 1;
+
+    const response = await issue()
+      .set('Content-Type', 'text/plain')
+      .send(JSON.stringify({ weights: { random: weight } }));
+
+    expect(response.status).toBe(400);
+    expect((response.body as ApiErrorResponse).error.code).toBe('INVALID_BODY');
+    expect(await storedCoupons()).toHaveLength(0);
+  });
+
+  /**
+   * 모양 판정이 넘겨야 하는 쪽. `weights` 를 생략하거나 `{}` 로 보내는 것은 8장 2단계가
+   * "전부 기본값"으로 두는 정상 경로다. 판정을 "본문이 객체인가"로 넓히면 이 둘이 함께
+   * 막히므로, 좁힌 자리가 실제로 좁은지 여기서 든다.
+   */
+  it.each([
+    { label: 'weights 를 생략한 본문', body: {} },
+    { label: '빈 weights', body: { weights: {} } },
+  ])('$label 은 모양 판정을 지나 기본값으로 발급된다', async ({ body }) => {
+    await boot();
+
+    const response = await issue().send(body);
+
+    expect(response.status).toBe(201);
+    expect((response.body as IssueCouponResponse).decision.total).toBe(
+      SCORE * DEFAULT_ISSUANCE_PARAMS.weights.random,
+    );
+  });
+});
+
+describe('동시 발급', () => {
+  it('TC-03-05 발급 요청 2건이 겹쳐도 쿠폰 2건이 모두 저장된다', async () => {
+    // 두 요청을 기다리지 않고 함께 띄운다. 저장이 읽고-더하고-쓰는 한 묶음이라, 직렬화가
+    // 없으면 나중 쓰기가 앞 쓰기를 덮어 파일에 1건만 남는다 — 두 응답은 둘 다 `201` 이므로
+    // 유실은 응답이 아니라 파일이 답한다.
+    await boot();
+
+    const responses = await Promise.all([issue(), issue()]);
+
+    expect(responses.map((response) => response.status)).toEqual([201, 201]);
+    const stored = await storedCoupons();
+    expect(stored).toHaveLength(2);
+    // 같은 레코드가 두 번 쓰인 것도 2건이므로, 두 응답의 쿠폰이 각각 들어갔는지까지 본다.
+    expect(stored.map((coupon) => coupon.id).sort()).toEqual(
+      responses.map((response) => (response.body as IssueCouponResponse).coupon.id).sort(),
+    );
   });
 });
