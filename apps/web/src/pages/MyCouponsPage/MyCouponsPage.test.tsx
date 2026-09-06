@@ -322,4 +322,31 @@ describe('MyCouponsPage', () => {
     await screen.findByRole('article', { name: '달성책방' });
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
   });
+
+  it('쿠폰을 불러오는 중에도 소유자 선택이 잠기지 않는다', async () => {
+    let releaseCoupons: (response: Response) => void = () => {};
+    stubRoutes({
+      citizens: () => citizensResponse(CITIZENS),
+      // 붙들어 두는 응답. 조회 중 상태에서 소유자 선택을 관찰하려고 쓴다
+      coupons: () =>
+        new Promise<Response>((resolve) => {
+          releaseCoupons = resolve;
+        }),
+    });
+    const user = userEvent.setup();
+
+    render(<MyCouponsPage />);
+    await selectOwner(user, 'cit-001');
+    await screen.findByRole('status');
+
+    /*
+      소유자를 바꾸는 것이 `useMyCoupons` 의 유일한 재조회 트리거이고 그 훅이 앞 소유자의
+      늦은 응답을 스스로 걷어내므로, 조회 중에 화면이 선택을 잠그면 훅이 이미 감당하는
+      전환을 막는 셈이 된다. 조립이 잠금을 넘기지 않는다는 것을 화면 수준에서 고정한다.
+    */
+    expect(screen.getByLabelText('소유자 선택')).toBeEnabled();
+
+    releaseCoupons(couponsResponse([COUPON]));
+    await screen.findByRole('article', { name: '달성책방' });
+  });
 });

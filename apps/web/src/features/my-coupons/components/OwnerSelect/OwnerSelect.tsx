@@ -16,8 +16,6 @@ export interface OwnerSelectProps {
   value: string | null;
   /** 선택이 바뀌면 그 시민의 id 를 올린다 */
   onChange: (ownerId: string) => void;
-  /** 조회가 진행 중인 동안 선택을 잠근다 */
-  disabled?: boolean;
 }
 
 /**
@@ -28,7 +26,7 @@ export interface OwnerSelectProps {
  * 선택 상태를 스스로 들지 않는 제어 컴포넌트다. 목록을 가져오는 것은 `CP-06-03`,
  * 선택된 소유자 id 를 드는 것은 화면 조립 `CP-06-05` 의 몫이다.
  */
-export function OwnerSelect({ citizens, value, onChange, disabled = false }: OwnerSelectProps) {
+export function OwnerSelect({ citizens, value, onChange }: OwnerSelectProps) {
   return (
     <p>
       <label htmlFor={SELECT_ID}>소유자 선택</label>{' '}
@@ -40,7 +38,6 @@ export function OwnerSelect({ citizens, value, onChange, disabled = false }: Own
           사라져도 엉뚱한 시민이 선택된 것처럼 보이지 않는 것이 그 덕이다.
         */
         value={value ?? NO_SELECTION}
-        disabled={disabled}
         onChange={(event) => {
           /*
             플레이스홀더는 선택 전 상태를 그리는 자리일 뿐 소유자가 아니다. 그 값을 그대로
@@ -51,8 +48,9 @@ export function OwnerSelect({ citizens, value, onChange, disabled = false }: Own
         }}
       >
         {/*
-          고를 시민이 없다는 사실은 잠금이 아니라 이 문구로 알린다 — `disabled` 를 조회 중
-          잠그는 뜻 하나로 두어야, 조립이 잠근 것과 목록이 빈 것이 같은 표시로 뭉치지 않는다.
+          고를 시민이 없다는 사실은 컨트롤을 잠가서가 아니라 이 문구로 알린다. 이 컴포넌트는
+          어떤 이유로도 셀렉트를 잠그지 않는다 — 잠긴 컨트롤은 왜 잠겼는지를 말하지 못해,
+          고를 시민이 없는 것과 다른 사정으로 막힌 것이 같은 표시로 뭉친다.
         */}
         <option value={NO_SELECTION}>
           {citizens.length === 0 ? '고를 수 있는 시민이 없습니다' : '시민을 선택하세요'}

@@ -119,14 +119,4 @@ describe('OwnerSelect', () => {
 
     expect(select).toBeEnabled();
   });
-
-  it('disabled 면 셀렉트가 잠기고 변경 콜백이 불리지 않는다', async () => {
-    const { onChange, select } = renderSelect({ value: 'cit-001', disabled: true });
-
-    expect(select).toBeDisabled();
-    await userEvent.click(select);
-
-    expect(onChange).not.toHaveBeenCalled();
-    expect(select).toHaveValue('cit-001');
-  });
 });
