@@ -114,14 +114,17 @@
 | 8 | 화면 전환 방식 | react-router 도입 / 탭 상태 전환 | `App.tsx` 의 탭 상태 전환 | 화면이 둘뿐. 의존 추가 없이 Playwright 클릭으로 검증 가능 | `apps/web` |
 | 9 | 발급 트리거 확장 구조 | 컨트롤러가 발급 유스케이스를 직접 호출 / `IssueTrigger` 인터페이스 + 트리거 구현 | 인터페이스 + 시연 트리거 구현 | 아래 문장 참조 | `apps/api` · `packages/contracts` |
 | 10 | 화면 컴포넌트 구조 | 화면당 단일 컴포넌트 / UI 전용 컴포넌트·로직 훅 분리 + 화면 컴포넌트 조립 | 분리 + 조립 | 아래 문장 참조 | `apps/web` |
+| 11 | 발급 거부의 표현 | 성공·실패 결과 타입 반환 / 예외 | 계약의 `ApiErrorCode` 를 `code` 로 드는 `IssuanceError` 예외 | 아래 문장 참조 | `apps/api` |
 
 표 셀에 압축되지 않은 근거를 문장으로 푼다.
 
 - 결정 2 — "키만 더해 확장한다"는 응답·엔진뿐 아니라 **요청 계약에 대해서도 참이다.** 발급 요청의 `weights` 는 `SignalWeights` 전체 교체가 아니라 부분 덮어쓰기(`Partial<SignalWeights>`)이므로, 이후 에픽이 신호 키를 더해도 그 키를 모르는 기존 호출자의 요청 본문이 그대로 유효하다. 지정하지 않은 신호는 발급 파라미터 기본값(결정 4)을 쓴다.
+- 결정 2 — 신호 키 집합의 강제는 두 자리로 나뉜다. 신호가 자기 `key` 를 `keyof SignalWeights` 로 선언해 가중치에 없는 키를 쓰지 못하게 하고, 엔진이 신호를 `Record<keyof SignalWeights, Signal>` 맵으로 받아 그 반대 방향 — 가중치에 키를 더하고 신호 구현을 빠뜨리는 것 — 을 막는다. 두 자리가 어긋날 수 있으므로 **엔진은 맵의 키만 신뢰하고 `Signal.key` 를 조회에 쓰지 않는다.** 어긋나도 엔진은 맵 키대로 동작하며, 런타임 일치 검사는 넣지 않는다 — 키 집합을 타입이 이미 강제하는데 조회를 런타임 값에 매달면 그 강제가 도로 풀린다.
 - 결정 5 — 배분 비율과 두 기한은 거래조건 고지 대상이다. 발급 뒤에 파라미터 기본값을 바꿔도 이미 발급된 쿠폰의 고지 내용이 바뀌면 안 되므로, 고지에 필요한 값 전부를 발급 시점에 레코드로 굳힌다. 부수 효과로 내 쿠폰 조회가 `coupons` 컬렉션 하나로 닫혀 조인이 없어진다.
 - 결정 6 — `JsonFileDb` 의 쓰기는 이미 원자적(임시 파일 후 rename)이라 파일이 깨지지는 않지만, 읽고-더하고-쓰는 발급이 겹치면 나중 쓰기가 앞 쓰기를 덮어 레코드가 유실될 수 있다. API 는 단일 프로세스이므로 발급 쓰기를 프로세스 안에서 한 줄로 직렬화하면 충분하다. 프로세스 밖까지 막는 파일 락은 단독 점유(찜하기) 기획이 확정될 때의 몫이며, [저장소 구조와 기술 스택](../저장소-구조와-기술-스택.md) 의 미결로 이미 걸려 있다.
-- 결정 9 — 소비 도달·참여 리워드·가맹점 요청 트리거는 각자 다른 계기에서 발급을 일으키지만, 트리거가 하는 일은 발급 명령(`IssueCommand` — 발급 가중치 덮어쓰기 등)을 만들어 `CouponsService.issue` 에 넘기는 것으로 같다. 신호 확장 구조(결정 2)와 대칭으로 인터페이스에 자리만 남기면 이후 에픽이 같은 틀로 트리거를 추가한다. 쿠폰 레코드에는 발급을 일으킨 발급 트리거 유형을 `trigger` 필드로 남긴다. 구성도는 6장에 있다.
+- 결정 9 — 소비 도달·참여 리워드·가맹점 요청 트리거는 각자 다른 계기에서 발급을 일으키지만, 트리거가 하는 일은 발급 명령(`IssueCommand` — 발급 가중치 덮어쓰기 등)을 만들어 `CouponsService.issue` 에 넘기는 것으로 같다. 신호 확장 구조(결정 2)와 대칭으로 인터페이스에 자리만 남기면 이후 에픽이 같은 틀로 트리거를 추가한다. 쿠폰 레코드에는 발급을 일으킨 발급 트리거 유형을 `trigger` 필드로 남긴다. 트리거가 선언하는 유형과 그 트리거가 만드는 명령의 `trigger` 는 타입 매개변수로 묶어, 어느 쪽을 기준으로 삼을지 정할 필요 없이 어긋난 트리거가 컴파일되지 않게 한다. 그 매개변수에 기본값을 두지 않아 묶음이 생략만으로 풀리지도 않는다 — 신호의 `key` 와 엔진의 신호 맵 키처럼 규칙으로 한쪽을 정하는 대신(결정 2) 타입이 드는 자리다. 구성도는 6장에 있다.
 - 결정 10 — 화면 안의 컴포넌트는 최소단위로 나눈다. UI 전용 컴포넌트(`apps/web/src/components/`)는 props 만 받아 그리고 fetch·상태 로직을 갖지 않는다. 로직은 훅(`apps/web/src/hooks/`)이 진다. 화면 컴포넌트(`apps/web/src/pages/`)는 훅과 UI 전용 컴포넌트를 조립만 한다. 이렇게 나누면 단위 테스트가 fetch 스텁 없이 UI 를, 렌더 없이 로직을 각각 검증할 수 있고, 커밋도 단위별로 쪼개진다 (13장).
+- 결정 11 — 엔진의 거부는 결과 타입이 아니라 예외로 표현한다. `selectCandidate` 는 계약의 `ApiErrorCode` 를 `code` 로 드는 `IssuanceError` 를 던지고, 그 `code` 를 HTTP 상태로 옮기는 것은 발급 엔드포인트를 만드는 `KAN-13/03-issue-endpoint` 의 몫이다 (10장). 근거는 컨트롤러가 다룰 실패가 `INVALID_WEIGHTS` 하나가 아니라는 것이다 — `STORAGE_FAILURE` 는 파일 IO 에서 예외로 올라오므로, 엔진만 결과 타입을 쓰면 컨트롤러가 실패를 받는 채널이 반환값과 예외 둘로 갈린다. 한 채널로 모으면 그 층이 `IssuanceError` 하나만 잡아 오류 응답으로 옮기면 된다. 그러려면 엔진 밖에서 나는 파일 IO 실패도 같은 예외로 감싸 올려야 한다 — 감싸는 자리는 `KAN-13/03-issue-endpoint` 의 쿠폰 저장 리포지터리와 발급 후보 적재다 (10장). 엔진은 NestJS 에 의존하지 않으므로(결정 1) 상태 번호는 여기서 알지 않는다.
 - 이 장의 결정 중 구현 완료 시 `documents/` 주제 문서에 반영할 것 — 결정 6 은 [저장소 구조와 기술 스택](../저장소-구조와-기술-스택.md) 에, 결정 5·7·9 는 [쿠폰 도메인 규칙](../쿠폰-도메인-규칙.md) 에, 결정 10 은 [저장소 구조와 기술 스택](../저장소-구조와-기술-스택.md) 에 `- YYYY-MM-DD — <결정>` 으로 적는다.
 
 ## 5. 프로젝트 구조도
@@ -280,8 +283,8 @@ type ApiErrorCode =
 - `INVALID_WEIGHTS` 의 조건은 넷이다 — 병합된 가중치의 값이 숫자가 아님 · 음수 · 합이 0, 그리고 요청에 모르는 신호 키가 있음.
 - **가중치 검증은 병합 후 값에 건다.** 순서는 셋이다.
   1. 컨트롤러가 본문의 모양만 본다 — 파싱 실패·`weights` 비객체는 `INVALID_BODY`.
-  2. 요청에 없는 신호 키는 `params.ts` 기본값으로 채운다. 따라서 `weights` 를 생략하거나 `{}` 로 보내면 전부 기본값으로 발급된다.
-  3. 병합된 `SignalWeights` 에 값 규칙 셋(숫자가 아님·음수·합이 0)을 적용한다. 이 중 음수·합이 0 은 `TC-02-02` 가 든다 (12장).
+  2. 요청에 없는 신호 키는 `params.ts` 기본값으로 채운다. 따라서 `weights` 를 생략하거나 `{}` 로 보내면 전부 기본값으로 발급된다. 알려진 신호 키를 값 `undefined` 로 든 것도 **"지정하지 않음"으로 걷어내** 같은 기본값으로 채운다 — `Partial<SignalWeights>` 에서 `undefined` 가 지정하지 않음이므로, 키를 생략한 요청과 결과가 갈리면 안 된다. 반면 **`null` 은 걷어내지 않는다** — JSON 본문이 실어 보낼 수 있는 값이고 "숫자가 아님"에 해당하므로 3단계가 `INVALID_WEIGHTS` 로 거부한다.
+  3. 병합된 `SignalWeights` 에 값 규칙 셋(숫자가 아님·음수·합이 0)을 적용한다. 이 중 음수·합이 0 은 `TC-02-02` 가 든다 (12장). "숫자가 아님"은 `!Number.isFinite` 로 판정하므로 숫자 아닌 값과 `NaN` 뿐 아니라 `±Infinity` 도 함께 거부한다. 조건을 넷으로 늘리는 것이 아니라 이 한 조건의 판정 범위다 — `Infinity` 가중치는 점수가 `0` 인 발급 후보의 총점을 `NaN` 으로 만들고, `NaN` 과의 비교가 늘 거짓이라 그 후보가 최고점 자리에 눌러앉는다.
 - 예외는 **모르는 신호 키** 하나다. 병합하면 그 키가 사라지므로 이 조건만 병합 전 요청 본문에서 검사한다. 병합과 검증은 둘 다 엔진(`apps/api/src/issuance/`)이 맡으므로 이 검사도 엔진의 몫이다 (`TC-02-02`).
 - 병합 후에도 키가 비는 상황은 `params.ts` 결손이며 요청 오류가 아니다. 요청이 만들 수 없는 상태이므로 `INVALID_WEIGHTS` 의 조건에 두지 않는다.
 
@@ -316,10 +319,11 @@ interface IssueDecision {
 }
 ```
 
+- 총점이 가장 높은 발급 후보 하나를 발급한다. **최고점이 여럿이면 발급 후보 목록에서 먼저 온 쪽을 고른다.** 동점은 실제로 일어난다 — 랜덤 신호가 같은 값을 두 번 낼 수 있고, `TC-02-02` 가 막지 않는 가중치 조합(예: 어떤 신호의 가중치가 `0`)에서도 총점이 겹친다. 규칙을 적어 두지 않으면 어느 발급 후보가 나오는지가 목록 순서와 구현 세부에 조용히 매달린다. `decision` 은 그렇게 고른 발급 후보의 점수를 싣는다.
 - `400 INVALID_BODY` — 요청 본문이 JSON 으로 파싱되지 않거나 `weights` 가 객체가 아님.
 - `400 INVALID_WEIGHTS` — 병합된 가중치의 값이 숫자가 아니거나 음수이거나 합이 0, 또는 요청 `weights` 에 모르는 신호 키가 있음.
 - `422 NO_CANDIDATES` — `merchants` 또는 `citizens` 컬렉션이 비어 있어 발급 후보를 만들 수 없음.
-- `500 STORAGE_FAILURE` — `coupons` 컬렉션 쓰기 실패.
+- `500 STORAGE_FAILURE` — 발급 후보를 만들 `merchants`·`citizens` 읽기 또는 `coupons` 쓰기 실패. 계약의 `ApiErrorCode` 가 이 코드를 "JSON 파일 읽기·쓰기 실패"로 두는 것과 같은 범위다.
 
 ### `GET /api/coupons?ownerId=<시민 id>` — 내 쿠폰 조회
 
@@ -399,15 +403,15 @@ interface IssueDecision {
 
 ### `KAN-13/02-issuance-engine`
 
-- 파일맵 — 생성: `apps/api/src/issuance/signal.ts`(`Signal`·`Candidate`), `apps/api/src/issuance/random-signal.ts`, `apps/api/src/issuance/engine.ts`(`selectCandidate`), `apps/api/src/issuance/trigger.ts`(`IssueTrigger`·`IssueCommand`), `apps/api/src/issuance/manual-trigger.ts`(+`manual-trigger.test.ts`), `apps/api/src/issuance/params.ts`(7장 값 표의 기본값), `apps/api/src/issuance/engine.test.ts`. 수정: `packages/contracts/src/issuance.ts`·`packages/contracts/src/coupon.ts`·`documents/KAN-13/design.md`(계약 미결 4건 반영 — 14장).
-- 넣는 것 — 신호 인터페이스와 랜덤 신호, 발급 가중치 결합, 발급 트리거 인터페이스와 시연 트리거. NestJS 에 의존하지 않는 순수 함수로 두고 RNG 는 인자로 주입한다 (4장 결정 1·2·3·9).
+- 파일맵 — 생성: `apps/api/src/issuance/signal.ts`(`Signal`·`Candidate`), `apps/api/src/issuance/random-signal.ts`(+`random-signal.test.ts`), `apps/api/src/issuance/engine.ts`(`selectCandidate`), `apps/api/src/issuance/trigger.ts`(`IssueTrigger`·`IssueCommand`), `apps/api/src/issuance/manual-trigger.ts`(+`manual-trigger.test.ts`), `apps/api/src/issuance/params.ts`(7장 값 표의 기본값), `apps/api/src/issuance/engine.test.ts`. 수정: `packages/contracts/src/issuance.ts`·`packages/contracts/src/coupon.ts`·`documents/KAN-13/design.md`(계약 미결 4건과 구현 중 굳은 결정 넷 반영 — 14장).
+- 넣는 것 — 신호 인터페이스와 랜덤 신호, 발급 가중치 결합, 발급 트리거 인터페이스와 시연 트리거. NestJS 에 의존하지 않는 순수 함수로 두고 RNG 는 인자로 주입한다 (4장 결정 1·2·3·9·11).
 - RED `TC-02-01` — `engine.test.ts`: "발급 가중치 `{ random: 1 }` 과 고정 수열을 반환하는 RNG 스텁으로 `selectCandidate` 를 두 번 호출하면 두 번 모두 같은 발급 후보가 선택되고, 반환된 `scores.random`·`total` 이 스텁 수열에서 계산한 기대값과 일치한다".
 - 완료 조건 — `TC-02-01` 이 GREEN 이고 `TC-02-02`(가중치 거부)·`TC-02-03`(시연 트리거, 12장)을 포함. 기본값 수치가 `params.ts` 밖에 등장하지 않는다.
 
 ### `KAN-13/03-issue-endpoint`
 
 - 파일맵 — 생성: `apps/api/src/coupons/coupons.module.ts`, `apps/api/src/coupons/coupons.controller.ts`, `apps/api/src/coupons/coupons.service.ts`, `apps/api/src/coupons/coupon.repository.ts`(`JsonFileDb` 래핑 + 직렬화 큐), `apps/api/src/coupons/candidate-source.ts`(`merchants`·`citizens` 를 읽어 발급 후보 생성), `apps/api/src/coupons/coupons.controller.test.ts`. 수정: `apps/api/src/app.module.ts`.
-- 넣는 것 — 8장의 `POST /api/coupons/issue`. 컨트롤러는 요청 본문을 시연 트리거로 옮겨 발급 명령을 만들고 발급 유스케이스에 넘긴다 (4장 결정 9). 쿠폰 생성 시 두 기한 계산과 `trigger`·스냅샷 기록 (4장 결정 5·7), coupons 쓰기의 프로세스 내 직렬화 (4장 결정 6).
+- 넣는 것 — 8장의 `POST /api/coupons/issue`. 컨트롤러는 요청 본문을 시연 트리거로 옮겨 발급 명령을 만들고 발급 유스케이스에 넘긴다 (4장 결정 9). 쿠폰 생성 시 두 기한 계산과 `trigger`·스냅샷 기록 (4장 결정 5·7), coupons 쓰기의 프로세스 내 직렬화 (4장 결정 6). 발급의 실패는 전부 `IssuanceError` 로 올린다 — 엔진이 던지는 `INVALID_WEIGHTS`·`NO_CANDIDATES` 에 더해, 발급 후보 적재와 쿠폰 저장의 파일 IO 실패도 `candidate-source.ts`·`coupon.repository.ts` 가 `IssuanceError('STORAGE_FAILURE')` 로 감싸 올린다. 컨트롤러 층은 그래서 `IssuanceError` 하나만 잡아 `code` 를 8장의 HTTP 상태와 오류 응답 본문으로 옮긴다 (4장 결정 11).
 - RED `TC-03-01` — `coupons.controller.test.ts`(supertest): "임시 데이터 디렉터리에 시드를 부트스트랩한 뒤 `POST /api/coupons/issue` 를 보내면 `201` 과 `IssueCouponResponse` 계약을 만족하는 본문이 오고, `coupons` 컬렉션 레코드가 0건에서 1건이 된다".
 - 완료 조건 — `TC-03-01` 이 GREEN 이고 오류 4종 `TC-03-02`~`TC-03-04`·`TC-03-06` 과 동시 발급 유실 없음 `TC-03-05`(12장)를 포함.
 
@@ -456,8 +460,8 @@ interface IssueDecision {
 
 ![발급 흐름 — 정상 경로와 세 가지 실패 경로](./src/발급-흐름.svg)
 
-- 정상 흐름 — 버튼(시연 트리거) → 발급 가중치 검증 → 발급 후보 적재 → 가중치 결합 → 쿠폰 생성 → coupons 컬렉션 저장 → `201` → 발급 결과 카드. 이후 내 쿠폰 화면의 확인은 별도 `GET` 요청이다.
-- 실패 흐름 — 요청 본문 모양 오류(`400 INVALID_BODY`), 발급 가중치 검증 실패(`400 INVALID_WEIGHTS`), 발급 후보 없음(`422 NO_CANDIDATES`), 쓰기 실패(`500 STORAGE_FAILURE`) 넷이고, 전부 발급 실행 화면의 오류 영역에 코드·메시지로 표시된다.
+- 정상 흐름 — 버튼(시연 트리거) → 발급 후보 적재 → 발급 가중치 검증·결합 → 쿠폰 생성 → coupons 컬렉션 저장 → `201` → 발급 결과 카드. 이후 내 쿠폰 화면의 확인은 별도 `GET` 요청이다. 검증과 결합을 한 자리로 붙여 적는 것은 순수 함수 하나(`selectCandidate`)가 둘을 함께 맡고 이미 적재된 발급 후보를 인자로 받기 때문이다 — 그래서 가중치 오류와 읽기 실패가 겹치면 `STORAGE_FAILURE` 가 먼저 난다.
+- 실패 흐름 — 요청 본문 모양 오류(`400 INVALID_BODY`), 발급 가중치 검증 실패(`400 INVALID_WEIGHTS`), 발급 후보 없음(`422 NO_CANDIDATES`), 발급 후보 읽기 또는 `coupons` 쓰기 실패(`500 STORAGE_FAILURE`) 넷이고, 전부 발급 실행 화면의 오류 영역에 코드·메시지로 표시된다.
 - 위 그림은 `INVALID_BODY` 가 8장에 들어오기 전에 그려져 실패 경로를 셋만 그린다. 기준은 이 목록이고, 그림은 발급 API 구현 브랜치(`KAN-13/03-issue-endpoint`)에서 다시 그린다.
 - 이번 에픽에는 기한 만료로 일어나는 전이가 없으므로, 기한 초과 흐름은 그리지 않는다 — 두 기한은 저장·고지까지만 쓰인다 (7장).
 
@@ -548,7 +552,7 @@ interface IssueDecision {
   1. 설계문서 개정(3·4·7~14장)과 계약 타입 반영 — `packages/contracts` · `documents/`
   2. 신호 인터페이스와 랜덤 신호
   3. 가중치 결합 엔진과 파라미터 기본값
-  4. 발급 트리거 인터페이스와 시연 트리거
+  4. 발급 트리거 인터페이스와 시연 트리거, 구현 중 굳은 결정의 설계문서 반영 — `apps/api` · `documents/`
 - `KAN-13/03-issue-endpoint`
   1. 쿠폰 저장 리포지터리와 직렬화 큐
   2. 발급 후보 적재(`candidate-source`)
@@ -586,3 +590,4 @@ interface IssueDecision {
 - 2026-09-06 — 브랜치 01 이 `_meta` 판 올림으로 기존 e2e `health.spec.ts` 의 스키마 판 단언을 깨뜨려, 그 단언을 판 번호에 무관하도록 완화하는 한 줄을 브랜치 01 에 포함했다. 완화로 놓치는 판 번호 값은 `packages/db/src/seed-data.test.ts` 가 시드의 `schemaVersion` 이 2 임을 단언해 고정한다. 10장 브랜치 01 파일맵과 5장의 수정 파일 목록·구조 변화 그림을 그에 맞춰 고쳤다.
 - 2026-09-06 — KAN-14 리뷰에서 이월된 계약 미결 4건을 닫았다. 8장에 INVALID_BODY 와 OWNER_ID_QUERY 를 더하고 INVALID_WEIGHTS 의 조건에 필수 키 누락을 포함했으며, 발급 가중치를 부분 덮어쓰기(Partial)로 바꿔 4장 결정 2 의 확장 서술을 요청 계약에도 참이 되게 했다. 7장 값 표에 두 기한 일수가 1 이상의 정수임을 적었다. 계약 파일을 고치면 그 위에 쌓이는 브랜치 전부가 영향을 받으므로, 이미 만들어진 브랜치 중 가장 위인 `KAN-13/02-issuance-engine` 에서 닫아 아래 브랜치 01 을 건드리지 않고 03~07 이 이 결과를 물려받게 했다. 그래서 이 커밋은 9장 레인 표기(`apps/api`)와 달리 `packages/contracts` 와 `documents/` 를 함께 건드린다 — 10장 브랜치 02 파일맵과 13장 커밋 계획에도 그렇게 적었다. 정정 — 확정 직후 `INVALID_WEIGHTS` 의 필수 키 누락 조항이 부분 덮어쓰기와 모순된다는 리뷰 지적이 나와, 검증을 병합 후 가중치에 걸고 그 조항을 조건에서 뺐다. 병합 후에도 키가 비는 경우는 `params.ts` 결손이라 요청 오류가 아니고, 죽은 조항을 계약에 남기면 다음 사람이 그것을 구현해 부분 덮어쓰기를 깨뜨린다. `INVALID_WEIGHTS` 의 조건은 넷이 되었고, 그중 '모르는 신호 키'만 병합 전 요청 본문에서 검사한다. 12장 `TC-02-02` 의 거부 3종은 그대로 둔다.
 - 2026-09-06 — 위 줄들의 개정을 리뷰한 결과 하나를 더 닫았다. 발급 엔드포인트의 오류가 셋에서 넷이 된 것을 10장 브랜치 03 완료 조건·11장 실패 흐름·13장 커밋 계획에 반사하고 12장에 `TC-03-06`(INVALID_BODY)을 더했다. 11장 발급 흐름 그림은 실패 경로를 셋만 그린 상태이며, 다시 그리는 것은 `KAN-13/03-issue-endpoint` 의 몫으로 남겼다. 같은 이유로 11장 발급 실행 화면 와이어프레임의 오류 영역 예시도 3종 상태이고, 다시 그리는 것은 `KAN-13/05-issue-screen` 의 몫이다. 브랜치 02 의 수정 범위를 3·9장 본문에도 반사했고(9장 레인 그림은 다시 그리지 않는다), `coupon.ts` 의 `expiresAt` 주석이 두 일수 파라미터를 "양수"로 느슨하게 적던 것을 7장과 같은 "1 이상의 정수"로 좁혔다. 13장 브랜치 02 첫 커밋의 장 열거는 실제로 고친 장에 맞춰 `3·4·7~14장` 으로 적었다 — 대응하는 티켓 체크박스 본문은 처음 계획대로 `4·7·8·14장` 이라 이 괄호만 표기가 다르고, 가리키는 커밋은 같다.
+- 2026-09-06 — 브랜치 02 의 구현에서 굳은 결정 넷을 반영했다. 엔진의 거부를 결과 타입이 아니라 `IssuanceError` 예외로 표현하고 `code` 를 HTTP 상태로 옮기는 것은 브랜치 03 의 몫으로 남기는 결정 11 을 4장에 더했다. 엔진이 신호 맵의 키만 신뢰하고 `Signal.key` 를 조회에 쓰지 않는다는 것은 4장 결정 2 의 근거에 붙였다. 8장 병합 단계에는 알려진 키의 `undefined` 를 걷어내 기본값으로 채우고 `null` 은 걷어내지 않아 값 규칙이 거부한다는 세부와, "숫자가 아님"을 `!Number.isFinite` 로 판정해 `NaN`·`±Infinity` 까지 거부한다는 것을 적었다. 최고점이 여럿일 때 발급 후보 목록에서 먼저 온 쪽을 고른다는 규칙은 8장에 없던 것이라 새 문장으로 더했다. 결정 11 이 가리키는 자리가 비지 않도록 10장 브랜치 03 "넣는 것"에 `IssuanceError` 를 잡아 HTTP 상태로 옮기는 절을 더했고, 10장 브랜치 02 파일맵·결정 열거(`1·2·3·9·11`)와 13장 커밋 4 제목에도 반사했다. 13장 커밋 4 문구는 KAN-15 체크박스 본문과 표기가 다르고 가리키는 커밋은 같다. 리뷰에서 트리거의 유형 선언과 명령의 `trigger` 가 서로 독립이라는 지적이 나와 둘을 타입 매개변수로 묶고 그 서술을 4장 결정 9 에 적었다 — `TriggerType` 이 아직 값 하나라 지금은 어긋난 값을 쓸 수 없지만, 이후 에픽이 값을 늘리는 순간 열리는 자리다. 이어 10장에 더한 그 절이 엔진 밖 파일 IO 실패를 누가 `IssuanceError('STORAGE_FAILURE')` 로 감싸는지 말하지 않아 결정 11 의 채널 통일이 절반만 서 있다는 지적이 나와, 감싸는 자리를 4장 결정 11 과 10장 브랜치 03 양쪽에 지목했다. 같은 그림을 8장도 말하도록 발급 엔드포인트의 `500 STORAGE_FAILURE` 를 쓰기 실패만이 아니라 발급 후보 읽기 실패까지로 넓혔다 — 계약의 `ApiErrorCode` 주석이 이미 두던 범위다. 감싸기의 구현은 브랜치 03 의 몫으로 남는다. 마지막으로 8장·결정 11 의 개정이 11장을 옛 서술로 남긴 것을 반사했다 — 실패 흐름의 `STORAGE_FAILURE` 를 8장과 같은 범위로 넓히고, 정상 흐름의 "가중치 검증 → 후보 적재" 순서를 코드가 강제하는 "후보 적재 → 검증·결합"으로 바로잡았다(검증과 결합을 `selectCandidate` 하나가 맡아 문서 순서를 구현할 진입점이 없다). 트리거 유형을 묶는 타입 매개변수에서는 기본값을 뺐다 — 기본값이 있으면 매개변수를 생략한 구현이 묶음 없이 통과해, 1라운드에 고른 "규칙 대신 타입이 든다"가 도로 규칙이 된다.
