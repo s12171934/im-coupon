@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 
 import { CouponsModule } from './coupons/coupons.module';
-import { IssuanceErrorFilter } from './coupons/issuance-error.filter';
+import { IssuanceErrorFilter } from './coupons/presentation/issuance-error.filter';
 import { HealthModule } from './health/health.module';
 
 /**

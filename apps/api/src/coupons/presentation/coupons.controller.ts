@@ -2,9 +2,9 @@ import { Controller, Post, Req } from '@nestjs/common';
 import type { IssueCouponRequest, IssueCouponResponse } from '@im-coupon/contracts';
 import { ISSUE_COUPON_PATH } from '@im-coupon/contracts';
 
-import { IssuanceError } from '../issuance/engine';
-import { manualTrigger } from '../issuance/manual-trigger';
-import { CouponsService } from './coupons.service';
+import { IssuanceError } from '../../issuance/domain/services/engine';
+import { manualTrigger } from '../../issuance/presentation/triggers/manual-trigger';
+import { CouponsService } from '../application/coupons.service';
 
 /**
  * 앱이 붙이는 전역 접두. 계약 상수에서 이만큼 덜어 낸 것이 컨트롤러가 선언할 경로다 —

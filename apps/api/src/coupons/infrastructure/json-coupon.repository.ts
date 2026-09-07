@@ -1,9 +1,10 @@
+import type { CouponRepository } from '../application/ports/coupon.repository';
 import { Inject, Injectable } from '@nestjs/common';
 import type { Coupon } from '@im-coupon/contracts';
 import { JsonFileDb } from '@im-coupon/db';
 
-import { DATA_DIR } from '../data-dir.token';
-import { IssuanceError } from '../issuance/engine';
+import { DATA_DIR } from '../../shared/infrastructure/data-dir.token';
+import { IssuanceError } from '../../issuance/domain/services/engine';
 
 /** 발급된 쿠폰이 담기는 컬렉션. 시드에 없고 발급의 최초 쓰기가 이 파일을 만든다. */
 const COUPONS_COLLECTION = 'coupons';
@@ -26,7 +27,7 @@ const COUPONS_COLLECTION = 'coupons';
  * 여기서도 같은 예외로 맞춰야 API 층이 한 종류만 잡아 오류 응답으로 옮길 수 있다.
  */
 @Injectable()
-export class CouponRepository {
+export class JsonCouponRepository implements CouponRepository {
   private readonly db: JsonFileDb;
   /** 직렬화 큐의 꼬리. 앞선 저장이 끝나야 다음 저장이 읽기부터 시작한다 */
   private tail: Promise<unknown> = Promise.resolve();

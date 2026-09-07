@@ -4,8 +4,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { IssuanceError } from '../issuance/engine';
-import { CandidateSource } from './candidate-source';
+import { IssuanceError } from '../../issuance/domain/services/engine';
+import { JsonCandidateSource } from './json-candidate-source';
 
 let dataDir: string;
 
@@ -40,26 +40,26 @@ beforeEach(async () => {
   dataDir = await mkdtemp(join(tmpdir(), 'im-coupon-api-'));
 });
 
-describe('CandidateSource', () => {
+describe('JsonCandidateSource', () => {
   it('가맹점 수 × 시민 수 만큼의 쌍을 계약 타입 그대로 낸다', async () => {
     await seed('merchants', MERCHANTS);
     await seed('citizens', CITIZENS);
 
-    const candidates = await new CandidateSource(dataDir).load();
+    const candidates = await new JsonCandidateSource(dataDir).load();
 
     expect(candidates).toHaveLength(MERCHANTS.length * CITIZENS.length);
     expect(candidates).toContainEqual({ merchant: MERCHANTS[1], citizen: CITIZENS[1] });
   });
 });
 
-describe('CandidateSource 의 목록 순서', () => {
+describe('JsonCandidateSource 의 목록 순서', () => {
   it('가맹점을 바깥, 시민을 안쪽으로 두고 두 컬렉션의 시드 순서를 그대로 잇는다', async () => {
     // 8장의 동점 규칙이 "먼저 온 쪽"이라 이 순서가 곧 동점일 때 발급되는 쿠폰을 정한다.
     // 기대 배열이 id 순이 아닌 것은 픽스처가 파일 순서를 id 순과 어긋내 두었기 때문이다.
     await seed('merchants', MERCHANTS);
     await seed('citizens', CITIZENS);
 
-    const candidates = await new CandidateSource(dataDir).load();
+    const candidates = await new JsonCandidateSource(dataDir).load();
 
     expect(candidates.map((each) => `${each.merchant.id}×${each.citizen.id}`)).toEqual([
       'mer-003×cit-002',
@@ -72,7 +72,7 @@ describe('CandidateSource 의 목록 순서', () => {
   });
 });
 
-describe('CandidateSource 의 빈 컬렉션', () => {
+describe('JsonCandidateSource 의 빈 컬렉션', () => {
   /**
    * 발급 후보 0건은 이 자리의 실패가 아니다. `NO_CANDIDATES` 는 빈 목록을 받은 엔진이
    * 던지며, 여기서도 던지면 오류가 두 자리에서 나 오류 우선순위가 흔들린다.
@@ -85,12 +85,12 @@ describe('CandidateSource 의 빈 컬렉션', () => {
     await seed('merchants', merchants);
     await seed('citizens', citizens);
 
-    await expect(new CandidateSource(dataDir).load()).resolves.toEqual([]);
+    await expect(new JsonCandidateSource(dataDir).load()).resolves.toEqual([]);
   });
 
   it('컬렉션 파일이 아직 없어도 예외 없이 빈 목록을 낸다', async () => {
     // 시드 부트스트랩 전의 데이터 디렉터리다 — `JsonFileDb` 가 없는 컬렉션을 빈 배열로 읽는다.
-    await expect(new CandidateSource(dataDir).load()).resolves.toEqual([]);
+    await expect(new JsonCandidateSource(dataDir).load()).resolves.toEqual([]);
   });
 });
 
@@ -118,7 +118,7 @@ const COLLECTIONS: [string, string, string, Merchant[] | Citizen[]][] = [
 ];
 
 describe.each(COLLECTIONS)(
-  'CandidateSource 의 %s 컬렉션 읽기 실패',
+  'JsonCandidateSource 의 %s 컬렉션 읽기 실패',
   (_label, broken, intact, intactRows) => {
     it.each(UNREADABLE)('%s `STORAGE_FAILURE` 를 든 `IssuanceError` 로 올린다', async (
       _case,
@@ -127,7 +127,7 @@ describe.each(COLLECTIONS)(
       await writeFile(join(dataDir, `${broken}.json`), content, 'utf8');
       await seed(intact, intactRows);
 
-      const call = new CandidateSource(dataDir).load();
+      const call = new JsonCandidateSource(dataDir).load();
 
       await expect(call).rejects.toThrowError(IssuanceError);
       await expect(call).rejects.toMatchObject({ code: 'STORAGE_FAILURE' });

@@ -2,7 +2,7 @@ import type { ArgumentsHost, ExceptionFilter } from '@nestjs/common';
 import { BadRequestException, Catch, HttpStatus, Logger } from '@nestjs/common';
 import type { ApiErrorCode, ApiErrorResponse } from '@im-coupon/contracts';
 
-import { IssuanceError } from '../issuance/engine';
+import { IssuanceError } from '../../issuance/domain/services/engine';
 
 /**
  * 8장이 오류 코드마다 정한 HTTP 상태.

@@ -5,9 +5,9 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { IssuanceError } from '../issuance/engine';
-import { DEFAULT_ISSUANCE_PARAMS } from '../issuance/params';
-import { CouponRepository } from './coupon.repository';
+import { IssuanceError } from '../../issuance/domain/services/engine';
+import { DEFAULT_ISSUANCE_PARAMS } from '../../issuance/domain/params';
+import { JsonCouponRepository } from './json-coupon.repository';
 
 let dataDir: string;
 
@@ -41,9 +41,9 @@ beforeEach(async () => {
   dataDir = await mkdtemp(join(tmpdir(), 'im-coupon-api-'));
 });
 
-describe('CouponRepository', () => {
+describe('JsonCouponRepository', () => {
   it('컬렉션 파일이 없던 상태에서 쿠폰 1건을 저장하면 0건이 1건이 된다', async () => {
-    const repository = new CouponRepository(dataDir);
+    const repository = new JsonCouponRepository(dataDir);
     expect(await storedCoupons()).toHaveLength(0);
 
     await repository.append(coupon('0001'));
@@ -55,15 +55,15 @@ describe('CouponRepository', () => {
     // 재기동 뒤 앞 프로세스가 써 둔 파일에 새 인스턴스가 이어 쓰는 경로다.
     await writeFile(join(dataDir, 'coupons.json'), JSON.stringify([coupon('0001')]), 'utf8');
 
-    await new CouponRepository(dataDir).append(coupon('0002'));
+    await new JsonCouponRepository(dataDir).append(coupon('0002'));
 
     expect(await storedCoupons()).toEqual([coupon('0001'), coupon('0002')]);
   });
 });
 
-describe('CouponRepository 의 동시 저장', () => {
+describe('JsonCouponRepository 의 동시 저장', () => {
   it('저장 여러 건이 겹쳐도 유실이 없다', async () => {
-    const repository = new CouponRepository(dataDir);
+    const repository = new JsonCouponRepository(dataDir);
     const coupons = ['0001', '0002', '0003', '0004', '0005'].map(coupon);
 
     await Promise.all(coupons.map((each) => repository.append(each)));
@@ -73,10 +73,10 @@ describe('CouponRepository 의 동시 저장', () => {
   });
 });
 
-describe('CouponRepository 의 저장 실패', () => {
+describe('JsonCouponRepository 의 저장 실패', () => {
   it('컬렉션을 읽지 못하면 `STORAGE_FAILURE` 를 든 `IssuanceError` 로 올린다', async () => {
     await writeFile(join(dataDir, 'coupons.json'), '{ 깨진 JSON', 'utf8');
-    const repository = new CouponRepository(dataDir);
+    const repository = new JsonCouponRepository(dataDir);
 
     const call = repository.append(coupon('0001'));
 
@@ -92,7 +92,7 @@ describe('CouponRepository 의 저장 실패', () => {
     '컬렉션이 배열이 아니면(%s) `STORAGE_FAILURE` 를 든 `IssuanceError` 로 올린다',
     async (content) => {
       await writeFile(join(dataDir, 'coupons.json'), content, 'utf8');
-      const repository = new CouponRepository(dataDir);
+      const repository = new JsonCouponRepository(dataDir);
 
       const call = repository.append(coupon('0001'));
 
@@ -112,7 +112,7 @@ describe('CouponRepository 의 저장 실패', () => {
     async () => {
       // 읽기는 되고 쓰기만 막힌 상태를 만든다 — 없는 컬렉션은 빈 배열로 읽히므로 읽기는 지나간다.
       await chmod(dataDir, 0o555);
-      const repository = new CouponRepository(dataDir);
+      const repository = new JsonCouponRepository(dataDir);
 
       const call = repository.append(coupon('0001'));
 
@@ -127,7 +127,7 @@ describe('CouponRepository 의 저장 실패', () => {
     // 막는 수단으로 권한이 아니라 깨진 파일을 쓴다 — 꼬리 복구는 실패 원인과 무관한 동작이고,
     // 이쪽은 root 로 돌려도 같은 것을 검증한다.
     const collection = join(dataDir, 'coupons.json');
-    const repository = new CouponRepository(dataDir);
+    const repository = new JsonCouponRepository(dataDir);
     await writeFile(collection, '{ 깨진 JSON', 'utf8');
     await expect(repository.append(coupon('0001'))).rejects.toMatchObject({
       code: 'STORAGE_FAILURE',

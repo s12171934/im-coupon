@@ -1,10 +1,11 @@
+import type { CandidateSource } from '../application/ports/candidate-source';
 import { Inject, Injectable } from '@nestjs/common';
 import type { Citizen, Merchant } from '@im-coupon/contracts';
 import { JsonFileDb } from '@im-coupon/db';
 
-import { DATA_DIR } from '../data-dir.token';
-import { IssuanceError } from '../issuance/engine';
-import type { Candidate } from '../issuance/signal';
+import { DATA_DIR } from '../../shared/infrastructure/data-dir.token';
+import { IssuanceError } from '../../issuance/domain/services/engine';
+import type { Candidate } from '../../issuance/domain/ports/signal';
 
 /** 시드로만 들어오고 발급은 읽기만 한다. 쓰기가 없으므로 직렬화 큐도 필요 없다. */
 const MERCHANTS_COLLECTION = 'merchants';
@@ -24,7 +25,7 @@ const CITIZENS_COLLECTION = 'citizens';
  * 이유다 — 발급의 실패를 한 예외로 모아야 API 층이 한 종류만 잡아 오류 응답으로 옮긴다.
  */
 @Injectable()
-export class CandidateSource {
+export class JsonCandidateSource implements CandidateSource {
   private readonly db: JsonFileDb;
 
   constructor(@Inject(DATA_DIR) dataDir: string) {

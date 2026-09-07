@@ -2,13 +2,13 @@ import { Inject, Injectable } from '@nestjs/common';
 import type { Coupon, IssueCouponResponse, SignalWeights, TriggerType } from '@im-coupon/contracts';
 import { randomUUID } from 'node:crypto';
 
-import { selectCandidate } from '../issuance/engine';
-import { DEFAULT_ISSUANCE_PARAMS } from '../issuance/params';
-import { randomSignal } from '../issuance/random-signal';
-import type { Candidate, Signal } from '../issuance/signal';
-import type { IssueCommand } from '../issuance/trigger';
-import { CandidateSource } from './candidate-source';
-import { CouponRepository } from './coupon.repository';
+import { selectCandidate } from '../../issuance/domain/services/engine';
+import { DEFAULT_ISSUANCE_PARAMS } from '../../issuance/domain/params';
+import { randomSignal } from '../../issuance/domain/signals/random-signal';
+import type { Candidate, Signal } from '../../issuance/domain/ports/signal';
+import type { IssueCommand } from '../../issuance/application/ports/trigger';
+import { CANDIDATE_SOURCE, type CandidateSource } from './ports/candidate-source';
+import { COUPON_REPOSITORY, type CouponRepository } from './ports/coupon.repository';
 
 /**
  * 발급 시각을 공급하는 자리의 주입 토큰. 전역 `Date.now` 를 유스케이스가 직접 읽으면
@@ -45,8 +45,8 @@ const SIGNALS: Record<keyof SignalWeights, Signal> = { random: randomSignal };
 @Injectable()
 export class CouponsService {
   constructor(
-    private readonly candidates: CandidateSource,
-    private readonly coupons: CouponRepository,
+    @Inject(CANDIDATE_SOURCE) private readonly candidates: CandidateSource,
+    @Inject(COUPON_REPOSITORY) private readonly coupons: CouponRepository,
     @Inject(ISSUE_CLOCK) private readonly now: () => Date,
     @Inject(ISSUE_RANDOM) private readonly random: () => number,
   ) {}
