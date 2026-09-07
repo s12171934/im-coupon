@@ -54,3 +54,5 @@ iM뱅크 주최 `2026 AI Blockchain Challenge in Daegu` 공모전(접수 마감 
 - 날짜는 절대 날짜로 적는다. "어제", "지난주"는 쓰지 않는다.
 - 맨 위 "갱신" 날짜를 함께 고친다.
 - 근거는 다른 곳에 미루지 않고 여기에 직접 옮겨 적는다 (`documents-first` §6).
+
+- [KAN-13 PR별 변경 흐름과 시각화](KAN-13/pr-review/README.md) — PR #8~#15의 PNG·SVG·HTML 및 검증 기록

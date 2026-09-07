@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "PR #8 · 쿠폰 발급 구현 계획",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1040,
+      560
+    ]
+  },
+  "layout": {
+    "mode": "grid",
+    "origin": [
+      60,
+      55
+    ],
+    "cols": 2,
+    "cellW": 330,
+    "cellH": 100,
+    "gapX": 260,
+    "gapY": 170
+  },
+  "components": [
+    {
+      "id": "design",
+      "type": "backend",
+      "label": "설계와 계약",
+      "sublabel": "범위 · 데이터 · API · 테스트 계획",
+      "tag": "PR #8",
+      "row": 0,
+      "col": 0,
+      "size": [
+        330,
+        100
+      ]
+    },
+    {
+      "id": "server",
+      "type": "backend",
+      "label": "시드와 발급 API",
+      "sublabel": "계약 → 엔진 → 발급 → 조회",
+      "tag": "PR #9–12",
+      "row": 0,
+      "col": 1,
+      "size": [
+        330,
+        100
+      ]
+    },
+    {
+      "id": "verification",
+      "type": "backend",
+      "label": "발급 시나리오 검증",
+      "sublabel": "발급 → 소유자 선택 → 거래조건 확인",
+      "tag": "PR #15",
+      "row": 1,
+      "col": 0,
+      "size": [
+        330,
+        100
+      ]
+    },
+    {
+      "id": "screens",
+      "type": "frontend",
+      "label": "두 화면 구현",
+      "sublabel": "발급 실행 · 내 쿠폰",
+      "tag": "PR #13–14",
+      "row": 1,
+      "col": 1,
+      "size": [
+        330,
+        100
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "design",
+      "to": "server",
+      "label": "구현 기준"
+    },
+    {
+      "from": "server",
+      "to": "screens",
+      "label": "API 계약",
+      "labelAt": [
+        815,
+        240
+      ]
+    },
+    {
+      "from": "screens",
+      "to": "verification",
+      "label": "사용 흐름 검증"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "이 PR의 산출물",
+      "items": [
+        "14장 설계문서 · SVG 7종",
+        "브랜치 의존 순서 · 티켓맵"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "후속 구현 범위",
+      "items": [
+        "쿠폰 발급과 내 쿠폰 조회",
+        "소비·페이백·만료 전이는 제외"
+      ]
+    }
+  ]
+}

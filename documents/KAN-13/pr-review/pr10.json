@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "PR #10 · 신호와 트리거의 대칭 구조",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1040,
+      560
+    ]
+  },
+  "layout": {
+    "mode": "grid",
+    "origin": [
+      60,
+      55
+    ],
+    "cols": 2,
+    "cellW": 330,
+    "cellH": 100,
+    "gapX": 260,
+    "gapY": 170
+  },
+  "components": [
+    {
+      "id": "signal",
+      "type": "backend",
+      "label": "Signal 인터페이스",
+      "sublabel": "domain/signals/signal.ts",
+      "tag": "점수를 계산하는 계약",
+      "row": 0,
+      "col": 0,
+      "size": [
+        330,
+        100
+      ]
+    },
+    {
+      "id": "random",
+      "type": "backend",
+      "label": "randomSignal",
+      "sublabel": "signals/implementations/",
+      "tag": "난수를 주입받는 구현",
+      "row": 0,
+      "col": 1,
+      "size": [
+        330,
+        100
+      ]
+    },
+    {
+      "id": "trigger",
+      "type": "backend",
+      "label": "IssueTrigger 인터페이스",
+      "sublabel": "domain/triggers/issue-trigger.ts",
+      "tag": "명령을 만드는 계약",
+      "row": 1,
+      "col": 0,
+      "size": [
+        330,
+        100
+      ]
+    },
+    {
+      "id": "manual",
+      "type": "backend",
+      "label": "manualTrigger",
+      "sublabel": "triggers/implementations/",
+      "tag": "시연 입력을 옮기는 구현",
+      "row": 1,
+      "col": 1,
+      "size": [
+        330,
+        100
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "random",
+      "to": "signal",
+      "label": "인터페이스 구현"
+    },
+    {
+      "from": "manual",
+      "to": "trigger",
+      "label": "인터페이스 구현"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "selectCandidate",
+      "items": [
+        "신호 점수 × 가중치의 합으로 후보 선택",
+        "동률이면 입력 순서의 첫 후보"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "순수 함수 경계",
+      "items": [
+        "NestJS·파일 IO와 분리",
+        "가중치 검증 · 파라미터 기본값"
+      ]
+    }
+  ]
+}

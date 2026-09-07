@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "PR #13 · 발급 화면의 역할 분리",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1040,
+      560
+    ]
+  },
+  "layout": {
+    "mode": "grid",
+    "origin": [
+      60,
+      55
+    ],
+    "cols": 2,
+    "cellW": 330,
+    "cellH": 100,
+    "gapX": 260,
+    "gapY": 170
+  },
+  "components": [
+    {
+      "id": "page",
+      "type": "frontend",
+      "label": "IssuePage",
+      "sublabel": "입력 초안 · 기능 UI 조립",
+      "tag": "/issue",
+      "row": 0,
+      "col": 0,
+      "size": [
+        330,
+        100
+      ]
+    },
+    {
+      "id": "hook",
+      "type": "frontend",
+      "label": "useIssueCoupon",
+      "sublabel": "입력 변환 · 요청 · 중복 호출 차단",
+      "tag": "features/issuance/hooks",
+      "row": 0,
+      "col": 1,
+      "size": [
+        330,
+        100
+      ]
+    },
+    {
+      "id": "ui",
+      "type": "frontend",
+      "label": "결과 또는 오류 표시",
+      "sublabel": "IssuedCouponCard / ErrorNotice",
+      "tag": "props를 받아 렌더",
+      "row": 1,
+      "col": 0,
+      "size": [
+        330,
+        100
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "발급 API",
+      "sublabel": "쿠폰과 선택 점수 또는 오류 반환",
+      "tag": "앞선 PR #11에서 구현",
+      "row": 1,
+      "col": 1,
+      "size": [
+        330,
+        100
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "page",
+      "to": "hook",
+      "label": "issue(draft)"
+    },
+    {
+      "from": "hook",
+      "to": "api",
+      "label": "POST 요청",
+      "labelAt": [
+        815,
+        240
+      ]
+    },
+    {
+      "from": "api",
+      "to": "ui",
+      "label": "응답 상태 반영"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "URL 기반 화면 연결",
+      "items": [
+        "BrowserRouter · Routes · NavLink",
+        "/ → /issue · 없는 경로 안내"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "이 PR의 화면 범위",
+      "items": [
+        "발급 화면 구현 · 저장소 상태 표시",
+        "/my-coupons는 준비 중 안내"
+      ]
+    }
+  ]
+}

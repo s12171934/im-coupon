@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "PR #11 · 발급 요청에서 저장까지",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1040,
+      560
+    ]
+  },
+  "layout": {
+    "mode": "grid",
+    "origin": [
+      60,
+      55
+    ],
+    "cols": 2,
+    "cellW": 330,
+    "cellH": 100,
+    "gapX": 260,
+    "gapY": 170
+  },
+  "components": [
+    {
+      "id": "http",
+      "type": "backend",
+      "label": "CouponsController",
+      "sublabel": "본문 모양 검증 → manualTrigger",
+      "tag": "POST /api/coupons/issue",
+      "row": 0,
+      "col": 0,
+      "size": [
+        330,
+        100
+      ]
+    },
+    {
+      "id": "service",
+      "type": "backend",
+      "label": "CouponsService.issue",
+      "sublabel": "후보 적재 → 선택 → 스냅샷 생성",
+      "tag": "application",
+      "row": 0,
+      "col": 1,
+      "size": [
+        330,
+        100
+      ]
+    },
+    {
+      "id": "response",
+      "type": "frontend",
+      "label": "201 발급 응답",
+      "sublabel": "coupon + decision",
+      "tag": "저장 성공 뒤 응답",
+      "row": 1,
+      "col": 0,
+      "size": [
+        330,
+        100
+      ]
+    },
+    {
+      "id": "repository",
+      "type": "database",
+      "label": "JsonCouponRepository",
+      "sublabel": "읽기 → 추가 → 원자적 쓰기",
+      "tag": "프로세스 내 직렬화",
+      "row": 1,
+      "col": 1,
+      "size": [
+        330,
+        100
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "http",
+      "to": "service",
+      "label": "IssueCommand"
+    },
+    {
+      "from": "service",
+      "to": "repository",
+      "label": "append(coupon)",
+      "labelAt": [
+        815,
+        240
+      ]
+    },
+    {
+      "from": "repository",
+      "to": "response",
+      "label": "저장 완료"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "입력·선택 실패",
+      "items": [
+        "INVALID_BODY / INVALID_WEIGHTS → 400",
+        "NO_CANDIDATES → 422"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "저장소 실패",
+      "items": [
+        "STORAGE_FAILURE → 500",
+        "원인은 서버 로그 · 응답 메시지는 고정"
+      ]
+    }
+  ]
+}

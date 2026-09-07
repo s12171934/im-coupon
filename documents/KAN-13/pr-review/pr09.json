@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "PR #9 · 시드와 공유 계약",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1040,
+      560
+    ]
+  },
+  "layout": {
+    "mode": "grid",
+    "origin": [
+      60,
+      55
+    ],
+    "cols": 2,
+    "cellW": 330,
+    "cellH": 100,
+    "gapX": 260,
+    "gapY": 170
+  },
+  "components": [
+    {
+      "id": "seed",
+      "type": "database",
+      "label": "정적 시드",
+      "sublabel": "가맹점 5건 · 시민 5건",
+      "tag": "data/seed",
+      "row": 0,
+      "col": 0,
+      "size": [
+        330,
+        100
+      ]
+    },
+    {
+      "id": "runtime",
+      "type": "database",
+      "label": "런타임 컬렉션",
+      "sublabel": "기존 부트스트랩이 시드를 복사",
+      "tag": "data/runtime",
+      "row": 0,
+      "col": 1,
+      "size": [
+        330,
+        100
+      ]
+    },
+    {
+      "id": "contracts",
+      "type": "backend",
+      "label": "공유 타입과 API 경로",
+      "sublabel": "Coupon · Citizen · Merchant",
+      "tag": "packages/contracts",
+      "row": 1,
+      "col": 0,
+      "size": [
+        330,
+        100
+      ]
+    },
+    {
+      "id": "consumers",
+      "type": "backend",
+      "label": "후속 서버·웹 구현",
+      "sublabel": "같은 요청·응답 계약을 사용",
+      "tag": "PR #10–14",
+      "row": 1,
+      "col": 1,
+      "size": [
+        330,
+        100
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "seed",
+      "to": "runtime",
+      "label": "기동 시 복사"
+    },
+    {
+      "from": "contracts",
+      "to": "consumers",
+      "label": "타입·상수 제공"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "이 PR에서 추가",
+      "items": [
+        "가상 데이터와 schemaVersion 2",
+        "쿠폰 스냅샷·발급·목록 계약"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "후속 계약 변경",
+      "items": [
+        "가중치 부분 덮어쓰기와 INVALID_BODY",
+        "PR #10에서 추가"
+      ]
+    }
+  ]
+}

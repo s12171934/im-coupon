@@ -1,0 +1,386 @@
+[
+  {
+    "pr": 8,
+    "type": "architecture",
+    "specification": {
+      "sha256": "d3c9cc2b0ec9c503651cc31e05024bd05a253e9e7c5507f33cd31e263f2f38c3",
+      "bytes": 2233
+    },
+    "artifact": {
+      "sha256": "f1f9c3c9f634530ebacff2604d716c0e2bf2a67d0dc9258e7596f7d7b7f36dc2",
+      "bytes": 702845
+    },
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browser_evidence": {
+      "status": "passed",
+      "viewports": [
+        "1440x900",
+        "1600x1000",
+        "1920x1080",
+        "2048x1320"
+      ],
+      "themes": [
+        "light",
+        "dark"
+      ]
+    },
+    "perceptual_review": {
+      "status": "passed",
+      "reviewer": "image-capable assistant",
+      "evidence": "Canonical light PNG and 2048x1320 dark browser screenshot inspected; labels, connections and containment checked."
+    },
+    "exports": {
+      "svg": {
+        "sha256": "dc0fe655529c476ad5357942726e9042dffe18d3222ca966666deb0c6bb32f74",
+        "bytes": 46619
+      },
+      "png": {
+        "sha256": "337b641b7e87d84b0468405b5b77e0486ad5ff22c8488412333d6e4f8ebfa496",
+        "bytes": 286920
+      }
+    }
+  },
+  {
+    "pr": 9,
+    "type": "architecture",
+    "specification": {
+      "sha256": "3b9cd875ecf596acf73da0986d883b3ad8cb12184f0981cf4f25f7dd4cdabaec",
+      "bytes": 2084
+    },
+    "artifact": {
+      "sha256": "680cd45293d637f944aaa7ecce3177cc4771d39835ea5f1a687241ad51985ab1",
+      "bytes": 702232
+    },
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browser_evidence": {
+      "status": "passed",
+      "viewports": [
+        "1440x900",
+        "1600x1000",
+        "1920x1080",
+        "2048x1320"
+      ],
+      "themes": [
+        "light",
+        "dark"
+      ]
+    },
+    "perceptual_review": {
+      "status": "passed",
+      "reviewer": "image-capable assistant",
+      "evidence": "Canonical light PNG and 2048x1320 dark browser screenshot inspected; labels, connections and containment checked."
+    },
+    "exports": {
+      "svg": {
+        "sha256": "31184b347f5d28490c13c7af7e8f854e471730fae0d236f2d64c478741a63c23",
+        "bytes": 46040
+      },
+      "png": {
+        "sha256": "bfc5e64e4a4f65b1d9112598ff3d0b85d16ba7185703d345b46b02cb63b57a2c",
+        "bytes": 296442
+      }
+    }
+  },
+  {
+    "pr": 10,
+    "type": "architecture",
+    "specification": {
+      "sha256": "9a612746d803bb72421af437219f7a0e2dda140868c03226bc8bfece2c94be32",
+      "bytes": 2140
+    },
+    "artifact": {
+      "sha256": "f78595998243f52856c102f2d2fafa5c0ad4fcda81a65d0d543f264b31eae3dd",
+      "bytes": 701740
+    },
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browser_evidence": {
+      "status": "passed",
+      "viewports": [
+        "1440x900",
+        "1600x1000",
+        "1920x1080",
+        "2048x1320"
+      ],
+      "themes": [
+        "light",
+        "dark"
+      ]
+    },
+    "perceptual_review": {
+      "status": "passed",
+      "reviewer": "image-capable assistant",
+      "evidence": "Canonical light PNG and 2048x1320 dark browser screenshot inspected; labels, connections and containment checked."
+    },
+    "exports": {
+      "svg": {
+        "sha256": "1337e769804fcfec23caecf2f4aa9e5fd4bffb38f9457a57ea2c3a88b332567e",
+        "bytes": 45556
+      },
+      "png": {
+        "sha256": "76d068f1b49f647de186530822f1cd44837ed9d8fd7f4200695768fa52a499a6",
+        "bytes": 304966
+      }
+    }
+  },
+  {
+    "pr": 11,
+    "type": "architecture",
+    "specification": {
+      "sha256": "9051620654735aeb61ae750ef3a2ced360d82a8d903447a2aae4bc31392a6b6f",
+      "bytes": 2249
+    },
+    "artifact": {
+      "sha256": "f5c114db6ae51404fb42862353bb7950fa1926cedb89290fab21f6f1d2c92c09",
+      "bytes": 703367
+    },
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browser_evidence": {
+      "status": "passed",
+      "viewports": [
+        "1440x900",
+        "1600x1000",
+        "1920x1080",
+        "2048x1320"
+      ],
+      "themes": [
+        "light",
+        "dark"
+      ]
+    },
+    "perceptual_review": {
+      "status": "passed",
+      "reviewer": "image-capable assistant",
+      "evidence": "Canonical light PNG and 2048x1320 dark browser screenshot inspected; labels, connections and containment checked."
+    },
+    "exports": {
+      "svg": {
+        "sha256": "308f04539f92414979666f2a3faf3748e14b807a98853378666438049792e238",
+        "bytes": 47081
+      },
+      "png": {
+        "sha256": "95e3ac0d63fe538e112c3176e67302966bd06344b7ec895b78e6364e7e71fbe8",
+        "bytes": 330041
+      }
+    }
+  },
+  {
+    "pr": 12,
+    "type": "architecture",
+    "specification": {
+      "sha256": "c1994af2271a0e704533be062de5707bc2ee2b7cb662ef5507d1249204fd0fd4",
+      "bytes": 2275
+    },
+    "artifact": {
+      "sha256": "a1404b509e59b6b46d6cdb6eb7c55010e56d0083b0addfc8d4a5045a3bfc90dd",
+      "bytes": 703418
+    },
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browser_evidence": {
+      "status": "passed",
+      "viewports": [
+        "1440x900",
+        "1600x1000",
+        "1920x1080",
+        "2048x1320"
+      ],
+      "themes": [
+        "light",
+        "dark"
+      ]
+    },
+    "perceptual_review": {
+      "status": "passed",
+      "reviewer": "image-capable assistant",
+      "evidence": "Canonical light PNG and 2048x1320 dark browser screenshot inspected; labels, connections and containment checked."
+    },
+    "exports": {
+      "svg": {
+        "sha256": "0df92e3c0d2baba5c9b2bd4e7633e485ce7eb2e59286aab0d25d9c9c9eefea39",
+        "bytes": 47104
+      },
+      "png": {
+        "sha256": "82f529fc65cc415656776fa6be62384f73d1922fa014743ccae53c356070fce0",
+        "bytes": 320023
+      }
+    }
+  },
+  {
+    "pr": 13,
+    "type": "architecture",
+    "specification": {
+      "sha256": "35e7559e75f9f0824f8492cc3792b0015cac62037054e5ad80f41d0e0c78c7ea",
+      "bytes": 2229
+    },
+    "artifact": {
+      "sha256": "d0ba233243210bbd9e2f0fa34cedbc9e2acfec43984f53a6eb33884c176c3f4a",
+      "bytes": 703177
+    },
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browser_evidence": {
+      "status": "passed",
+      "viewports": [
+        "1440x900",
+        "1600x1000",
+        "1920x1080",
+        "2048x1320"
+      ],
+      "themes": [
+        "light",
+        "dark"
+      ]
+    },
+    "perceptual_review": {
+      "status": "passed",
+      "reviewer": "image-capable assistant",
+      "evidence": "Canonical light PNG and 2048x1320 dark browser screenshot inspected; labels, connections and containment checked."
+    },
+    "exports": {
+      "svg": {
+        "sha256": "fa19116a2c711d8117989e19a4bd15b13cc0a62e4d47cf220facf45f718e4f31",
+        "bytes": 46928
+      },
+      "png": {
+        "sha256": "39f4ca4dd4175737d39838666fcb9f5a88f86a14b06ff4b86bcd95efb1a63142",
+        "bytes": 312080
+      }
+    }
+  },
+  {
+    "pr": 14,
+    "type": "architecture",
+    "specification": {
+      "sha256": "ce1e15097c4a9333a9902d91bd10190a6af623405c0b1777b622ee65addfed5a",
+      "bytes": 2283
+    },
+    "artifact": {
+      "sha256": "86cb7646517f6ecffb5a4193d819ac629f962aa67ac8b2a56010dd2af413228e",
+      "bytes": 703287
+    },
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browser_evidence": {
+      "status": "passed",
+      "viewports": [
+        "1440x900",
+        "1600x1000",
+        "1920x1080",
+        "2048x1320"
+      ],
+      "themes": [
+        "light",
+        "dark"
+      ]
+    },
+    "perceptual_review": {
+      "status": "passed",
+      "reviewer": "image-capable assistant",
+      "evidence": "Canonical light PNG and 2048x1320 dark browser screenshot inspected; labels, connections and containment checked."
+    },
+    "exports": {
+      "svg": {
+        "sha256": "96d5271525130969e459be902f33411346d5fb8c6894b277b5257fca256a697b",
+        "bytes": 46988
+      },
+      "png": {
+        "sha256": "431298e7ce088e9287c82dc9212a35d1cdee92e54a317c86d810c680d81e34e2",
+        "bytes": 309826
+      }
+    }
+  },
+  {
+    "pr": 15,
+    "type": "architecture",
+    "specification": {
+      "sha256": "18f0c52caf70a3a90c191aa93c7ff3abffd44860c7831ae4801e13731b81bd84",
+      "bytes": 2329
+    },
+    "artifact": {
+      "sha256": "4cdb469363760182c3109e53f79908a9edf8ce526bd7b06164c1e4cc57e4719f",
+      "bytes": 703456
+    },
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browser_evidence": {
+      "status": "passed",
+      "viewports": [
+        "1440x900",
+        "1600x1000",
+        "1920x1080",
+        "2048x1320"
+      ],
+      "themes": [
+        "light",
+        "dark"
+      ]
+    },
+    "perceptual_review": {
+      "status": "passed",
+      "reviewer": "image-capable assistant",
+      "evidence": "Canonical light PNG and 2048x1320 dark browser screenshot inspected; labels, connections and containment checked."
+    },
+    "exports": {
+      "svg": {
+        "sha256": "15c55eb00e1f385e38310825ca5cd87e987a8ed4d452d15ef2176852fc292e74",
+        "bytes": 47175
+      },
+      "png": {
+        "sha256": "ed68047dbcd159e4068a371d4cc0e696b23853cdb49a97d0c3368e2b894113f8",
+        "bytes": 313437
+      }
+    }
+  }
+]

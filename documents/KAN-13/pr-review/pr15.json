@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "PR #15 · 실제 서버를 관통하는 검증",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1040,
+      560
+    ]
+  },
+  "layout": {
+    "mode": "grid",
+    "origin": [
+      60,
+      55
+    ],
+    "cols": 2,
+    "cellW": 330,
+    "cellH": 100,
+    "gapX": 260,
+    "gapY": 170
+  },
+  "components": [
+    {
+      "id": "start",
+      "type": "frontend",
+      "label": "브라우저에서 발급 실행",
+      "sublabel": "/issue → 발급 1건 실행",
+      "tag": "Playwright",
+      "row": 0,
+      "col": 0,
+      "size": [
+        330,
+        100
+      ]
+    },
+    {
+      "id": "issue",
+      "type": "backend",
+      "label": "실제 API와 JSON DB",
+      "sublabel": "201 응답 · 쿠폰 레코드 저장",
+      "tag": "빌드 산출물 사용",
+      "row": 0,
+      "col": 1,
+      "size": [
+        330,
+        100
+      ]
+    },
+    {
+      "id": "assert",
+      "type": "frontend",
+      "label": "거래조건 고지 확인",
+      "sublabel": "카드 1건 · 액면 · 배분 · 두 기한",
+      "tag": "목 데이터 없이 검증",
+      "row": 1,
+      "col": 0,
+      "size": [
+        330,
+        100
+      ]
+    },
+    {
+      "id": "list",
+      "type": "frontend",
+      "label": "내 쿠폰에서 소유자 선택",
+      "sublabel": "발급 응답에서 읽은 이름 사용",
+      "tag": "/my-coupons",
+      "row": 1,
+      "col": 1,
+      "size": [
+        330,
+        100
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "start",
+      "to": "issue",
+      "label": "HTTP 발급 요청"
+    },
+    {
+      "from": "issue",
+      "to": "list",
+      "label": "발급 결과 확인",
+      "labelAt": [
+        815,
+        240
+      ]
+    },
+    {
+      "from": "list",
+      "to": "assert",
+      "label": "실제 조회 결과"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "라우팅 회귀 검증",
+      "items": [
+        "직접 진입 · 새로고침 · 뒤로/앞으로",
+        "없는 경로에서 발급 화면 복귀"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "기존 검증도 유지",
+      "items": [
+        "헬스 조회 · 고아 프로세스 종료",
+        "포트 선점 안내 포함 E2E 6개"
+      ]
+    }
+  ]
+}
