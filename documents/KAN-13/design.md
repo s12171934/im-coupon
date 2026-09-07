@@ -60,12 +60,12 @@
 | 시민 | 쿠폰을 발급받을 수 있는 가상 사용자 | `Citizen` (`packages/contracts/src/citizen.ts`) |
 | 소유자 | 쿠폰을 발급받은 시민 | `Coupon.ownerId` · `Coupon.ownerName` |
 | 발급 | 발급 후보 하나를 골라 쿠폰 레코드를 만들어 저장하는 것 | `POST /api/coupons/issue` · `CouponsService.issue` |
-| 발급 트리거 | 발급을 일으키는 계기의 추상화. 발급 명령을 만들어 발급 유스케이스에 넘긴다 | `IssueTrigger` · `IssueCommand` (`apps/api/src/issuance/application/ports/trigger.ts`) |
-| 시연 트리거 | 발급 실행 화면의 버튼이 일으키는, 이번 에픽에서 구현하는 유일한 발급 트리거 | `manualTrigger` (`apps/api/src/issuance/presentation/triggers/manual-trigger.ts`) · `TriggerType` 의 `'manual'` |
-| 발급 명령 | 발급 트리거가 만들어 넘기는 발급 1건의 입력 — 트리거 유형과 발급 가중치 덮어쓰기 | `IssueCommand` (`apps/api/src/issuance/application/ports/trigger.ts`) |
-| 발급 후보 | 발급 대상이 될 수 있는 가맹점×시민 쌍 | `Candidate` (`apps/api/src/issuance/domain/ports/signal.ts`) |
-| 신호 | 발급 후보 하나에 0 이상 점수를 주는 단위 함수 | `Signal` (`apps/api/src/issuance/domain/ports/signal.ts`) |
-| 랜덤 신호 | 이력 없이 작동하는 탐색용 신호. 이번 에픽에서 구현하는 유일한 신호 | `randomSignal` (`apps/api/src/issuance/domain/signals/random-signal.ts`) |
+| 발급 트리거 | 발급을 일으키는 계기의 추상화. 발급 명령을 만들어 발급 유스케이스에 넘긴다 | `IssueTrigger` · `IssueCommand` (`apps/api/src/issuance/domain/triggers/issue-trigger.ts`) |
+| 시연 트리거 | 발급 실행 화면의 버튼이 일으키는, 이번 에픽에서 구현하는 유일한 발급 트리거 | `manualTrigger` (`apps/api/src/issuance/domain/triggers/implementations/manual-trigger.ts`) · `TriggerType` 의 `'manual'` |
+| 발급 명령 | 발급 트리거가 만들어 넘기는 발급 1건의 입력 — 트리거 유형과 발급 가중치 덮어쓰기 | `IssueCommand` (`apps/api/src/issuance/domain/triggers/issue-trigger.ts`) |
+| 발급 후보 | 발급 대상이 될 수 있는 가맹점×시민 쌍 | `Candidate` (`apps/api/src/issuance/domain/signals/signal.ts`) |
+| 신호 | 발급 후보 하나에 0 이상 점수를 주는 단위 함수 | `Signal` (`apps/api/src/issuance/domain/signals/signal.ts`) |
+| 랜덤 신호 | 이력 없이 작동하는 탐색용 신호. 이번 에픽에서 구현하는 유일한 신호 | `randomSignal` (`apps/api/src/issuance/domain/signals/implementations/random-signal.ts`) |
 | 발급 가중치 | 신호별 결합 비중 | `SignalWeights` (`packages/contracts/src/issuance.ts`) |
 | 가중치 결합 | 신호 점수 × 발급 가중치의 합으로 총점 최대 발급 후보를 고르는 것 | `selectCandidate` (`apps/api/src/issuance/domain/services/engine.ts`) |
 | 소유자 점유 상태 | 발급 직후의 쿠폰 상태. 이번 에픽의 유일한 상태 값 | `CouponStatus` 의 `'held'` |
@@ -403,7 +403,7 @@ interface IssueDecision {
 
 ### `KAN-13/02-issuance-engine`
 
-- 파일맵 — 생성: `apps/api/src/issuance/domain/ports/signal.ts`(`Signal`·`Candidate`), `apps/api/src/issuance/domain/signals/random-signal.ts`(+`random-signal.test.ts`), `apps/api/src/issuance/domain/services/engine.ts`(`selectCandidate`), `apps/api/src/issuance/application/ports/trigger.ts`(`IssueTrigger`·`IssueCommand`), `apps/api/src/issuance/presentation/triggers/manual-trigger.ts`(+`manual-trigger.test.ts`), `apps/api/src/issuance/domain/params.ts`(7장 값 표의 기본값), `apps/api/src/issuance/domain/services/engine.test.ts`. 수정: `packages/contracts/src/issuance.ts`·`packages/contracts/src/coupon.ts`·`documents/KAN-13/design.md`(계약 미결 4건과 구현 중 굳은 결정 넷 반영 — 14장).
+- 파일맵 — 생성: `apps/api/src/issuance/domain/signals/signal.ts`(`Signal`·`Candidate`), `apps/api/src/issuance/domain/signals/implementations/random-signal.ts`(+`random-signal.test.ts`), `apps/api/src/issuance/domain/services/engine.ts`(`selectCandidate`), `apps/api/src/issuance/domain/triggers/issue-trigger.ts`(`IssueTrigger`·`IssueCommand`), `apps/api/src/issuance/domain/triggers/implementations/manual-trigger.ts`(+`manual-trigger.test.ts`), `apps/api/src/issuance/domain/params.ts`(7장 값 표의 기본값), `apps/api/src/issuance/domain/services/engine.test.ts`. 수정: `packages/contracts/src/issuance.ts`·`packages/contracts/src/coupon.ts`·`documents/KAN-13/design.md`(계약 미결 4건과 구현 중 굳은 결정 넷 반영 — 14장).
 - 넣는 것 — 신호 인터페이스와 랜덤 신호, 발급 가중치 결합, 발급 트리거 인터페이스와 시연 트리거. NestJS 에 의존하지 않는 순수 함수로 두고 RNG 는 인자로 주입한다 (4장 결정 1·2·3·9·11).
 - RED `TC-02-01` — `engine.test.ts`: "발급 가중치 `{ random: 1 }` 과 고정 수열을 반환하는 RNG 스텁으로 `selectCandidate` 를 두 번 호출하면 두 번 모두 같은 발급 후보가 선택되고, 반환된 `scores.random`·`total` 이 스텁 수열에서 계산한 기대값과 일치한다".
 - 완료 조건 — `TC-02-01` 이 GREEN 이고 `TC-02-02`(가중치 거부)·`TC-02-03`(시연 트리거, 12장)을 포함. 기본값 수치가 `params.ts` 밖에 등장하지 않는다.

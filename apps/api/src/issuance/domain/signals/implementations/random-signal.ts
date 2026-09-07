@@ -1,4 +1,4 @@
-import type { Signal } from '../ports/signal';
+import type { Signal } from '../signal';
 
 /**
  * 랜덤 신호 — 이력 없이 작동하는 탐색용 신호.

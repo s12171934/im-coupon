@@ -1,7 +1,7 @@
 import type { ApiErrorCode, IssueDecision, SignalWeights } from '@im-coupon/contracts';
 
 import { DEFAULT_ISSUANCE_PARAMS } from '../params';
-import type { Candidate, Signal, SignalContext } from '../ports/signal';
+import type { Candidate, Signal, SignalContext } from '../signals/signal';
 
 /**
  * 발급이 거부된 이유. 계약의 오류 코드를 그대로 들어, API 층이 이 클래스 하나만 잡고

@@ -1,6 +1,6 @@
 import type { IssueCouponRequest } from '@im-coupon/contracts';
 
-import type { IssueTrigger } from '../../application/ports/trigger';
+import type { IssueTrigger } from '../issue-trigger';
 
 /**
  * 시연 트리거 — 이번 에픽의 유일한 트리거이자 발급 엔드포인트의 진입점.
