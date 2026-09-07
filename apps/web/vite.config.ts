@@ -10,6 +10,9 @@ const proxy = {
 
 export default defineConfig({
   plugins: [react()],
+  optimizeDeps: {
+    include: ['@im-coupon/contracts'],
+  },
   server: { port: 5173, proxy },
   preview: { port: 5173, proxy },
 });
