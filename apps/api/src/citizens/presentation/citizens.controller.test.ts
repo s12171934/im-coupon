@@ -10,10 +10,10 @@ import { join } from 'node:path';
 import request from 'supertest';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { AppModule } from '../app.module';
-import { STORAGE_FAILURE_MESSAGE } from '../coupons/issuance-error.filter';
-import { resolveSeedDir } from '../data-dir';
-import { DATA_DIR } from '../data-dir.token';
+import { AppModule } from '../../app.module';
+import { STORAGE_FAILURE_MESSAGE } from '../../coupons/presentation/issuance-error.filter';
+import { resolveSeedDir } from '../../shared/infrastructure/data-dir';
+import { DATA_DIR } from '../../shared/infrastructure/data-dir.token';
 
 let app: INestApplication;
 let dataDir: string;

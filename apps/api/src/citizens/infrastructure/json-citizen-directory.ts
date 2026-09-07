@@ -1,9 +1,10 @@
+import type { CitizenDirectory } from '../application/ports/citizen-directory';
 import { Inject, Injectable } from '@nestjs/common';
 import type { Citizen } from '@im-coupon/contracts';
 import { JsonFileDb } from '@im-coupon/db';
 
-import { DATA_DIR } from '../data-dir.token';
-import { readCollection } from '../read-collection';
+import { DATA_DIR } from '../../shared/infrastructure/data-dir.token';
+import { readCollection } from '../../shared/infrastructure/read-collection';
 
 /** 시드로만 들어오고 목록 조회는 읽기만 한다. 쓰기가 없으므로 직렬화 큐도 필요 없다. */
 const CITIZENS_COLLECTION = 'citizens';
@@ -23,7 +24,7 @@ const CITIZENS_COLLECTION = 'citizens';
  * 한 곳을 함께 쓰므로, 자리를 늘려도 겹치는 것은 컬렉션 이름 문자열뿐이다.
  */
 @Injectable()
-export class CitizenDirectory {
+export class JsonCitizenDirectory implements CitizenDirectory {
   private readonly db: JsonFileDb;
 
   constructor(@Inject(DATA_DIR) dataDir: string) {

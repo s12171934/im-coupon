@@ -1,9 +1,10 @@
+import type { OwnerDirectory } from '../application/ports/owner-directory';
 import { Inject, Injectable } from '@nestjs/common';
 import type { Citizen } from '@im-coupon/contracts';
 import { JsonFileDb } from '@im-coupon/db';
 
-import { DATA_DIR } from '../data-dir.token';
-import { readCollection } from '../read-collection';
+import { DATA_DIR } from '../../shared/infrastructure/data-dir.token';
+import { readCollection } from '../../shared/infrastructure/read-collection';
 
 /** 시드로만 들어오고 조회는 읽기만 한다. 쓰기가 없으므로 직렬화 큐도 필요 없다. */
 const CITIZENS_COLLECTION = 'citizens';
@@ -21,7 +22,7 @@ const CITIZENS_COLLECTION = 'citizens';
  * 조회 유스케이스의 판단이고, 적재가 발급 후보 0건을 엔진에 맡기는 것과 같은 가름이다.
  */
 @Injectable()
-export class OwnerDirectory {
+export class JsonOwnerDirectory implements OwnerDirectory {
   private readonly db: JsonFileDb;
 
   constructor(@Inject(DATA_DIR) dataDir: string) {

@@ -1,4 +1,4 @@
-import { OwnerDirectory } from '../owner-directory';
+import { OWNER_DIRECTORY, type OwnerDirectory } from './ports/owner-directory';
 import { Inject, Injectable } from '@nestjs/common';
 import type {
   Coupon,
@@ -54,7 +54,7 @@ export class CouponsService {
   constructor(
     @Inject(CANDIDATE_SOURCE) private readonly candidates: CandidateSource,
     @Inject(COUPON_REPOSITORY) private readonly coupons: CouponRepository,
-    private readonly owners: OwnerDirectory,
+    @Inject(OWNER_DIRECTORY) private readonly owners: OwnerDirectory,
     @Inject(ISSUE_CLOCK) private readonly now: () => Date,
     @Inject(ISSUE_RANDOM) private readonly random: () => number,
   ) {}

@@ -1,4 +1,4 @@
-import { readCollection } from '../../read-collection';
+import { readCollection } from '../../shared/infrastructure/read-collection';
 import type { CandidateSource } from '../application/ports/candidate-source';
 import { Inject, Injectable } from '@nestjs/common';
 import type { Citizen, Merchant } from '@im-coupon/contracts';

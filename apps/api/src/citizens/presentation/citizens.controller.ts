@@ -2,7 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 import type { ListCitizensResponse } from '@im-coupon/contracts';
 import { CITIZENS_PATH } from '@im-coupon/contracts';
 
-import { CitizenDirectory } from './citizen-directory';
+import { CitizensService } from '../application/citizens.service';
 
 /**
  * 앱이 붙이는 전역 접두. 계약 상수에서 이만큼 덜어 낸 것이 컨트롤러가 선언할 경로다 —
@@ -21,10 +21,10 @@ const LIST_ROUTE = CITIZENS_PATH.slice(GLOBAL_PREFIX.length);
  */
 @Controller()
 export class CitizensController {
-  constructor(private readonly citizens: CitizenDirectory) {}
+  constructor(private readonly citizens: CitizensService) {}
 
   @Get(LIST_ROUTE)
   async list(): Promise<ListCitizensResponse> {
-    return { citizens: await this.citizens.list() };
+    return this.citizens.list();
   }
 }

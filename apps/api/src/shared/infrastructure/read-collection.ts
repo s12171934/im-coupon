@@ -1,6 +1,6 @@
 import type { JsonFileDb } from '@im-coupon/db';
 
-import { IssuanceError } from './issuance/engine';
+import { IssuanceError } from '../../issuance/domain/services/engine';
 
 /**
  * 컬렉션 하나를 레코드 배열로 읽는다 — 파일 IO 실패를 `IssuanceError` 로 옮기는 자리.

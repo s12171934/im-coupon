@@ -10,10 +10,10 @@ import { join } from 'node:path';
 import request from 'supertest';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { AppModule } from '../app.module';
-import { resolveSeedDir } from '../data-dir';
-import { DATA_DIR } from '../data-dir.token';
-import { DEFAULT_ISSUANCE_PARAMS } from '../issuance/params';
+import { AppModule } from '../../app.module';
+import { resolveSeedDir } from '../../shared/infrastructure/data-dir';
+import { DATA_DIR } from '../../shared/infrastructure/data-dir.token';
+import { DEFAULT_ISSUANCE_PARAMS } from '../../issuance/domain/params';
 import { STORAGE_FAILURE_MESSAGE } from './issuance-error.filter';
 
 let app: INestApplication;

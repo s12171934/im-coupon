@@ -1,4 +1,4 @@
-import { readCollection } from '../../read-collection';
+import { readCollection } from '../../shared/infrastructure/read-collection';
 import type { CouponRepository } from '../application/ports/coupon.repository';
 import { Inject, Injectable } from '@nestjs/common';
 import type { Coupon } from '@im-coupon/contracts';

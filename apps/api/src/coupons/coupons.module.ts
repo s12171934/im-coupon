@@ -1,4 +1,5 @@
-import { OwnerDirectory } from './owner-directory';
+import { OWNER_DIRECTORY } from './application/ports/owner-directory';
+import { JsonOwnerDirectory } from './infrastructure/json-owner-directory';
 import { COUPON_REPOSITORY } from './application/ports/coupon.repository';
 import { CANDIDATE_SOURCE } from './application/ports/candidate-source';
 import { Module } from '@nestjs/common';
@@ -14,7 +15,7 @@ import { CouponsService, ISSUE_CLOCK, ISSUE_RANDOM } from './application/coupons
   controllers: [CouponsController],
   providers: [
     CouponsService,
-    OwnerDirectory,
+    { provide: OWNER_DIRECTORY, useClass: JsonOwnerDirectory },
     { provide: COUPON_REPOSITORY, useClass: JsonCouponRepository },
     { provide: CANDIDATE_SOURCE, useClass: JsonCandidateSource },
     { provide: DATA_DIR, useFactory: resolveDataDir },
