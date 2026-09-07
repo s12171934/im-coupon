@@ -145,7 +145,7 @@
 ![워크스페이스 내부 변화 — 다섯 워크스페이스와 시드 데이터](./src/워크스페이스-내부-변화.svg)
 
 - `apps/web` — `app/`(라우팅·앱 셸), `pages/<PageName>/`(화면 조립), `features/<기능>/components/<ComponentName>/`(기능 전용 UI), `features/<기능>/hooks/`(로직), `features/<기능>/model/`(공유 모델), `shared/components/<ComponentName>/`(범용 UI)로 나눈다. 모든 컴포넌트는 자기 폴더에 구현·테스트를 함께 둔다.
-- `apps/api` — `issuance`, `coupons`, `citizens`, `health` 도메인 안에 필요한 `presentation`, `application`, `domain`, `infrastructure` 계층을 둔다. 저장소 인터페이스와 토큰은 `application/ports`, JSON 구현체는 `infrastructure`에 두고 도메인 루트 모듈에서 연결한다. 신호 계약은 `issuance/domain/ports`, 신호 구현은 `domain/signals`, 트리거 계약은 `application/ports`, 시연 트리거는 `presentation/triggers`에 둔다.
+- `apps/api` — `issuance`, `coupons`, `citizens`, `health` 도메인 안에 필요한 `presentation`, `application`, `domain`, `infrastructure` 계층을 둔다. 저장소 인터페이스와 토큰은 `application/ports`, JSON 구현체는 `infrastructure`에 두고 도메인 루트 모듈에서 연결한다. 신호와 트리거는 `issuance/domain/signals`, `issuance/domain/triggers`에 대칭으로 배치한다. 각 폴더 루트에 인터페이스, `implementations/`에 구현체와 테스트를 둔다.
 - `packages/contracts` — 계약 파일 4개(`coupon.ts`·`merchant.ts`·`citizen.ts`·`issuance.ts`)가 생긴다.
 - `packages/db` — 구현 변경 없음. `JsonFileDb` 가 그대로 7장의 세 테이블(`merchants`·`citizens`·`coupons`)을 서빙하고, 시드 검증 테스트 1파일만 추가된다.
 - `e2e` — 발급 플로우(`issuance.spec.ts`)와 URL 직접 진입·새로고침·이력 이동·없는 경로 안내(`routing.spec.ts`)를 검증한다.
