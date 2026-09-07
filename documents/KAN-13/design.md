@@ -75,10 +75,10 @@
 | 배분 비율 | 소유자와 소비자가 나눠 갖는 혜택 비율 | `Coupon.benefitSplit` (`ownerRatio`·`consumerRatio`) |
 | 거래조건 고지 | 배분 비율과 이중 기한을 화면 본문 크기로 노출하는 것 | `MyCouponsPage` 의 렌더 규칙 |
 | 발급 엔진 | 신호·가중치 결합을 묶은, NestJS 비의존 순수 함수 모듈 | `apps/api/src/issuance/` |
-| 발급 실행 화면 | 발급을 일으키는 시연·관리 시점 화면 | `IssuePage` (`apps/web/src/pages/issue-page.tsx`) |
+| 발급 실행 화면 | 발급을 일으키는 시연·관리 시점 화면 | `IssuePage` (`apps/web/src/pages/IssuePage/IssuePage.tsx`) |
 | 발급 결과 카드 | 발급 실행 화면에서 `201` 응답의 쿠폰·선택 근거를 보여주는 영역 | `IssuePage` 의 결과 표시 영역 |
-| 내 쿠폰 화면 | 시민이 소유한 쿠폰 목록 화면 | `MyCouponsPage` (`apps/web/src/pages/my-coupons-page.tsx`) |
-| 탭 셸 | 두 화면을 전환하는 상단 탭 구조 | `App.tsx` (`apps/web/src/App.tsx`) |
+| 내 쿠폰 화면 | 시민이 소유한 쿠폰 목록 화면 | `MyCouponsPage` (`apps/web/src/pages/MyCouponsPage/MyCouponsPage.tsx`) |
+| 탭 셸 | 두 화면을 전환하는 상단 탭 구조 | `App.tsx` (`apps/web/src/app/App/App.tsx`) |
 | UI 전용 컴포넌트 | props 만 받아 그리며 fetch·상태 로직이 없는 컴포넌트 | `apps/web/src/components/` |
 | 로직 훅 | 화면의 fetch·상태 로직을 지는 훅 | `apps/web/src/hooks/` |
 | 테스트 코드 번호 | 테스트 케이스에 부여하는 식별자. 케이스 이름이 이 번호로 시작한다 | `TC-<브랜치 번호>-<일련번호>` (12장) |
@@ -132,7 +132,7 @@
 ![프로젝트 구조 변화 — 변경 전과 변경 후](./src/프로젝트-구조-변화.svg)
 
 - 왼쪽이 2026-09-06 의 `main`, 오른쪽이 KAN-13 스택이 전부 머지된 뒤다. 파란 항목이 새로 생기는 것이다.
-- 기존 파일 중 수정되는 것은 `apps/web/src/App.tsx`, `apps/api/src/app.module.ts`, `packages/contracts/src/index.ts`, `data/seed/_meta.json`, `e2e/tests/health.spec.ts` 다섯뿐이다.
+- 기존 파일 중 수정되는 것은 `apps/web/src/app/App/App.tsx`, `apps/api/src/app.module.ts`, `packages/contracts/src/index.ts`, `data/seed/_meta.json`, `e2e/tests/health.spec.ts` 다섯뿐이다.
 - 워크스페이스 경계와 의존 방향은 바꾸지 않는다 — [저장소 구조와 기술 스택](../저장소-구조와-기술-스택.md) 의 의존 규칙이 그대로 유지된다.
 
 ## 6. app 및 패키지 내부 구조도
@@ -433,14 +433,14 @@ interface IssueDecision {
 
 ### `KAN-13/05-issue-screen`
 
-- 파일맵 — 생성: 컴포넌트 `CP-05-02`~`CP-05-07` 의 파일과 각 테스트 파일 (10장 구현 컴포넌트 목록). 수정: `CP-05-01`(`apps/web/src/App.tsx` — 탭 셸로 개편, 발급 실행·내 쿠폰 두 탭)과 `apps/web/src/App.test.tsx`, `documents/KAN-13/src/발급-실행-화면.svg`·`documents/KAN-13/design.md`(와이어프레임 오류 영역을 8장 오류 4종으로 재작성 — 9~11·13·14장).
+- 파일맵 — 생성: 컴포넌트 `CP-05-02`~`CP-05-07` 의 파일과 각 테스트 파일 (10장 구현 컴포넌트 목록). 수정: `CP-05-01`(`apps/web/src/app/App/App.tsx` — 탭 셸로 개편, 발급 실행·내 쿠폰 두 탭)과 `apps/web/src/app/App/App.test.tsx`, `documents/KAN-13/src/발급-실행-화면.svg`·`documents/KAN-13/design.md`(와이어프레임 오류 영역을 8장 오류 4종으로 재작성 — 9~11·13·14장).
 - 넣는 것 — 발급 실행 화면. 기준은 [발급 실행 화면 와이어프레임](./src/발급-실행-화면.svg) (11장에 임베드) 이다. UI 전용 컴포넌트 넷(`CP-05-02`~`CP-05-05`)과 로직 훅 `CP-05-06`, 이를 조립만 하는 `CP-05-07`. 내 쿠폰 탭 자리는 만들되 내용은 `KAN-13/06-my-coupons-screen` 의 몫이다.
 - RED `TC-05-01` — `issue-page.test.tsx`: "`fetch` 를 스텁한 상태에서 발급 1건 실행 버튼을 클릭하면 `POST /api/coupons/issue` 가 1회 호출되고, 스텁 응답의 `merchantName`·`ownerName` 이 발급 결과 카드에 나타난다".
 - 완료 조건 — `TC-05-01` 이 GREEN 이고 `TC-05-02`(오류 표시, 12장)를 포함. UI 전용 컴포넌트가 `fetch`·전역 상태에 접근하지 않고, 훅과 UI 전용 컴포넌트가 각자의 테스트를 가진다.
 
 ### `KAN-13/06-my-coupons-screen`
 
-- 파일맵 — 생성: 컴포넌트 `CP-06-01`~`CP-06-05` 의 파일과 각 테스트 파일 (10장 구현 컴포넌트 목록). 수정: `CP-05-01`(`apps/web/src/App.tsx` — 내 쿠폰 탭 연결).
+- 파일맵 — 생성: 컴포넌트 `CP-06-01`~`CP-06-05` 의 파일과 각 테스트 파일 (10장 구현 컴포넌트 목록). 수정: `CP-05-01`(`apps/web/src/app/App/App.tsx` — 내 쿠폰 탭 연결).
 - 넣는 것 — 내 쿠폰 화면. 기준은 [내 쿠폰 화면 와이어프레임](./src/내-쿠폰-화면.svg) (11장에 임베드) 이다. UI 전용 컴포넌트 둘(`CP-06-01`·`CP-06-02`)과 로직 훅 둘(`CP-06-03`·`CP-06-04`), 이를 조립만 하는 `CP-06-05`. 거래조건 고지는 `CP-06-02` 쿠폰 카드가 지며, 배분 비율과 이중 기한을 본문과 같은 글자 크기로 표시하고 축소 표기·각주 처리를 하지 않는다.
 - RED `TC-06-01` — `my-coupons-page.test.tsx`: "시민 목록과 쿠폰 1건 응답을 스텁하면 카드에 액면·배분 비율(소유자 20% / 소비자 80%)·소유자 점유 기한·유효 소비 기한 텍스트가 존재하고, 거래조건 텍스트가 `small` 요소나 축소 클래스 없이 본문 단락으로 렌더된다".
 - 완료 조건 — `TC-06-01` 이 GREEN 이고 `TC-06-02`(빈 상태, 12장)를 포함. UI 전용 컴포넌트가 `fetch`·전역 상태에 접근하지 않고, 훅과 UI 전용 컴포넌트가 각자의 테스트를 가진다.
@@ -491,8 +491,8 @@ interface IssueDecision {
 | `KAN-13/02-issuance-engine` | `apps/api/src/issuance/domain/services/engine.test.ts` · `manual-trigger.test.ts` | `pnpm --filter @im-coupon/api test` |
 | `KAN-13/03-issue-endpoint` | `apps/api/src/coupons/presentation/coupons.controller.test.ts` | `pnpm --filter @im-coupon/api test` |
 | `KAN-13/04-list-endpoints` | `apps/api/src/coupons/presentation/list-coupons.test.ts` · `apps/api/src/citizens/presentation/citizens.controller.test.ts` | `pnpm --filter @im-coupon/api test` |
-| `KAN-13/05-issue-screen` | `apps/web/src/pages/issue-page.test.tsx` | `pnpm --filter @im-coupon/web test` |
-| `KAN-13/06-my-coupons-screen` | `apps/web/src/pages/my-coupons-page.test.tsx` | `pnpm --filter @im-coupon/web test` |
+| `KAN-13/05-issue-screen` | `apps/web/src/pages/IssuePage/IssuePage.test.tsx` | `pnpm --filter @im-coupon/web test` |
+| `KAN-13/06-my-coupons-screen` | `apps/web/src/pages/MyCouponsPage/MyCouponsPage.test.tsx` | `pnpm --filter @im-coupon/web test` |
 | `KAN-13/07-issuance-e2e` | `e2e/tests/issuance.spec.ts` | `pnpm build && pnpm e2e` |
 
 케이스 전체다. 구현 컴포넌트 목록(10장)과 같은 방식으로 적용 브랜치를 열로 적는다.

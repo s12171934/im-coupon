@@ -1,6 +1,6 @@
 import type { SignalWeights } from '@im-coupon/contracts';
 
-import { SIGNAL_KEYS, SIGNAL_LABELS } from './signal-labels';
+import { SIGNAL_KEYS, SIGNAL_LABELS } from '../../model/signal-labels';
 
 /**
  * 입력 중인 발급 가중치. 값을 문자열로 들어, 빈 칸("지정하지 않음")과 `0` 을 가른다.

@@ -10,8 +10,8 @@ import {
   type IssueCouponResponse,
 } from '@im-coupon/contracts';
 
-import type { StorageStatusState } from '../components/storage-status';
-import { IssuePage } from './issue-page';
+import type { StorageStatusState } from '../../features/storage/components/StorageStatus/StorageStatus';
+import { IssuePage } from './IssuePage';
 
 /** 설계문서 7장 `coupons` 예시 레코드. 화면은 응답을 해석하지 않고 카드에 넘기기만 한다. */
 const COUPON: Coupon = {

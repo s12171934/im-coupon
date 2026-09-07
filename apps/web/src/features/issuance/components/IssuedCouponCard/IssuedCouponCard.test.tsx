@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import type { Coupon, IssueDecision, SignalWeights } from '@im-coupon/contracts';
 
-import { IssuedCouponCard } from './issued-coupon-card';
+import { IssuedCouponCard } from './IssuedCouponCard';
 
 /** 설계문서 7장 `coupons` 예시 레코드. 수치는 값 표의 시연 기본값이고 세 시각은 `Z` 다. */
 const COUPON: Coupon = {

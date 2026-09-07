@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { StorageStatus, type StorageStatusState } from './storage-status';
+import { StorageStatus, type StorageStatusState } from './StorageStatus';
 
 function renderStatus(state: StorageStatusState) {
   return render(<StorageStatus state={state} />);

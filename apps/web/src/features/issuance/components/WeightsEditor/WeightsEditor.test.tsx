@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { WeightsEditor, type WeightsDraft } from './weights-editor';
+import { WeightsEditor, type WeightsDraft } from './WeightsEditor';
 
 const EMPTY: WeightsDraft = { random: '' };
 

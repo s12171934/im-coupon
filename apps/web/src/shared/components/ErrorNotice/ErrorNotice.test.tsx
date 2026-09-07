@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import type { ApiErrorCode } from '@im-coupon/contracts';
 
-import { ErrorNotice } from './error-notice';
+import { ErrorNotice } from './ErrorNotice';
 
 /**
  * 계약이 든 오류 코드 여섯 전부에 안내 한 줄이 붙는지 본다. 이 표를

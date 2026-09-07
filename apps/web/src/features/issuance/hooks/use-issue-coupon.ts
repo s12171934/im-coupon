@@ -7,7 +7,7 @@ import {
   type SignalWeights,
 } from '@im-coupon/contracts';
 
-import type { WeightsDraft } from '../components/weights-editor';
+import type { WeightsDraft } from '../components/WeightsEditor/WeightsEditor';
 
 /**
  * 오류 영역에 실을 실패 하나. `code` 를 `ApiErrorCode` 로 좁히지 않는다 — 계약 밖 응답과

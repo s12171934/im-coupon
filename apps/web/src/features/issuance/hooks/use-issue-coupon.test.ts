@@ -8,7 +8,7 @@ import {
   type IssueCouponResponse,
 } from '@im-coupon/contracts';
 
-import type { WeightsDraft } from '../components/weights-editor';
+import type { WeightsDraft } from '../components/WeightsEditor/WeightsEditor';
 import { useIssueCoupon } from './use-issue-coupon';
 
 /** 설계문서 7장 `coupons` 예시 레코드. 훅은 응답을 해석하지 않고 그대로 실어 주기만 한다. */

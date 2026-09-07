@@ -1,6 +1,6 @@
 import type { IssueCouponResponse } from '@im-coupon/contracts';
 
-import { SIGNAL_KEYS, SIGNAL_LABELS } from './signal-labels';
+import { SIGNAL_KEYS, SIGNAL_LABELS } from '../../model/signal-labels';
 
 /**
  * 발급 결과 카드의 props 는 발급 엔드포인트의 `201` 응답 그대로다 (설계문서 8장).

@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import type { SignalWeights } from '@im-coupon/contracts';
 
-import { ErrorNotice } from '../components/error-notice';
-import { IssuedCouponCard } from '../components/issued-coupon-card';
-import { SIGNAL_KEYS } from '../components/signal-labels';
-import { StorageStatus, type StorageStatusState } from '../components/storage-status';
-import { WeightsEditor, type WeightsDraft } from '../components/weights-editor';
-import { useIssueCoupon } from '../hooks/use-issue-coupon';
+import { ErrorNotice } from '../../shared/components/ErrorNotice/ErrorNotice';
+import { IssuedCouponCard } from '../../features/issuance/components/IssuedCouponCard/IssuedCouponCard';
+import { SIGNAL_KEYS } from '../../features/issuance/model/signal-labels';
+import { StorageStatus, type StorageStatusState } from '../../features/storage/components/StorageStatus/StorageStatus';
+import { WeightsEditor, type WeightsDraft } from '../../features/issuance/components/WeightsEditor/WeightsEditor';
+import { useIssueCoupon } from '../../features/issuance/hooks/use-issue-coupon';
 
 export interface IssuePageProps {
   /**
