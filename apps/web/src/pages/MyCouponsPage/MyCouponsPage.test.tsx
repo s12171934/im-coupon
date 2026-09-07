@@ -13,7 +13,7 @@ import {
   type ListCouponsResponse,
 } from '@im-coupon/contracts';
 
-import { MyCouponsPage } from './my-coupons-page';
+import { MyCouponsPage } from './MyCouponsPage';
 
 /** 설계문서 7장 `citizens` 예시 레코드. 소유자 선택이 로그인을 대신한다 (8장 시민 목록). */
 const CITIZENS: Citizen[] = [

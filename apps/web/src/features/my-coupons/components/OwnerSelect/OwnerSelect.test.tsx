@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import type { Citizen } from '@im-coupon/contracts';
 
-import { OwnerSelect } from './owner-select';
+import { OwnerSelect } from './OwnerSelect';
 
 /**
  * 이름과 `id` 를 둘 다 역순으로 둔 픽스처다. 컴포넌트가 이름으로든 `id` 로든

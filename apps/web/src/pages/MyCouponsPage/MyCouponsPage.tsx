@@ -1,10 +1,10 @@
 import { useState } from 'react';
 
-import { CouponCard } from '../components/coupon-card';
-import { ErrorNotice } from '../components/error-notice';
-import { OwnerSelect } from '../components/owner-select';
-import { useCitizens } from '../hooks/use-citizens';
-import { useMyCoupons } from '../hooks/use-my-coupons';
+import { CouponCard } from '../../features/my-coupons/components/CouponCard/CouponCard';
+import { ErrorNotice } from '../../shared/components/ErrorNotice/ErrorNotice';
+import { OwnerSelect } from '../../features/my-coupons/components/OwnerSelect/OwnerSelect';
+import { useCitizens } from '../../features/my-coupons/hooks/use-citizens';
+import { useMyCoupons } from '../../features/my-coupons/hooks/use-my-coupons';
 
 /**
  * 내 쿠폰 화면 (`CP-06-05`, 설계문서 11장 와이어프레임). 훅과 UI 전용 컴포넌트를 조립만

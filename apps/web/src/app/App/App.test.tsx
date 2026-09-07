@@ -152,3 +152,16 @@ it('없는 경로에서 안내를 보여주고 발급 화면으로 이동한다'
   expect(await screen.findByText('정상')).toBeInTheDocument();
   expect(screen.getByRole('link', { name: '발급 실행' })).toHaveAttribute('aria-current', 'page');
 });
+
+it('화면을 왕복해도 앱이 유지되어 헬스 조회를 반복하지 않는다', async () => {
+  stubHealthyStorage();
+  const user = userEvent.setup();
+  render(<MemoryRouter initialEntries={['/issue']}><App /></MemoryRouter>);
+  await screen.findByText('정상');
+  await user.click(screen.getByRole('link', { name: '내 쿠폰' }));
+  await screen.findByLabelText('소유자 선택');
+  await user.click(screen.getByRole('link', { name: '발급 실행' }));
+  await screen.findByText('정상');
+  const healthCalls = vi.mocked(fetch).mock.calls.filter(([path]) => String(path) === HEALTH_PATH);
+  expect(healthCalls).toHaveLength(1);
+});
