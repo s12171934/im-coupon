@@ -1,19 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { HealthResponse } from '@im-coupon/contracts';
-import { JsonFileDb } from '@im-coupon/db';
 
-import { DATA_DIR } from '../data-dir.token';
+import { STORAGE_HEALTH, type StorageHealth } from './ports/storage-health';
 
 @Injectable()
 export class HealthService {
-  private readonly db: JsonFileDb;
-
-  constructor(@Inject(DATA_DIR) dataDir: string) {
-    this.db = new JsonFileDb(dataDir);
-  }
+  constructor(@Inject(STORAGE_HEALTH) private readonly storage: StorageHealth) {}
 
   async check(): Promise<HealthResponse> {
-    const storage = await this.db.checkHealth();
+    const storage = await this.storage.check();
     return { status: storage.readable ? 'ok' : 'degraded', storage };
   }
 }

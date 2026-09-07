@@ -60,14 +60,14 @@
 | 시민 | 쿠폰을 발급받을 수 있는 가상 사용자 | `Citizen` (`packages/contracts/src/citizen.ts`) |
 | 소유자 | 쿠폰을 발급받은 시민 | `Coupon.ownerId` · `Coupon.ownerName` |
 | 발급 | 발급 후보 하나를 골라 쿠폰 레코드를 만들어 저장하는 것 | `POST /api/coupons/issue` · `CouponsService.issue` |
-| 발급 트리거 | 발급을 일으키는 계기의 추상화. 발급 명령을 만들어 발급 유스케이스에 넘긴다 | `IssueTrigger` · `IssueCommand` (`apps/api/src/issuance/trigger.ts`) |
-| 시연 트리거 | 발급 실행 화면의 버튼이 일으키는, 이번 에픽에서 구현하는 유일한 발급 트리거 | `manualTrigger` (`apps/api/src/issuance/manual-trigger.ts`) · `TriggerType` 의 `'manual'` |
-| 발급 명령 | 발급 트리거가 만들어 넘기는 발급 1건의 입력 — 트리거 유형과 발급 가중치 덮어쓰기 | `IssueCommand` (`apps/api/src/issuance/trigger.ts`) |
-| 발급 후보 | 발급 대상이 될 수 있는 가맹점×시민 쌍 | `Candidate` (`apps/api/src/issuance/signal.ts`) |
-| 신호 | 발급 후보 하나에 0 이상 점수를 주는 단위 함수 | `Signal` (`apps/api/src/issuance/signal.ts`) |
-| 랜덤 신호 | 이력 없이 작동하는 탐색용 신호. 이번 에픽에서 구현하는 유일한 신호 | `randomSignal` (`apps/api/src/issuance/random-signal.ts`) |
+| 발급 트리거 | 발급을 일으키는 계기의 추상화. 발급 명령을 만들어 발급 유스케이스에 넘긴다 | `IssueTrigger` · `IssueCommand` (`apps/api/src/issuance/application/ports/trigger.ts`) |
+| 시연 트리거 | 발급 실행 화면의 버튼이 일으키는, 이번 에픽에서 구현하는 유일한 발급 트리거 | `manualTrigger` (`apps/api/src/issuance/presentation/triggers/manual-trigger.ts`) · `TriggerType` 의 `'manual'` |
+| 발급 명령 | 발급 트리거가 만들어 넘기는 발급 1건의 입력 — 트리거 유형과 발급 가중치 덮어쓰기 | `IssueCommand` (`apps/api/src/issuance/application/ports/trigger.ts`) |
+| 발급 후보 | 발급 대상이 될 수 있는 가맹점×시민 쌍 | `Candidate` (`apps/api/src/issuance/domain/ports/signal.ts`) |
+| 신호 | 발급 후보 하나에 0 이상 점수를 주는 단위 함수 | `Signal` (`apps/api/src/issuance/domain/ports/signal.ts`) |
+| 랜덤 신호 | 이력 없이 작동하는 탐색용 신호. 이번 에픽에서 구현하는 유일한 신호 | `randomSignal` (`apps/api/src/issuance/domain/signals/random-signal.ts`) |
 | 발급 가중치 | 신호별 결합 비중 | `SignalWeights` (`packages/contracts/src/issuance.ts`) |
-| 가중치 결합 | 신호 점수 × 발급 가중치의 합으로 총점 최대 발급 후보를 고르는 것 | `selectCandidate` (`apps/api/src/issuance/engine.ts`) |
+| 가중치 결합 | 신호 점수 × 발급 가중치의 합으로 총점 최대 발급 후보를 고르는 것 | `selectCandidate` (`apps/api/src/issuance/domain/services/engine.ts`) |
 | 소유자 점유 상태 | 발급 직후의 쿠폰 상태. 이번 에픽의 유일한 상태 값 | `CouponStatus` 의 `'held'` |
 | 소유자 점유 기한 | 소유자만 쿠폰을 온전히 쓸 수 있는 기간의 끝 시각 | `Coupon.heldUntil` · 파라미터 `ownerHoldDays` |
 | 유효 소비 기한 | 쿠폰이 만료되는 시각 | `Coupon.expiresAt` · 파라미터 `openValidDays` |
@@ -107,7 +107,7 @@
 | 1 | 발급 엔진의 위치 | 새 워크스페이스 `packages/issuance` / `apps/api` 내부 모듈 | `apps/api/src/issuance/` | 워크스페이스 다섯을 유지. 이식성은 순수 함수 경계로 확보 | `apps/api` |
 | 2 | 신호 확장 구조 | 단일 함수에 하드코딩 / `Signal` 인터페이스 + 발급 가중치 맵 | 인터페이스 + 맵 | 제외된 네 신호를 나중에 같은 틀로 추가 | `apps/api` · `packages/contracts` |
 | 3 | 난수·현재 시각 공급 | 전역(`Math.random`·`Date.now`) 직접 호출 / 주입 | RNG 와 시계를 인자로 주입 | 테스트가 고정 값으로 결정적으로 판정 | `apps/api` |
-| 4 | 파라미터 기본값 위치 | 환경변수 / 시드 파일 / 코드 상수 | `apps/api/src/issuance/params.ts` 상수 한 곳 | 7장 값 표와 1:1 대응. 발급 가중치만 요청 본문으로 덮어쓸 수 있다 | `apps/api` |
+| 4 | 파라미터 기본값 위치 | 환경변수 / 시드 파일 / 코드 상수 | `apps/api/src/issuance/domain/params.ts` 상수 한 곳 | 7장 값 표와 1:1 대응. 발급 가중치만 요청 본문으로 덮어쓸 수 있다 | `apps/api` |
 | 5 | 쿠폰 레코드의 자기완결 | 조회 시 조인 / 발급 시 스냅샷 | 가맹점명·소유자명·액면·배분 비율·두 기한을 레코드에 스냅샷 | 아래 문장 참조 | `packages/contracts` · `apps/api` |
 | 6 | coupons 동시 쓰기 보호 | 파일 락 / 프로세스 내 직렬화 / 보호 없음 | 프로세스 내 직렬화 + 기존 원자적 쓰기 | 아래 문장 참조 | `apps/api` |
 | 7 | 두 기한의 저장 형태 | 파라미터(일수)만 저장 / 발급 시 절대 시각을 계산해 저장 | ISO 8601 절대 시각 `heldUntil`·`expiresAt` 저장 | 화면·테스트가 계산 없이 판정. 파라미터 변경의 소급 영향 차단 | `packages/contracts` · `apps/api` |
@@ -239,7 +239,7 @@
 
 ### 파라미터 값 표
 
-- 수치는 본문·코드에 박지 않고 파라미터로 둔다. 시연용 기본값은 이 표가 유일한 원본이고, 코드에서는 `apps/api/src/issuance/params.ts` 한 곳이 이 표를 든다 (4장 결정 4).
+- 수치는 본문·코드에 박지 않고 파라미터로 둔다. 시연용 기본값은 이 표가 유일한 원본이고, 코드에서는 `apps/api/src/issuance/domain/params.ts` 한 곳이 이 표를 든다 (4장 결정 4).
 - 파라미터 이름과 후보값은 [프로토타입 범위](../프로토타입-범위.md) 의 파라미터 표와 대응한다. 표가 어긋나면 그쪽을 먼저 갱신한다.
 - `ownerHoldDays` 와 `openValidDays` 는 둘 다 **1 이상의 정수**다. 근거는 둘로 나뉜다 — 0 과 음수는 두 기한이 등호 없는 "이후"라는 조건(위 `coupons` 테이블)에서 배제되고, 소수는 그 조건이 아니라 두 기한을 **일 단위 파라미터로 두기로 한 결정**(아래 값 표의 단위)에서 배제된다. 다만 이 둘은 요청 본문으로 들어오지 않고 `params.ts` 상수로만 오므로 런타임 검증은 두지 않는다 — 범위를 지키는 것은 상수를 고치는 쪽의 몫이다.
 
@@ -303,7 +303,7 @@ interface SignalWeights {
 }
 ```
 
-- `weights` 는 **부분 덮어쓰기**다. 지정한 신호만 덮어쓰고, **지정하지 않은 신호는 `apps/api/src/issuance/params.ts` 의 기본값**(7장 값 표)을 쓴다. 신호 키가 늘어도 기존 호출자의 요청 본문이 그대로 유효하다 (4장 결정 2).
+- `weights` 는 **부분 덮어쓰기**다. 지정한 신호만 덮어쓰고, **지정하지 않은 신호는 `apps/api/src/issuance/domain/params.ts` 의 기본값**(7장 값 표)을 쓴다. 신호 키가 늘어도 기존 호출자의 요청 본문이 그대로 유효하다 (4장 결정 2).
 
 - `201` — 발급 성공.
 
@@ -403,21 +403,21 @@ interface IssueDecision {
 
 ### `KAN-13/02-issuance-engine`
 
-- 파일맵 — 생성: `apps/api/src/issuance/signal.ts`(`Signal`·`Candidate`), `apps/api/src/issuance/random-signal.ts`(+`random-signal.test.ts`), `apps/api/src/issuance/engine.ts`(`selectCandidate`), `apps/api/src/issuance/trigger.ts`(`IssueTrigger`·`IssueCommand`), `apps/api/src/issuance/manual-trigger.ts`(+`manual-trigger.test.ts`), `apps/api/src/issuance/params.ts`(7장 값 표의 기본값), `apps/api/src/issuance/engine.test.ts`. 수정: `packages/contracts/src/issuance.ts`·`packages/contracts/src/coupon.ts`·`documents/KAN-13/design.md`(계약 미결 4건과 구현 중 굳은 결정 넷 반영 — 14장).
+- 파일맵 — 생성: `apps/api/src/issuance/domain/ports/signal.ts`(`Signal`·`Candidate`), `apps/api/src/issuance/domain/signals/random-signal.ts`(+`random-signal.test.ts`), `apps/api/src/issuance/domain/services/engine.ts`(`selectCandidate`), `apps/api/src/issuance/application/ports/trigger.ts`(`IssueTrigger`·`IssueCommand`), `apps/api/src/issuance/presentation/triggers/manual-trigger.ts`(+`manual-trigger.test.ts`), `apps/api/src/issuance/domain/params.ts`(7장 값 표의 기본값), `apps/api/src/issuance/domain/services/engine.test.ts`. 수정: `packages/contracts/src/issuance.ts`·`packages/contracts/src/coupon.ts`·`documents/KAN-13/design.md`(계약 미결 4건과 구현 중 굳은 결정 넷 반영 — 14장).
 - 넣는 것 — 신호 인터페이스와 랜덤 신호, 발급 가중치 결합, 발급 트리거 인터페이스와 시연 트리거. NestJS 에 의존하지 않는 순수 함수로 두고 RNG 는 인자로 주입한다 (4장 결정 1·2·3·9·11).
 - RED `TC-02-01` — `engine.test.ts`: "발급 가중치 `{ random: 1 }` 과 고정 수열을 반환하는 RNG 스텁으로 `selectCandidate` 를 두 번 호출하면 두 번 모두 같은 발급 후보가 선택되고, 반환된 `scores.random`·`total` 이 스텁 수열에서 계산한 기대값과 일치한다".
 - 완료 조건 — `TC-02-01` 이 GREEN 이고 `TC-02-02`(가중치 거부)·`TC-02-03`(시연 트리거, 12장)을 포함. 기본값 수치가 `params.ts` 밖에 등장하지 않는다.
 
 ### `KAN-13/03-issue-endpoint`
 
-- 파일맵 — 생성: `apps/api/src/coupons/coupons.module.ts`, `apps/api/src/coupons/coupons.controller.ts`, `apps/api/src/coupons/coupons.service.ts`, `apps/api/src/coupons/coupon.repository.ts`(`JsonFileDb` 래핑 + 직렬화 큐), `apps/api/src/coupons/candidate-source.ts`(`merchants`·`citizens` 를 읽어 발급 후보 생성), `apps/api/src/coupons/coupons.controller.test.ts`. 수정: `apps/api/src/app.module.ts`.
+- 파일맵 — 생성: `apps/api/src/coupons/coupons.module.ts`, `apps/api/src/coupons/presentation/coupons.controller.ts`, `apps/api/src/coupons/application/coupons.service.ts`, `apps/api/src/coupons/infrastructure/json-coupon.repository.ts`(`JsonFileDb` 래핑 + 직렬화 큐), `apps/api/src/coupons/infrastructure/json-candidate-source.ts`(`merchants`·`citizens` 를 읽어 발급 후보 생성), `apps/api/src/coupons/presentation/coupons.controller.test.ts`. 수정: `apps/api/src/app.module.ts`.
 - 넣는 것 — 8장의 `POST /api/coupons/issue`. 컨트롤러는 요청 본문을 시연 트리거로 옮겨 발급 명령을 만들고 발급 유스케이스에 넘긴다 (4장 결정 9). 쿠폰 생성 시 두 기한 계산과 `trigger`·스냅샷 기록 (4장 결정 5·7), coupons 쓰기의 프로세스 내 직렬화 (4장 결정 6). 발급의 실패는 전부 `IssuanceError` 로 올린다 — 엔진이 던지는 `INVALID_WEIGHTS`·`NO_CANDIDATES` 에 더해, 발급 후보 적재와 쿠폰 저장의 파일 IO 실패도 `candidate-source.ts`·`coupon.repository.ts` 가 `IssuanceError('STORAGE_FAILURE')` 로 감싸 올린다. 컨트롤러 층은 그래서 `IssuanceError` 하나만 잡아 `code` 를 8장의 HTTP 상태와 오류 응답 본문으로 옮긴다 (4장 결정 11).
 - RED `TC-03-01` — `coupons.controller.test.ts`(supertest): "임시 데이터 디렉터리에 시드를 부트스트랩한 뒤 `POST /api/coupons/issue` 를 보내면 `201` 과 `IssueCouponResponse` 계약을 만족하는 본문이 오고, `coupons` 컬렉션 레코드가 0건에서 1건이 된다".
 - 완료 조건 — `TC-03-01` 이 GREEN 이고 오류 4종 `TC-03-02`~`TC-03-04`·`TC-03-06` 과 동시 발급 유실 없음 `TC-03-05`(12장)를 포함.
 
 ### `KAN-13/04-list-endpoints`
 
-- 파일맵 — 생성: `apps/api/src/citizens/citizens.module.ts`, `apps/api/src/citizens/citizens.controller.ts`, `apps/api/src/citizens/citizens.controller.test.ts`, `apps/api/src/coupons/list-coupons.test.ts`. 수정: `apps/api/src/coupons/coupons.controller.ts`·`coupons.service.ts`(내 쿠폰 조회 추가), `apps/api/src/app.module.ts`.
+- 파일맵 — 생성: `apps/api/src/citizens/citizens.module.ts`, `apps/api/src/citizens/presentation/citizens.controller.ts`, `apps/api/src/citizens/presentation/citizens.controller.test.ts`, `apps/api/src/coupons/presentation/list-coupons.test.ts`. 수정: `apps/api/src/coupons/presentation/coupons.controller.ts`·`coupons.service.ts`(내 쿠폰 조회 추가), `apps/api/src/app.module.ts`.
 - 넣는 것 — 8장의 `GET /api/coupons?ownerId=` 와 `GET /api/citizens`.
 - RED `TC-04-01` — `list-coupons.test.ts`: "`coupons` 컬렉션에 소유자 `cit-001` 의 쿠폰 1건을 미리 써 두면, `GET /api/coupons?ownerId=cit-001` 은 그 1건을 반환하고 `?ownerId=cit-002` 는 빈 배열을 반환한다".
 - 완료 조건 — `TC-04-01` 이 GREEN 이고 오류 2종 `TC-04-02`·`TC-04-03` 과 시민 목록 `TC-04-04`(12장)를 포함.
@@ -480,9 +480,9 @@ interface IssueDecision {
 | 브랜치 | 테스트 파일 | 실행 명령 |
 | --- | --- | --- |
 | `KAN-13/01-seed-and-contracts` | `packages/db/src/seed-data.test.ts` | `pnpm --filter @im-coupon/db test` |
-| `KAN-13/02-issuance-engine` | `apps/api/src/issuance/engine.test.ts` · `manual-trigger.test.ts` | `pnpm --filter @im-coupon/api test` |
-| `KAN-13/03-issue-endpoint` | `apps/api/src/coupons/coupons.controller.test.ts` | `pnpm --filter @im-coupon/api test` |
-| `KAN-13/04-list-endpoints` | `apps/api/src/coupons/list-coupons.test.ts` · `apps/api/src/citizens/citizens.controller.test.ts` | `pnpm --filter @im-coupon/api test` |
+| `KAN-13/02-issuance-engine` | `apps/api/src/issuance/domain/services/engine.test.ts` · `manual-trigger.test.ts` | `pnpm --filter @im-coupon/api test` |
+| `KAN-13/03-issue-endpoint` | `apps/api/src/coupons/presentation/coupons.controller.test.ts` | `pnpm --filter @im-coupon/api test` |
+| `KAN-13/04-list-endpoints` | `apps/api/src/coupons/presentation/list-coupons.test.ts` · `apps/api/src/citizens/presentation/citizens.controller.test.ts` | `pnpm --filter @im-coupon/api test` |
 | `KAN-13/05-issue-screen` | `apps/web/src/pages/issue-page.test.tsx` | `pnpm --filter @im-coupon/web test` |
 | `KAN-13/06-my-coupons-screen` | `apps/web/src/pages/my-coupons-page.test.tsx` | `pnpm --filter @im-coupon/web test` |
 | `KAN-13/07-issuance-e2e` | `e2e/tests/issuance.spec.ts` | `pnpm build && pnpm e2e` |

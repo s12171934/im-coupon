@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { randomSignal } from './random-signal';
-import type { Candidate } from './signal';
+import type { Candidate } from '../ports/signal';
 
 /**
  * 고정 수열을 순서대로 돌려주는 RNG 스텁. 수열이 모자라면 조용히 다른 값을 내지 않고

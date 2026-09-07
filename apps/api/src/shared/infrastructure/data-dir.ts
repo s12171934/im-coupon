@@ -1,6 +1,6 @@
 import { resolve } from 'node:path';
 
-const REPO_ROOT = resolve(__dirname, '../../..');
+const REPO_ROOT = resolve(__dirname, '../../../../..');
 
 /**
  * 런타임 데이터 디렉터리의 위치. `IM_COUPON_DATA_DIR` 로 덮어쓸 수 있고,

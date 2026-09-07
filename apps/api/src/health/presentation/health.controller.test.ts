@@ -6,8 +6,8 @@ import { join } from 'node:path';
 import request from 'supertest';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { DATA_DIR } from '../data-dir.token';
-import { HealthModule } from './health.module';
+import { DATA_DIR } from '../../shared/infrastructure/data-dir.token';
+import { HealthModule } from '../health.module';
 
 let app: INestApplication;
 
