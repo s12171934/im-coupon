@@ -45,6 +45,7 @@ test('TC-07-01 발급한 쿠폰이 그 소유자의 내 쿠폰 화면에 거래�
   await new JsonFileDb(DATA_DIR).writeCollection('coupons', []);
 
   await page.goto('/');
+  await expect(page).toHaveURL(/\/issue$/);
 
   // 2. 발급 실행 화면에서 발급 1건 실행을 클릭한다.
   await page.getByRole('button', { name: '발급 1건 실행' }).click();
@@ -63,7 +64,8 @@ test('TC-07-01 발급한 쿠폰이 그 소유자의 내 쿠폰 화면에 거래�
   expect(faceValue).toBeDefined();
 
   // 4. 내 쿠폰 화면으로 전환해 그 소유자를 선택한다.
-  await page.getByRole('tab', { name: '내 쿠폰' }).click();
+  await page.getByRole('link', { name: '내 쿠폰' }).click();
+  await expect(page).toHaveURL(/\/my-coupons$/);
   /*
     소유자를 **이름(표시 텍스트)** 으로 고른다. 발급은 랜덤 신호로 후보를 골라 실행마다
     소유자가 달라지므로, 3단계에서 읽은 값으로 4단계를 골라야 한다. 그런데 발급 결과
