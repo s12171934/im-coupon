@@ -4,9 +4,9 @@ import { randomUUID } from 'node:crypto';
 
 import { selectCandidate } from '../../issuance/domain/services/engine';
 import { DEFAULT_ISSUANCE_PARAMS } from '../../issuance/domain/params';
-import { randomSignal } from '../../issuance/domain/signals/random-signal';
-import type { Candidate, Signal } from '../../issuance/domain/ports/signal';
-import type { IssueCommand } from '../../issuance/application/ports/trigger';
+import { randomSignal } from '../../issuance/domain/signals/implementations/random-signal';
+import type { Candidate, Signal } from '../../issuance/domain/signals/signal';
+import type { IssueCommand } from '../../issuance/domain/triggers/issue-trigger';
 import { CANDIDATE_SOURCE, type CandidateSource } from './ports/candidate-source';
 import { COUPON_REPOSITORY, type CouponRepository } from './ports/coupon.repository';
 

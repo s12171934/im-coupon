@@ -1,4 +1,4 @@
-import type { Candidate } from '../../../issuance/domain/ports/signal';
+import type { Candidate } from '../../../issuance/domain/signals/signal';
 
 export interface CandidateSource {
   load(): Promise<Candidate[]>;

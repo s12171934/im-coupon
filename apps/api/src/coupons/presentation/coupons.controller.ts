@@ -3,7 +3,7 @@ import type { IssueCouponRequest, IssueCouponResponse } from '@im-coupon/contrac
 import { ISSUE_COUPON_PATH } from '@im-coupon/contracts';
 
 import { IssuanceError } from '../../issuance/domain/services/engine';
-import { manualTrigger } from '../../issuance/presentation/triggers/manual-trigger';
+import { manualTrigger } from '../../issuance/domain/triggers/implementations/manual-trigger';
 import { CouponsService } from '../application/coupons.service';
 
 /**

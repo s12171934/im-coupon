@@ -5,7 +5,7 @@ import { JsonFileDb } from '@im-coupon/db';
 
 import { DATA_DIR } from '../../shared/infrastructure/data-dir.token';
 import { IssuanceError } from '../../issuance/domain/services/engine';
-import type { Candidate } from '../../issuance/domain/ports/signal';
+import type { Candidate } from '../../issuance/domain/signals/signal';
 
 /** 시드로만 들어오고 발급은 읽기만 한다. 쓰기가 없으므로 직렬화 큐도 필요 없다. */
 const MERCHANTS_COLLECTION = 'merchants';
