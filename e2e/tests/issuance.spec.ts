@@ -34,7 +34,7 @@ test('TC-07-01 발급한 쿠폰이 그 소유자의 내 쿠폰 화면에 거래�
   page,
 }) => {
   /*
-    1. 준비 — `coupons` 를 빈 배열로 연다. 5단계에서 카드 건수를 단언하려면 시작 건수를
+    1. 준비 — `issued-coupons` 를 빈 배열로 연다. 5단계에서 카드 건수를 단언하려면 시작 건수를
     알아야 하고, 시연으로 쌓인 쿠폰이 남아 있으면 그 수를 알 수 없다.
 
     이 쓰기가 `data/runtime` 의 컬렉션 수를 늘리지만 `health.spec.ts` 와 부딪히지 않는다 —
@@ -42,7 +42,7 @@ test('TC-07-01 발급한 쿠폰이 그 소유자의 내 쿠폰 화면에 거래�
     `orphan-guard.spec.ts` 는 자기 임시 디렉터리를 쓰므로 이 디렉터리를 아예 보지 않는다.
     쿠폰을 쓰는 스펙이 이 파일 하나뿐이라 `fullyParallel` 아래에서도 건수가 흔들리지 않는다.
   */
-  await new JsonFileDb(DATA_DIR).writeCollection('coupons', []);
+  await new JsonFileDb(DATA_DIR).writeCollection('issued-coupons', []);
 
   await page.goto('/');
   await expect(page).toHaveURL(/\/issue$/);
@@ -101,4 +101,19 @@ test('TC-07-01 발급한 쿠폰이 그 소유자의 내 쿠폰 화면에 거래�
     new RegExp(`소유자 점유 기한 — ${DISPLAY_MINUTE} 까지는 소유자만 사용`),
   );
   await expect(card).toContainText(new RegExp(`유효 소비 기한 — ${DISPLAY_MINUTE} 에 만료`));
+
+  // 소비 초기화를 실제 화면에서 실행해도 발급한 쿠폰은 보존된다.
+  await page.getByRole('link', { name: '소비 시연' }).click();
+  await expect(page).toHaveURL(/\/consumption$/);
+  await expect(page.getByRole('heading', { name: '내 리워드 미션' })).toBeVisible();
+  page.once('dialog', (dialog) => dialog.accept());
+  const reset = page.waitForResponse((response) =>
+    response.url().endsWith('/api/consumption') && response.request().method() === 'DELETE',
+  );
+  await page.getByRole('button', { name: '전체 소비 데이터 초기화' }).click();
+  expect((await reset).ok()).toBe(true);
+  await page.getByRole('link', { name: '내 쿠폰' }).click();
+  await page.getByRole('combobox', { name: '소유자 선택' }).selectOption({ label: ownerName });
+  await expect(page.getByRole('article', { name: merchantName })).toContainText(`액면 ${faceValue}원 페이백`);
+
 });

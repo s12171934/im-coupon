@@ -1,4 +1,4 @@
-import type { IssueCouponRequest } from '@im-coupon/contracts';
+import type { IssuanceRequest } from '@im-coupon/contracts';
 
 import type { IssueTrigger } from '../issue-trigger';
 
@@ -10,7 +10,7 @@ import type { IssueTrigger } from '../issue-trigger';
  * 않은 신호를 발급 파라미터 기본값으로 채우는 것도 병합을 맡은 엔진의 몫이라 여기서 하지
  * 않는다. 그래서 이 트리거는 값을 판정하지 않고 받은 그대로 통과시킨다.
  */
-export const manualTrigger: IssueTrigger<IssueCouponRequest | undefined, 'manual'> = {
+export const manualTrigger: IssueTrigger<IssuanceRequest | undefined, 'manual'> = {
   type: 'manual',
   toCommand: (request) => ({ trigger: 'manual', weights: request?.weights }),
 };

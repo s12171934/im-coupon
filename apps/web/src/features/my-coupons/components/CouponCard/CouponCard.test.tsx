@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import type { Coupon } from '@im-coupon/contracts';
+import type { IssuedCoupon } from '@im-coupon/contracts';
 
 import { CouponCard } from './CouponCard';
 
 /** 설계문서 7장 `coupons` 예시 레코드. 수치는 값 표의 시연 기본값이고 세 시각은 `Z` 다. */
-const COUPON: Coupon = {
+const COUPON: IssuedCoupon = {
   id: 'cpn-9b1c6a2e-3f47-4a6b-8f0e-2d5c7e1a4b93',
   status: 'held',
   trigger: 'manual',
@@ -20,7 +20,7 @@ const COUPON: Coupon = {
   expiresAt: '2026-09-15T05:00:00.000Z',
 };
 
-function renderCard(overrides: Partial<Coupon> = {}) {
+function renderCard(overrides: Partial<IssuedCoupon> = {}) {
   render(<CouponCard {...COUPON} {...overrides} />);
   return screen.getByRole('article', { name: overrides.merchantName ?? COUPON.merchantName });
 }

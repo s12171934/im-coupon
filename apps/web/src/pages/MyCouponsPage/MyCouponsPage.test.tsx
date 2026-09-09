@@ -8,7 +8,7 @@ import {
   type ApiErrorCode,
   type ApiErrorResponse,
   type Citizen,
-  type Coupon,
+  type IssuedCoupon,
   type ListCitizensResponse,
   type ListCouponsResponse,
 } from '@im-coupon/contracts';
@@ -25,7 +25,7 @@ const CITIZENS: Citizen[] = [
  * 설계문서 7장 `coupons` 예시 레코드. 수치는 값 표의 시연 기본값이고 세 시각은 `Z` 다 —
  * `benefitSplit` 이 `0.2`/`0.8` 이라 카드에 `소유자 20% / 소비자 80%` 가 실제로 나온다.
  */
-const COUPON: Coupon = {
+const COUPON: IssuedCoupon = {
   id: 'cpn-9b1c6a2e-3f47-4a6b-8f0e-2d5c7e1a4b93',
   status: 'held',
   trigger: 'manual',
@@ -57,7 +57,7 @@ function citizensResponse(citizens: Citizen[]): Response {
   return jsonResponse(200, body);
 }
 
-function couponsResponse(coupons: Coupon[]): Response {
+function couponsResponse(coupons: IssuedCoupon[]): Response {
   const body: ListCouponsResponse = { coupons };
   return jsonResponse(200, body);
 }
@@ -67,7 +67,7 @@ function errorResponse(status: number, code: ApiErrorCode, message: string): Res
   return jsonResponse(status, body);
 }
 
-function couponOf(overrides: Partial<Coupon>): Coupon {
+function couponOf(overrides: Partial<IssuedCoupon>): IssuedCoupon {
   return { ...COUPON, ...overrides };
 }
 
@@ -280,7 +280,7 @@ describe('MyCouponsPage', () => {
   });
 
   it('소유자를 바꾸면 새 소유자의 쿠폰으로 바뀌고 앞 소유자의 카드가 남지 않는다', async () => {
-    const byOwner: Record<string, Coupon[]> = {
+    const byOwner: Record<string, IssuedCoupon[]> = {
       'cit-001': [couponOf({ id: 'cpn-a', merchantName: '달성책방' })],
       'cit-002': [couponOf({ id: 'cpn-b', merchantName: '수성문구' })],
     };

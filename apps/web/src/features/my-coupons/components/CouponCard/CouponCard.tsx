@@ -1,11 +1,11 @@
-import type { Coupon, CouponStatus } from '@im-coupon/contracts';
+import type { IssuedCoupon, IssuedCouponStatus } from '@im-coupon/contracts';
 
 /**
  * 상태 값을 화면 문구로 옮기는 표. `'held'` 하나뿐인 것은 발급 이후 상태의 이름과 수가
  * 기획 노선 미결이어서다 (설계문서 7장) — 그래서 없는 상태의 문구를 미리 만들지 않는다.
  * 표로 두면 라이프사이클 에픽이 상태를 늘릴 때 이 표가 컴파일 오류로 문구를 요구한다.
  */
-const STATUS_LABELS: Record<CouponStatus, string> = {
+const STATUS_LABELS: Record<IssuedCouponStatus, string> = {
   held: '소유자 점유',
 };
 
@@ -28,7 +28,7 @@ const PERCENT_ERROR_CUTOFF = 10;
 const DISPLAY_OFFSET_MINUTES = 9 * 60;
 const DISPLAY_ZONE_LABEL = 'KST';
 
-export type CouponCardProps = Coupon;
+export type CouponCardProps = IssuedCoupon;
 
 /**
  * 쿠폰 한 건을 와이어프레임의 카드로 그린다 (설계문서 11장). props 만 받아 그리는 UI 전용

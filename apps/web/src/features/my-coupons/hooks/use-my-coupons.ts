@@ -4,8 +4,8 @@ import {
   OWNER_ID_QUERY,
   type ApiErrorResponse,
   type BenefitSplit,
-  type Coupon,
-  type CouponStatus,
+  type IssuedCoupon,
+  type IssuedCouponStatus,
   type ListCouponsResponse,
 } from '@im-coupon/contracts';
 
@@ -35,7 +35,7 @@ export interface MyCouponsFailure {
 export type MyCouponsState =
   | { status: 'unselected' }
   | { status: 'loading' }
-  | { status: 'loaded'; coupons: Coupon[] }
+  | { status: 'loaded'; coupons: IssuedCoupon[] }
   | { status: 'failed'; error: MyCouponsFailure };
 
 export interface UseMyCoupons {
@@ -163,7 +163,7 @@ function unexpectedResponse(status: number): MyCouponsState {
  * `ListCouponsResponse` 로 읽히면 그 목록을, 아니면 `undefined` 를 준다.
  *
  * 성공 본문을 `as` 로 믿지 않고 여기서 모양을 확인한다 — 시민 목록 훅(`CP-06-03`)이 정한
- * 것이고, 훅이 반환 타입으로 `Coupon[]` 이라고 선언하는 값이니 그 선언이 참이 되는 지점도
+ * 것이고, 훅이 반환 타입으로 `IssuedCoupon[]` 이라고 선언하는 값이니 그 선언이 참이 되는 지점도
  * 이 검사뿐이다.
  *
  * 어긋난 원소를 골라내지 않고 목록 전체를 계약 밖으로 본다. 골라내면 화면이 쿠폰 일부만
@@ -172,7 +172,7 @@ function unexpectedResponse(status: number): MyCouponsState {
  * 순서를 그대로 둔다 — `issuedAt` 내림차순은 서버가 지는 계약이다 (설계문서 8장). 화면이
  * 다시 정렬하면 서버 정렬이 깨졌을 때 그 사실을 화면이 가려 버린다.
  */
-function couponListOf(body: unknown): Coupon[] | undefined {
+function couponListOf(body: unknown): IssuedCoupon[] | undefined {
   if (typeof body !== 'object' || body === null) return undefined;
   const { coupons } = body as Partial<ListCouponsResponse>;
   if (!Array.isArray(coupons)) return undefined;
@@ -181,9 +181,9 @@ function couponListOf(body: unknown): Coupon[] | undefined {
 
 /**
  * 상태 값의 표. 쿠폰 카드(`CP-06-02`)의 문구 표와 같은 틀이라, 라이프사이클 에픽이
- * `CouponStatus` 를 늘리면 이 표가 컴파일 오류로 새 값을 요구한다.
+ * `IssuedCouponStatus` 를 늘리면 이 표가 컴파일 오류로 새 값을 요구한다.
  */
-const KNOWN_STATUSES: Record<CouponStatus, true> = {
+const KNOWN_STATUSES: Record<IssuedCouponStatus, true> = {
   held: true,
 };
 
@@ -192,7 +192,7 @@ const KNOWN_STATUSES: Record<CouponStatus, true> = {
  * `merchantName`, `faceValue`, `benefitSplit` 의 두 비율, `heldUntil`, `expiresAt`.
  * `coupon-card.tsx` 의 구조 분해에 든 이름이 정확히 이 일곱이다.
  *
- * `Coupon` 은 필드가 열둘이지만 나머지 다섯(`id`·`trigger`·`ownerId`·`ownerName`·
+ * `IssuedCoupon` 은 필드가 열둘이지만 나머지 다섯(`id`·`trigger`·`ownerId`·`ownerName`·
  * `merchantId`·`issuedAt`)은 카드가 읽지 않아 검사하지 않는다. 아는 필드만 보고 모르는
  * 필드는 통과시키는 것이 시민 목록 훅이 정한 방식이고, 그래야 계약에 필드가 늘어도 이
  * 검사가 막지 않는다.
@@ -203,10 +203,10 @@ const KNOWN_STATUSES: Record<CouponStatus, true> = {
  * 거래조건 고지이므로(설계문서 10장), 고지 자리에 뜻 없는 문자열을 그리느니 목록 전체를
  * 계약 밖으로 보고 실패로 알리는 편이 맞다.
  */
-function isCoupon(value: unknown): value is Coupon {
+function isCoupon(value: unknown): value is IssuedCoupon {
   if (typeof value !== 'object' || value === null) return false;
   const { status, merchantName, faceValue, benefitSplit, heldUntil, expiresAt } =
-    value as Partial<Coupon>;
+    value as Partial<IssuedCoupon>;
 
   return (
     typeof status === 'string' &&

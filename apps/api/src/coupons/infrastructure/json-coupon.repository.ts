@@ -1,14 +1,14 @@
 import { readCollection } from '../../shared/infrastructure/read-collection';
 import type { CouponRepository } from '../application/ports/coupon.repository';
 import { Inject, Injectable } from '@nestjs/common';
-import type { Coupon } from '@im-coupon/contracts';
+import type { IssuedCoupon } from '@im-coupon/contracts';
 import { JsonFileDb } from '@im-coupon/db';
 
 import { DATA_DIR } from '../../shared/infrastructure/data-dir.token';
 import { IssuanceError } from '../../issuance/domain/services/engine';
 
 /** 발급된 쿠폰이 담기는 컬렉션. 시드에 없고 발급의 최초 쓰기가 이 파일을 만든다. */
-const COUPONS_COLLECTION = 'coupons';
+const COUPONS_COLLECTION = 'issued-coupons';
 
 /**
  * 발급 시각 내림차순. 세 시각이 UTC `Z` 로 굳어 있으므로(7장) 문자열 비교가 곧 시각
@@ -23,13 +23,13 @@ const COUPONS_COLLECTION = 'coupons';
  * 그래서 오름차순으로 정렬한 뒤 뒤집지 않는다. 뒤집기는 안정 정렬이 지켜 준 동률 구간의
  * 앞뒤까지 함께 뒤집어, 같은 시각 2건이 발급 순서의 역순으로 나온다.
  */
-function byIssuedAtDesc(left: Coupon, right: Coupon): number {
+function byIssuedAtDesc(left: IssuedCoupon, right: IssuedCoupon): number {
   if (left.issuedAt === right.issuedAt) return 0;
   return left.issuedAt < right.issuedAt ? 1 : -1;
 }
 
 /**
- * `coupons` 컬렉션의 유일한 출입구.
+ * `issued-coupons` 컬렉션의 유일한 출입구.
  *
  * 저장은 읽고-더하고-쓰는 한 묶음이라 겹치면 나중 쓰기가 앞 쓰기를 덮어 레코드가 유실된다.
  * `JsonFileDb` 의 원자적 쓰기는 파일이 반쯤 쓰인 상태만 막을 뿐 이 유실은 막지 못한다.
@@ -55,7 +55,20 @@ export class JsonCouponRepository implements CouponRepository {
     this.db = new JsonFileDb(dataDir);
   }
 
-  async append(coupon: Coupon): Promise<void> {
+  /** HTTP 요청을 받기 전에 기존 발급 레코드만 새 컬렉션으로 옮긴다. */
+  async onModuleInit(): Promise<void> {
+    const legacy = await this.db.readCollection<unknown>('coupons');
+    if (!Array.isArray(legacy)) throw new Error('기존 쿠폰 컬렉션이 배열이 아니다');
+    const issued = legacy.filter(isIssuedCoupon);
+    if (issued.length === 0) return;
+    const current = await this.read();
+    const ids = new Set(current.map((coupon) => coupon.id));
+    // 먼저 복사한다. 재시작 시 이미 복사된 id는 대상의 값을 유지한다.
+    await this.write([...current, ...issued.filter((coupon) => !ids.has(coupon.id))]);
+    await this.db.writeCollection('coupons', legacy.filter((row) => !isIssuedCoupon(row)));
+  }
+
+  async append(coupon: IssuedCoupon): Promise<void> {
     await this.serialize(async () => {
       const rows = await this.read();
       await this.write([...rows, coupon]);
@@ -72,16 +85,16 @@ export class JsonCouponRepository implements CouponRepository {
    * 거른 뒤에 정렬한다. 결과는 어느 쪽을 먼저 해도 같지만, 거르기가 앞서면 정렬이 다루는
    * 것이 늘 응답에 실릴 목록 그대로다.
    */
-  async findByOwner(ownerId: string): Promise<Coupon[]> {
+  async findByOwner(ownerId: string): Promise<IssuedCoupon[]> {
     const rows = await this.read();
     return rows.filter((coupon) => coupon.ownerId === ownerId).sort(byIssuedAtDesc);
   }
 
-  private read(): Promise<Coupon[]> {
-    return readCollection<Coupon>(this.db, COUPONS_COLLECTION);
+  private read(): Promise<IssuedCoupon[]> {
+    return readCollection<IssuedCoupon>(this.db, COUPONS_COLLECTION);
   }
 
-  private async write(rows: readonly Coupon[]): Promise<void> {
+  private async write(rows: readonly IssuedCoupon[]): Promise<void> {
     try {
       await this.db.writeCollection(COUPONS_COLLECTION, rows);
     } catch (error) {
@@ -112,4 +125,13 @@ export class JsonCouponRepository implements CouponRepository {
 /** 감싼 예외가 원인을 삼키지 않게 원래 오류의 말을 메시지에 남긴다. */
 function messageOf(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
+}
+
+/** 소비 쿠폰의 상태·금액 계약과 구분되는 기존 발급 레코드 표식이다. */
+function isIssuedCoupon(value: unknown): value is IssuedCoupon {
+  if (value === null || typeof value !== 'object') return false;
+  const row = value as Record<string, unknown>;
+  return typeof row.id === 'string' && row.status === 'held' &&
+    row.trigger === 'manual' && typeof row.ownerId === 'string' &&
+    typeof row.faceValue === 'number';
 }

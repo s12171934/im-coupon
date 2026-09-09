@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import type { Coupon, IssueDecision, SignalWeights } from '@im-coupon/contracts';
+import type { IssuedCoupon, IssueDecision, SignalWeights } from '@im-coupon/contracts';
 
 import { IssuedCouponCard } from './IssuedCouponCard';
 
 /** 설계문서 7장 `coupons` 예시 레코드. 수치는 값 표의 시연 기본값이고 세 시각은 `Z` 다. */
-const COUPON: Coupon = {
+const COUPON: IssuedCoupon = {
   id: 'cpn-9b1c6a2e-3f47-4a6b-8f0e-2d5c7e1a4b93',
   status: 'held',
   trigger: 'manual',

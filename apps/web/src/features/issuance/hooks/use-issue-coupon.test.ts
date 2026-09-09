@@ -4,7 +4,7 @@ import {
   ISSUE_COUPON_PATH,
   type ApiErrorCode,
   type ApiErrorResponse,
-  type Coupon,
+  type IssuedCoupon,
   type IssueCouponResponse,
 } from '@im-coupon/contracts';
 
@@ -12,7 +12,7 @@ import type { WeightsDraft } from '../components/WeightsEditor/WeightsEditor';
 import { useIssueCoupon } from './use-issue-coupon';
 
 /** 설계문서 7장 `coupons` 예시 레코드. 훅은 응답을 해석하지 않고 그대로 실어 주기만 한다. */
-const COUPON: Coupon = {
+const COUPON: IssuedCoupon = {
   id: 'cpn-9b1c6a2e-3f47-4a6b-8f0e-2d5c7e1a4b93',
   status: 'held',
   trigger: 'manual',
