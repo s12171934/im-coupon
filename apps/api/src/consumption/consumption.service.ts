@@ -7,7 +7,7 @@ import type {
   PointEntry,
 } from "@im-coupon/contracts";
 import { JsonFileDb } from "@im-coupon/db";
-import { DATA_DIR } from "../data-dir.token";
+import { DATA_DIR } from "../shared/infrastructure/data-dir.token";
 
 /** 문서의 후보값을 시연 기본값으로 둔 정책. 값은 도메인 흐름과 분리한다. */
 const POLICY = {
