@@ -1,7 +1,7 @@
 import type {
   ApiErrorResponse,
   Citizen,
-  Coupon,
+  IssuedCoupon,
   IssueCouponResponse,
   Merchant,
 } from '@im-coupon/contracts';
@@ -98,8 +98,8 @@ function collection<T>(dir: string, name: string): Promise<T[]> {
   return new JsonFileDb(dir).readCollection<T>(name);
 }
 
-function storedCoupons(): Promise<Coupon[]> {
-  return collection<Coupon>(dataDir, 'coupons');
+function storedCoupons(): Promise<IssuedCoupon[]> {
+  return collection<IssuedCoupon>(dataDir, 'issued-coupons');
 }
 
 function issue(): request.Test {
@@ -270,7 +270,7 @@ describe('오류 4종의 HTTP 매핑', () => {
 
   /**
    * 쓰기만 막는다 — 데이터 디렉터리에서 쓰기 비트를 걷으면 시드 읽기는 그대로 되고
-   * `coupons.json` 을 만드는 자리만 막힌다. 그래서 이 케이스가 짚는 것은 쓰기 실패다.
+   * `issued-coupons.json` 을 만드는 자리만 막힌다. 그래서 이 케이스가 짚는 것은 쓰기 실패다.
    *
    * root 는 디렉터리의 권한 비트를 무시하므로 그때는 쓰기가 성공해 버린다. 건너뛰지 않으면
    * root 로 도는 환경에서 이 케이스가 거짓 RED 를 낸다 — 구현이 아니라 실행 사용자가 원인이다.

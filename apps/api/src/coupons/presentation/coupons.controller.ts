@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Query, Req } from '@nestjs/common';
 import type {
-  IssueCouponRequest,
+  IssuanceRequest,
   IssueCouponResponse,
   ListCouponsResponse,
 } from '@im-coupon/contracts';
@@ -30,7 +30,7 @@ const LIST_ROUTE = COUPONS_PATH.slice(GLOBAL_PREFIX.length);
 interface IssueRequest {
   headers: { 'content-type'?: string };
   /** 파서가 JSON 으로 읽어 낸 본문. 파서가 건너뛰었으면 값이 없다 */
-  body?: IssueCouponRequest;
+  body?: IssuanceRequest;
 }
 
 /**
