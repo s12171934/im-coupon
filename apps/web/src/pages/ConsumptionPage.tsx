@@ -3,7 +3,7 @@ import {
   CONSUMPTION_PATH,
   type ConsumptionActionResponse,
   type ConsumptionSnapshot,
-  type Coupon,
+  type ConsumptionCoupon as Coupon,
   type PointEntry,
 } from "@im-coupon/contracts";
 

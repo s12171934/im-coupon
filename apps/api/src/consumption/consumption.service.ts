@@ -2,8 +2,8 @@ import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import type {
   ConsumptionActionResponse,
   ConsumptionSnapshot,
-  Coupon,
-  IssueCouponRequest,
+  ConsumptionCoupon as Coupon,
+  IssueConsumptionCouponRequest as IssueCouponRequest,
   PointEntry,
 } from "@im-coupon/contracts";
 import { JsonFileDb } from "@im-coupon/db";

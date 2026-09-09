@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
 import type {
   ConsumptionActionResponse,
   ConsumptionSnapshot,
-  IssueCouponRequest,
+  IssueConsumptionCouponRequest as IssueCouponRequest,
   ReserveCouponRequest,
   ConsumeCouponRequest,
 } from "@im-coupon/contracts";
