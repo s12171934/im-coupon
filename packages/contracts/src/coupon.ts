@@ -2,7 +2,7 @@
  * 쿠폰의 상태. 발급 이후 상태의 이름과 수는 기획 노선이 정해지지 않았으므로,
  * 지금 추측한 값을 미리 넣어 결정을 조용히 닫지 않는다. 라이프사이클 에픽이 값을 늘린다.
  */
-export type CouponStatus = 'held';
+export type IssuedCouponStatus = 'held';
 
 /**
  * 발급을 일으킨 트리거의 유형. 소비 도달·참여 리워드·가맹점 요청 값은
@@ -23,10 +23,10 @@ export interface BenefitSplit {
  * 거래조건 고지 대상이라, 발급 뒤에 파라미터 기본값이 바뀌어도 이미 발급된 쿠폰의 고지
  * 내용이 따라 바뀌면 안 된다. 부수 효과로 내 쿠폰 조회가 이 컬렉션 하나로 닫혀 조인이 없다.
  */
-export interface Coupon {
+export interface IssuedCoupon {
   /** `cpn-` 접두 + UUID. `coupons` 컬렉션 안에서 유일하다 */
   id: string;
-  status: CouponStatus;
+  status: IssuedCouponStatus;
   trigger: TriggerType;
   /** `citizens.id` 참조 */
   ownerId: string;
