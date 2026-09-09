@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 720" font-family="'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif">
+  <style>
+    .box { fill: #ffffff; stroke: #d0d7de; stroke-width: 1.5; }
+    .databox { fill: #f6f8fa; stroke: #8c959f; stroke-width: 1.2; stroke-dasharray: 6 4; }
+    .h { fill: #1f2328; font-size: 14px; font-weight: 700; }
+    .t { fill: #1f2328; font-size: 12px; }
+    .new { fill: #0969da; font-size: 12px; }
+    .mod { fill: #9a6700; font-size: 12px; }
+    .note { fill: #656d76; font-size: 11px; }
+    .mono { font-family: ui-monospace, Menlo, monospace; }
+  </style>
+
+  <!-- apps/web -->
+  <rect x="20" y="20" width="410" height="216" rx="8" class="box"/>
+  <text x="36" y="46" class="h mono">apps/web</text>
+  <text x="36" y="72" class="new">+ src/pages/ — 화면 조립 (4장 결정 10)</text>
+  <text x="48" y="92" class="new">issue-page · my-coupons-page (+ 각 테스트)</text>
+  <text x="36" y="114" class="new">+ src/components/ — UI 전용, fetch·상태 로직 없음</text>
+  <text x="48" y="134" class="new">weights-editor · issued-coupon-card · error-notice ·</text>
+  <text x="48" y="154" class="new">owner-select · coupon-card · storage-status (+ 각 테스트)</text>
+  <text x="36" y="176" class="new">+ src/hooks/ — 로직 훅</text>
+  <text x="48" y="196" class="new">use-issue-coupon · use-citizens · use-my-coupons (+ 각 테스트)</text>
+  <text x="36" y="218" class="mod">± src/App.tsx(.test.tsx) — 탭 셸로 변경</text>
+
+  <!-- apps/api -->
+  <rect x="450" y="20" width="410" height="216" rx="8" class="box"/>
+  <text x="466" y="46" class="h mono">apps/api</text>
+  <text x="466" y="72" class="new">+ src/issuance/ — signal.ts · random-signal.ts ·</text>
+  <text x="478" y="92" class="new">trigger.ts · manual-trigger.ts · engine.ts · params.ts</text>
+  <text x="478" y="112" class="new">(+ engine·manual-trigger 테스트)</text>
+  <text x="466" y="134" class="new">+ src/coupons/ — module · controller · service ·</text>
+  <text x="478" y="154" class="new">coupon.repository · candidate-source (+ 테스트 2파일)</text>
+  <text x="466" y="176" class="new">+ src/citizens/ — module · controller (+ 테스트 1파일)</text>
+  <text x="466" y="198" class="mod">± src/app.module.ts — CouponsModule·CitizensModule 등록</text>
+  <text x="466" y="220" class="note">health/ 등 기존 코드는 변경 없음</text>
+
+  <!-- packages/contracts -->
+  <rect x="20" y="266" width="410" height="150" rx="8" class="box"/>
+  <text x="36" y="292" class="h mono">packages/contracts</text>
+  <text x="36" y="318" class="new">+ src/coupon.ts — Coupon · CouponStatus · TriggerType ·</text>
+  <text x="48" y="338" class="new">BenefitSplit</text>
+  <text x="36" y="360" class="new">+ src/merchant.ts · src/citizen.ts — 시드 레코드 타입</text>
+  <text x="36" y="382" class="new">+ src/issuance.ts — 요청·응답·오류 계약과 경로 상수</text>
+  <text x="36" y="404" class="mod">± src/index.ts — 재수출 추가</text>
+
+  <!-- packages/db -->
+  <rect x="450" y="266" width="410" height="160" rx="8" class="box"/>
+  <text x="466" y="292" class="h mono">packages/db</text>
+  <text x="466" y="318" class="t">구현 변경 없음 — JsonFileDb(원자적 쓰기·시드 부트스트랩) 그대로</text>
+  <text x="466" y="340" class="new">+ src/seed-data.test.ts — 시드 검증 테스트</text>
+  <text x="466" y="368" class="t">이 구현이 서빙하는 테이블(7장) —</text>
+  <text x="466" y="390" class="t mono">merchants · citizens · coupons (+ 예약 _meta)</text>
+  <text x="466" y="412" class="note">테이블 추가는 파일 추가일 뿐 코드 변경을 부르지 않는다</text>
+
+  <!-- e2e -->
+  <rect x="20" y="446" width="410" height="100" rx="8" class="box"/>
+  <text x="36" y="472" class="h mono">e2e</text>
+  <text x="36" y="498" class="new">+ tests/issuance.spec.ts — 발급 실행 → 내 쿠폰 확인 플로우</text>
+  <text x="36" y="520" class="note">기존 health.spec.ts · orphan-guard.spec.ts 는 변경 없음</text>
+
+  <!-- data (워크스페이스 아님) -->
+  <rect x="450" y="456" width="410" height="150" rx="8" class="databox"/>
+  <text x="466" y="482" class="h mono">data/ — 워크스페이스 아님(시드 데이터)</text>
+  <text x="466" y="508" class="new">+ data/seed/merchants.json — 가상 가맹점 5건</text>
+  <text x="466" y="530" class="new">+ data/seed/citizens.json — 가상 시민 5건</text>
+  <text x="466" y="552" class="mod">± data/seed/_meta.json — schemaVersion 1 → 2</text>
+  <text x="466" y="574" class="note">coupons.json 은 시드에 없고 발급의 최초 쓰기가</text>
+  <text x="466" y="590" class="note">data/runtime/ 에 만든다</text>
+
+  <text x="20" y="660" class="note">+ 는 새 파일, ± 는 수정. 다섯 워크스페이스 전부를 그렸고 “변경 없음”도 침묵이 아니라 명시다.</text>
+  <text x="20" y="678" class="note">apps/web 의 세 디렉터리는 4장 결정 10 의 층이다 — components(UI 전용) · hooks(로직) · pages(조립).</text>
+</svg>

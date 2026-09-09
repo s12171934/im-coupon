@@ -1,12 +1,19 @@
 import { Module } from '@nestjs/common';
 
-import { DATA_DIR } from '../data-dir.token';
-import { resolveDataDir } from '../data-dir';
-import { HealthController } from './health.controller';
-import { HealthService } from './health.service';
+import { DATA_DIR } from '../shared/infrastructure/data-dir.token';
+import { resolveDataDir } from '../shared/infrastructure/data-dir';
+import { HealthController } from './presentation/health.controller';
+import { HealthService } from './application/health.service';
+
+import { STORAGE_HEALTH } from './application/ports/storage-health';
+import { JsonStorageHealth } from './infrastructure/json-storage-health';
 
 @Module({
   controllers: [HealthController],
-  providers: [HealthService, { provide: DATA_DIR, useFactory: resolveDataDir }],
+  providers: [
+    HealthService,
+    { provide: STORAGE_HEALTH, useClass: JsonStorageHealth },
+    { provide: DATA_DIR, useFactory: resolveDataDir },
+  ],
 })
 export class HealthModule {}

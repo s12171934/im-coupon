@@ -11,7 +11,7 @@ const proxy = {
 
 export default defineConfig({
   plugins: [react()],
-  // 개발 서버는 워크스페이스의 오래된 dist가 아니라 계약 타입 원본을 본다.
+  // 개발과 빌드에서 같은 계약 원본을 해석한다.
   resolve: {
     alias: {
       '@im-coupon/contracts': fileURLToPath(

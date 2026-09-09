@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 800" font-family="'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif">
+  <style>
+    .base { fill: #f6f8fa; stroke: #656d76; stroke-width: 1.3; }
+    .doc { fill: #f6f8fa; stroke: #8c959f; stroke-width: 1.3; stroke-dasharray: 6 4; }
+    .lane1 { fill: #fbefff; stroke: #8250df; stroke-width: 1; }
+    .lane2 { fill: #dafbe1; stroke: #1a7f37; stroke-width: 1; }
+    .lane3 { fill: #fff8c5; stroke: #9a6700; stroke-width: 1; }
+    .lane4 { fill: #ddf4ff; stroke: #0969da; stroke-width: 1; }
+    .b1 { fill: #ffffff; stroke: #8250df; stroke-width: 1.4; }
+    .b2 { fill: #ffffff; stroke: #1a7f37; stroke-width: 1.4; }
+    .b3 { fill: #ffffff; stroke: #9a6700; stroke-width: 1.4; }
+    .b4 { fill: #ffffff; stroke: #0969da; stroke-width: 1.4; }
+    .h1 { fill: #8250df; font-size: 12px; font-weight: 700; font-family: ui-monospace, Menlo, monospace; }
+    .h2 { fill: #1a7f37; font-size: 12px; font-weight: 700; font-family: ui-monospace, Menlo, monospace; }
+    .h3 { fill: #9a6700; font-size: 12px; font-weight: 700; font-family: ui-monospace, Menlo, monospace; }
+    .h4 { fill: #0969da; font-size: 12px; font-weight: 700; font-family: ui-monospace, Menlo, monospace; }
+    .name { fill: #1f2328; font-size: 12px; font-weight: 700; font-family: ui-monospace, Menlo, monospace; }
+    .desc { fill: #656d76; font-size: 10.5px; }
+    .lbl { fill: #1f2328; font-size: 10.5px; }
+    .note { fill: #656d76; font-size: 11px; }
+    .edge { stroke: #1f2328; stroke-width: 1.4; fill: none; }
+  </style>
+  <defs>
+    <marker id="g" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#1f2328"/></marker>
+  </defs>
+
+  <!-- 기준과 설계문서 브랜치 -->
+  <rect x="360" y="14" width="200" height="34" rx="6" class="base"/>
+  <text x="460" y="36" text-anchor="middle" class="name">main</text>
+  <line x1="460" y1="48" x2="460" y2="66" class="edge" marker-end="url(#g)"/>
+  <text x="470" y="62" class="lbl">기반</text>
+
+  <rect x="340" y="68" width="240" height="48" rx="6" class="doc"/>
+  <text x="460" y="88" text-anchor="middle" class="name">00-design-doc</text>
+  <text x="460" y="106" text-anchor="middle" class="desc">설계문서 — documents/ 만 수정 (구현 아님)</text>
+
+  <!-- 워크스페이스 레인 -->
+  <rect x="20" y="124" width="212" height="616" rx="8" class="lane1"/>
+  <text x="32" y="146" class="h1">packages/* · data/seed</text>
+  <rect x="248" y="124" width="212" height="616" rx="8" class="lane2"/>
+  <text x="260" y="146" class="h2">apps/api</text>
+  <rect x="476" y="124" width="212" height="616" rx="8" class="lane3"/>
+  <text x="488" y="146" class="h3">apps/web</text>
+  <rect x="704" y="124" width="196" height="616" rx="8" class="lane4"/>
+  <text x="716" y="146" class="h4">e2e</text>
+
+  <!-- 00 → 01 -->
+  <path d="M460,116 V140 H126 V164" class="edge" marker-end="url(#g)"/>
+  <text x="280" y="136" class="lbl">설계 확정</text>
+
+  <!-- 01 -->
+  <rect x="30" y="168" width="192" height="58" rx="6" class="b1"/>
+  <text x="42" y="190" class="name">01-seed-and-contracts</text>
+  <text x="42" y="210" class="desc">시드·계약 타입·시드 검증</text>
+  <path d="M126,226 V240 H354 V248" class="edge" marker-end="url(#g)"/>
+  <text x="170" y="237" class="lbl">계약 타입</text>
+
+  <!-- 02 -->
+  <rect x="258" y="252" width="192" height="58" rx="6" class="b2"/>
+  <text x="270" y="274" class="name">02-issuance-engine</text>
+  <text x="270" y="294" class="desc">발급 엔진·트리거 (순수 함수)</text>
+  <line x1="354" y1="310" x2="354" y2="332" class="edge" marker-end="url(#g)"/>
+  <text x="362" y="326" class="lbl">발급 엔진·시연 트리거</text>
+
+  <!-- 03 -->
+  <rect x="258" y="336" width="192" height="58" rx="6" class="b2"/>
+  <text x="270" y="358" class="name">03-issue-endpoint</text>
+  <text x="270" y="378" class="desc">발급 API·coupons 저장</text>
+  <line x1="354" y1="394" x2="354" y2="416" class="edge" marker-end="url(#g)"/>
+  <text x="362" y="410" class="lbl">coupons 저장</text>
+
+  <!-- 04 -->
+  <rect x="258" y="420" width="192" height="58" rx="6" class="b2"/>
+  <text x="270" y="442" class="name">04-list-endpoints</text>
+  <text x="270" y="462" class="desc">내 쿠폰·시민 목록 API</text>
+  <path d="M354,478 V492 H582 V500" class="edge" marker-end="url(#g)"/>
+  <text x="392" y="489" class="lbl">API 계약·경로 상수</text>
+
+  <!-- 05 -->
+  <rect x="486" y="504" width="192" height="58" rx="6" class="b3"/>
+  <text x="498" y="526" class="name">05-issue-screen</text>
+  <text x="498" y="546" class="desc">발급 실행 화면·탭 셸</text>
+  <line x1="582" y1="562" x2="582" y2="584" class="edge" marker-end="url(#g)"/>
+  <text x="590" y="578" class="lbl">탭 셸</text>
+
+  <!-- 06 -->
+  <rect x="486" y="588" width="192" height="58" rx="6" class="b3"/>
+  <text x="498" y="610" class="name">06-my-coupons-screen</text>
+  <text x="498" y="630" class="desc">내 쿠폰 화면·거래조건 고지</text>
+  <path d="M582,646 V660 H812 V668" class="edge" marker-end="url(#g)"/>
+  <text x="630" y="657" class="lbl">두 화면</text>
+
+  <!-- 07 -->
+  <rect x="716" y="672" width="176" height="58" rx="6" class="b4"/>
+  <text x="728" y="694" class="name">07-issuance-e2e</text>
+  <text x="728" y="714" class="desc">발급 → 내 쿠폰 e2e</text>
+
+  <!-- 범례 -->
+  <text x="20" y="762" class="note">화살표 A → B 는 “B 가 A 를 기반으로 한다”는 스택 의존이고, 간선 라벨은 B 가 A 에서 가져다 쓰는 것이다. 선형 스택 하나를 gh-stack 으로 관리한다.</text>
+  <text x="20" y="780" class="note">레인(바탕색)이 그 브랜치가 수정하는 워크스페이스다. 브랜치 이름은 KAN-13/ 접두를 생략해 적었고, 점선 상자 00 은 구현 브랜치 집합에서 제외한다.</text>
+</svg>

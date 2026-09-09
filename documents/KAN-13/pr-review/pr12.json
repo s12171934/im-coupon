@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "PR #12 · 내 쿠폰 조회의 판단 순서",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1040,
+      560
+    ]
+  },
+  "layout": {
+    "mode": "grid",
+    "origin": [
+      60,
+      55
+    ],
+    "cols": 2,
+    "cellW": 330,
+    "cellH": 100,
+    "gapX": 260,
+    "gapY": 170
+  },
+  "components": [
+    {
+      "id": "query",
+      "type": "backend",
+      "label": "ownerId 입력 검사",
+      "sublabel": "부재 · 빈 문자열 · 중복 키 거부",
+      "tag": "CouponsController",
+      "row": 0,
+      "col": 0,
+      "size": [
+        330,
+        100
+      ]
+    },
+    {
+      "id": "owner",
+      "type": "backend",
+      "label": "소유자 존재 확인",
+      "sublabel": "OwnerDirectory → citizens",
+      "tag": "CouponsService",
+      "row": 0,
+      "col": 1,
+      "size": [
+        330,
+        100
+      ]
+    },
+    {
+      "id": "result",
+      "type": "frontend",
+      "label": "200 쿠폰 목록",
+      "sublabel": "없는 쿠폰은 빈 배열",
+      "tag": "ListCouponsResponse",
+      "row": 1,
+      "col": 0,
+      "size": [
+        330,
+        100
+      ]
+    },
+    {
+      "id": "coupons",
+      "type": "database",
+      "label": "소유자의 쿠폰 읽기",
+      "sublabel": "issuedAt 내림차순 · 동률 순서 유지",
+      "tag": "CouponRepository",
+      "row": 1,
+      "col": 1,
+      "size": [
+        330,
+        100
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "query",
+      "to": "owner",
+      "label": "유효한 문자열"
+    },
+    {
+      "from": "owner",
+      "to": "coupons",
+      "label": "등록된 시민",
+      "labelAt": [
+        815,
+        240
+      ]
+    },
+    {
+      "from": "coupons",
+      "to": "result",
+      "label": "필터·정렬 결과"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "빈 목록과 오류 구분",
+      "items": [
+        "잘못된 쿼리 → 400 · 없는 시민 → 404",
+        "읽기 실패 → 500"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "GET /api/citizens",
+      "items": [
+        "CitizensService → CitizenDirectory",
+        "시드 파일 순서대로 시민 목록 반환"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 590" font-family="'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif">
+  <style>
+    .frame { fill: #ffffff; stroke: #d0d7de; stroke-width: 1.5; }
+    .panel { fill: #f6f8fa; stroke: #d0d7de; stroke-width: 1; }
+    .input { fill: #ffffff; stroke: #8c959f; stroke-width: 1; }
+    .t { fill: #1f2328; font-size: 13px; }
+    .t-bold { fill: #1f2328; font-size: 13px; font-weight: 700; }
+    .t-title { fill: #1f2328; font-size: 15px; font-weight: 700; }
+    .t-muted { fill: #656d76; font-size: 12px; }
+    .t-note { fill: #656d76; font-size: 11px; }
+    .t-white { fill: #ffffff; font-size: 12px; font-weight: 700; }
+    .t-err { fill: #cf222e; font-size: 13px; }
+    .mono { font-family: ui-monospace, Menlo, monospace; }
+  </style>
+  <rect x="20" y="20" width="680" height="550" rx="8" class="frame"/>
+  <!-- 헤더와 탭 -->
+  <text x="40" y="53" class="t-title">im-coupon</text>
+  <rect x="150" y="34" width="96" height="26" rx="5" fill="#0969da"/>
+  <text x="198" y="51" text-anchor="middle" class="t-white">발급 실행</text>
+  <rect x="254" y="34" width="88" height="26" rx="5" fill="#f6f8fa" stroke="#d0d7de"/>
+  <text x="298" y="51" text-anchor="middle" class="t-muted">내 쿠폰</text>
+  <line x1="20" y1="74" x2="700" y2="74" stroke="#d0d7de"/>
+
+  <text x="40" y="102" class="t-title">쿠폰 발급 실행 — 시연·관리 시점</text>
+  <text x="40" y="124" class="t-muted">저장소 상태 — 정상 · 스키마 {schemaVersion}판 (기존 표시를 이 화면으로 옮긴다)</text>
+
+  <!-- 발급 가중치 패널 -->
+  <rect x="40" y="140" width="640" height="106" rx="6" class="panel"/>
+  <text x="56" y="164" class="t-bold">발급 가중치 — 요청 본문으로 덮어쓸 수 있다</text>
+  <text x="56" y="192" class="t">랜덤 신호</text>
+  <rect x="130" y="177" width="72" height="24" rx="4" class="input"/>
+  <text x="166" y="193" text-anchor="middle" class="t mono">1</text>
+  <text x="216" y="193" class="t-note">(7장 값 표의 기본값 weights.random)</text>
+  <text x="56" y="218" class="t-muted">사용자 소비 패턴 · 쿠폰 사용 패턴 · 가맹점 매출 · 가맹점 마케팅 수요</text>
+  <text x="56" y="234" class="t-muted">— 이번 에픽 범위 제외. 가중치 결합 구조에 자리만 남긴다</text>
+
+  <!-- 발급 버튼 -->
+  <rect x="40" y="266" width="180" height="40" rx="6" fill="#0969da"/>
+  <text x="130" y="291" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="700">발급 1건 실행</text>
+  <line x1="228" y1="286" x2="330" y2="286" stroke="#8c959f" stroke-dasharray="4 3"/>
+  <text x="338" y="290" class="t-note mono">POST /api/coupons/issue 호출</text>
+
+  <!-- 발급 결과 카드 -->
+  <rect x="40" y="330" width="640" height="122" rx="6" fill="#f2fbf5" stroke="#1a7f37"/>
+  <text x="56" y="356" class="t-bold">방금 발급된 쿠폰 (201 응답 표시)</text>
+  <text x="56" y="380" class="t">가맹점 {merchantName} · 소유자 {ownerName}</text>
+  <text x="56" y="402" class="t">액면 {faceValue}원 · 랜덤 신호 점수 {decision.scores.random} · 발급 후보 {decision.candidateCount}건</text>
+  <text x="56" y="424" class="t">소유자 점유 기한 {heldUntil} · 유효 소비 기한 {expiresAt}</text>
+  <text x="56" y="443" class="t-note">중괄호 표기는 응답 필드 자리이고 수치는 7장 값 표의 기본값이 들어간다</text>
+
+  <!-- 오류 표시 영역 -->
+  <rect x="40" y="470" width="640" height="76" rx="6" fill="#fff5f5" stroke="#cf222e" stroke-dasharray="5 3"/>
+  <text x="56" y="494" class="t-err">오류 시 — {error.code}: {error.message} 를 이 자리에 표시</text>
+  <text x="56" y="514" class="t-note">400 INVALID_BODY · 400 INVALID_WEIGHTS</text>
+  <text x="56" y="534" class="t-note">422 NO_CANDIDATES · 500 STORAGE_FAILURE (8장 발급 엔드포인트의 오류 4종)</text>
+</svg>

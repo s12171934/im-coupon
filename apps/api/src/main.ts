@@ -3,9 +3,9 @@ import { NestFactory } from '@nestjs/core';
 import { JsonFileDb } from '@im-coupon/db';
 
 import { AppModule } from './app.module';
-import { resolveDataDir, resolveSeedDir } from './data-dir';
-import { resolveGuardDir, watchForOrphan } from './orphan-guard';
-import { explainPortInUse } from './port-in-use';
+import { resolveDataDir, resolveSeedDir } from './shared/infrastructure/data-dir';
+import { resolveGuardDir, watchForOrphan } from './bootstrap/orphan-guard';
+import { explainPortInUse } from './bootstrap/port-in-use';
 
 const PORT = Number(process.env.PORT ?? 3000);
 

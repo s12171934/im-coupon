@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "PR #14 · 소유자 선택에서 거래조건 표시까지",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1040,
+      560
+    ]
+  },
+  "layout": {
+    "mode": "grid",
+    "origin": [
+      60,
+      55
+    ],
+    "cols": 2,
+    "cellW": 330,
+    "cellH": 100,
+    "gapX": 260,
+    "gapY": 170
+  },
+  "components": [
+    {
+      "id": "select",
+      "type": "frontend",
+      "label": "OwnerSelect",
+      "sublabel": "시민 목록에서 소유자 선택",
+      "tag": "MyCouponsPage",
+      "row": 0,
+      "col": 0,
+      "size": [
+        330,
+        100
+      ]
+    },
+    {
+      "id": "hook",
+      "type": "frontend",
+      "label": "useMyCoupons(ownerId)",
+      "sublabel": "이전 결과 제거 · 늦은 응답 무시",
+      "tag": "features/my-coupons/hooks",
+      "row": 0,
+      "col": 1,
+      "size": [
+        330,
+        100
+      ]
+    },
+    {
+      "id": "card",
+      "type": "frontend",
+      "label": "CouponCard",
+      "sublabel": "액면 · 배분 비율 · 두 기한",
+      "tag": "본문 크기의 거래조건",
+      "row": 1,
+      "col": 0,
+      "size": [
+        330,
+        100
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "쿠폰 목록 API",
+      "sublabel": "선택한 소유자의 목록 반환",
+      "tag": "GET /api/coupons",
+      "row": 1,
+      "col": 1,
+      "size": [
+        330,
+        100
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "select",
+      "to": "hook",
+      "label": "ownerId 변경"
+    },
+    {
+      "from": "hook",
+      "to": "api",
+      "label": "쿼리 인코딩",
+      "labelAt": [
+        815,
+        240
+      ]
+    },
+    {
+      "from": "api",
+      "to": "card",
+      "label": "검사한 목록 표시"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "시민 목록과 화면 상태",
+      "items": [
+        "useCitizens가 선택 목록을 조회",
+        "미선택 · 로딩 · 빈 목록 · 실패 구분"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "공유 상태와 기한",
+      "items": [
+        "헬스 조회는 앱 셸에서 한 번",
+        "기한은 YYYY-MM-DD HH:mm KST"
+      ]
+    }
+  ]
+}

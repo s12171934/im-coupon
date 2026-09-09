@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 
-import { resolveDataDir } from "../data-dir";
-import { DATA_DIR } from "../data-dir.token";
+import { resolveDataDir } from "../shared/infrastructure/data-dir";
+import { DATA_DIR } from "../shared/infrastructure/data-dir.token";
 import { ConsumptionController } from "./consumption.controller";
 import { ConsumptionService } from "./consumption.service";
 
