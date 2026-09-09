@@ -94,6 +94,31 @@ describe('JsonFileDb.bootstrapFromSeed', () => {
     await expect(db.readCollection('coupons')).resolves.toEqual([{ id: 'c-1' }]);
   });
 
+  it('_meta.json 만 남아 있으면 시드와 최신 메타를 복사한다', async () => {
+    const seedDir = await makeDataDir();
+    await writeFile(join(seedDir, '_meta.json'), '{"schemaVersion":2}', 'utf8');
+    await writeFile(join(seedDir, 'coupons.json'), '[{"id":"c-1"}]', 'utf8');
+    const runtimeDir = await makeDataDir();
+    await writeFile(join(runtimeDir, '_meta.json'), '{"schemaVersion":1}', 'utf8');
+    const db = new JsonFileDb(runtimeDir);
+
+    await db.bootstrapFromSeed(seedDir);
+
+    await expect(db.readCollection('coupons')).resolves.toEqual([{ id: 'c-1' }]);
+    await expect(db.checkHealth()).resolves.toMatchObject({ schemaVersion: 2 });
+  });
+
+  it('빈 컬렉션도 기존 데이터로 보존한다', async () => {
+    const seedDir = await makeDataDir();
+    await writeFile(join(seedDir, 'coupons.json'), '[{"id":"시드"}]', 'utf8');
+    const db = new JsonFileDb(await makeDataDir());
+    await db.writeCollection('coupons', []);
+
+    await db.bootstrapFromSeed(seedDir);
+
+    await expect(db.readCollection('coupons')).resolves.toEqual([]);
+  });
+
   it('런타임 데이터가 이미 있으면 덮어쓰지 않는다', async () => {
     const seedDir = await makeDataDir();
     await writeFile(join(seedDir, 'coupons.json'), '[{"id":"시드"}]', 'utf8');
