@@ -1,5 +1,5 @@
 import type { Citizen } from './citizen';
-import type { Coupon } from './coupon';
+import type { IssuedCoupon } from './coupon';
 
 /** 쿠폰 발급 */
 export const ISSUE_COUPON_PATH = '/api/coupons/issue' as const;
@@ -19,7 +19,7 @@ export interface SignalWeights {
 }
 
 /** 요청 본문은 생략 가능하고, 생략하면 발급 파라미터 기본값으로 발급한다. */
-export interface IssueCouponRequest {
+export interface IssuanceRequest {
   /**
    * 발급 가중치 부분 덮어쓰기. 지정한 신호만 덮어쓰고, 지정하지 않은 신호는
    * 발급 파라미터 기본값으로 채운다. 생략하거나 `{}` 로 보내면 전부 기본값이다.
@@ -42,13 +42,13 @@ export interface IssueDecision {
 }
 
 export interface IssueCouponResponse {
-  coupon: Coupon;
+  coupon: IssuedCoupon;
   decision: IssueDecision;
 }
 
 /** `issuedAt` 내림차순이고, 소유한 쿠폰이 없으면 빈 배열이다. */
 export interface ListCouponsResponse {
-  coupons: Coupon[];
+  coupons: IssuedCoupon[];
 }
 
 /** 시드에 든 순서 그대로다. */

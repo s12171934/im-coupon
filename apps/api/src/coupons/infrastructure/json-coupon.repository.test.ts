@@ -1,4 +1,4 @@
-import type { Coupon } from '@im-coupon/contracts';
+import type { IssuedCoupon } from '@im-coupon/contracts';
 import { JsonFileDb } from '@im-coupon/db';
 import { chmod, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -15,12 +15,12 @@ let dataDir: string;
  * 컬렉션의 실제 파일 상태를 리포지터리를 거치지 않고 본다. 리포지터리가 자기 말로
  * 자기를 증명하지 않게 하려는 것이다 — 저장이 됐는지는 파일이 답한다.
  */
-function storedCoupons(): Promise<Coupon[]> {
-  return new JsonFileDb(dataDir).readCollection<Coupon>('coupons');
+function storedCoupons(): Promise<IssuedCoupon[]> {
+  return new JsonFileDb(dataDir).readCollection<IssuedCoupon>('issued-coupons');
 }
 
 /** 발급 유스케이스가 만들어 넘길 완성된 쿠폰. 액면·배분 비율은 발급 파라미터에서 끌어다 쓴다. */
-function coupon(serial: string): Coupon {
+function coupon(serial: string): IssuedCoupon {
   return {
     id: `cpn-${serial}`,
     status: 'held',
@@ -53,7 +53,7 @@ describe('JsonCouponRepository', () => {
 
   it('이미 레코드가 든 컬렉션에는 기존 행을 남긴 채 뒤에 이어 붙인다', async () => {
     // 재기동 뒤 앞 프로세스가 써 둔 파일에 새 인스턴스가 이어 쓰는 경로다.
-    await writeFile(join(dataDir, 'coupons.json'), JSON.stringify([coupon('0001')]), 'utf8');
+    await writeFile(join(dataDir, 'issued-coupons.json'), JSON.stringify([coupon('0001')]), 'utf8');
 
     await new JsonCouponRepository(dataDir).append(coupon('0002'));
 
@@ -75,7 +75,7 @@ describe('JsonCouponRepository 의 동시 저장', () => {
 
 describe('JsonCouponRepository 의 저장 실패', () => {
   it('컬렉션을 읽지 못하면 `STORAGE_FAILURE` 를 든 `IssuanceError` 로 올린다', async () => {
-    await writeFile(join(dataDir, 'coupons.json'), '{ 깨진 JSON', 'utf8');
+    await writeFile(join(dataDir, 'issued-coupons.json'), '{ 깨진 JSON', 'utf8');
     const repository = new JsonCouponRepository(dataDir);
 
     const call = repository.append(coupon('0001'));
@@ -91,7 +91,7 @@ describe('JsonCouponRepository 의 저장 실패', () => {
   it.each(['null', '{}', '42', '"abc"'])(
     '컬렉션이 배열이 아니면(%s) `STORAGE_FAILURE` 를 든 `IssuanceError` 로 올린다',
     async (content) => {
-      await writeFile(join(dataDir, 'coupons.json'), content, 'utf8');
+      await writeFile(join(dataDir, 'issued-coupons.json'), content, 'utf8');
       const repository = new JsonCouponRepository(dataDir);
 
       const call = repository.append(coupon('0001'));
@@ -126,7 +126,7 @@ describe('JsonCouponRepository 의 저장 실패', () => {
     // 시연 중 저장이 한 번 막혔다 풀려도 재기동 전까지 발급이 전부 실패하는 회귀다.
     // 막는 수단으로 권한이 아니라 깨진 파일을 쓴다 — 꼬리 복구는 실패 원인과 무관한 동작이고,
     // 이쪽은 root 로 돌려도 같은 것을 검증한다.
-    const collection = join(dataDir, 'coupons.json');
+    const collection = join(dataDir, 'issued-coupons.json');
     const repository = new JsonCouponRepository(dataDir);
     await writeFile(collection, '{ 깨진 JSON', 'utf8');
     await expect(repository.append(coupon('0001'))).rejects.toMatchObject({

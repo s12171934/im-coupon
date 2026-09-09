@@ -1,16 +1,16 @@
 import type { CouponRepository } from '../application/ports/coupon.repository';
 import { Inject, Injectable } from '@nestjs/common';
-import type { Coupon } from '@im-coupon/contracts';
+import type { IssuedCoupon } from '@im-coupon/contracts';
 import { JsonFileDb } from '@im-coupon/db';
 
 import { DATA_DIR } from '../../shared/infrastructure/data-dir.token';
 import { IssuanceError } from '../../issuance/domain/services/engine';
 
 /** 발급된 쿠폰이 담기는 컬렉션. 시드에 없고 발급의 최초 쓰기가 이 파일을 만든다. */
-const COUPONS_COLLECTION = 'coupons';
+const COUPONS_COLLECTION = 'issued-coupons';
 
 /**
- * `coupons` 컬렉션의 유일한 출입구.
+ * `issued-coupons` 컬렉션의 유일한 출입구.
  *
  * 저장은 읽고-더하고-쓰는 한 묶음이라 겹치면 나중 쓰기가 앞 쓰기를 덮어 레코드가 유실된다.
  * `JsonFileDb` 의 원자적 쓰기는 파일이 반쯤 쓰인 상태만 막을 뿐 이 유실은 막지 못한다.
@@ -36,7 +36,20 @@ export class JsonCouponRepository implements CouponRepository {
     this.db = new JsonFileDb(dataDir);
   }
 
-  async append(coupon: Coupon): Promise<void> {
+  /** HTTP 요청을 받기 전에 기존 발급 레코드만 새 컬렉션으로 옮긴다. */
+  async onModuleInit(): Promise<void> {
+    const legacy = await this.db.readCollection<unknown>('coupons');
+    if (!Array.isArray(legacy)) throw new Error('기존 쿠폰 컬렉션이 배열이 아니다');
+    const issued = legacy.filter(isIssuedCoupon);
+    if (issued.length === 0) return;
+    const current = await this.read();
+    const ids = new Set(current.map((coupon) => coupon.id));
+    // 먼저 복사한다. 재시작 시 이미 복사된 id는 대상의 값을 유지한다.
+    await this.write([...current, ...issued.filter((coupon) => !ids.has(coupon.id))]);
+    await this.db.writeCollection('coupons', legacy.filter((row) => !isIssuedCoupon(row)));
+  }
+
+  async append(coupon: IssuedCoupon): Promise<void> {
     await this.serialize(async () => {
       const rows = await this.read();
       await this.write([...rows, coupon]);
@@ -51,10 +64,10 @@ export class JsonCouponRepository implements CouponRepository {
    * 퍼뜨릴 때 감싸지지 않은 `TypeError` 로 새고, 문자열은 글자로 쪼개져 거부 없이
    * 컬렉션을 오염시킨다 — 둘 다 읽기 실패이므로 같은 예외로 모은다.
    */
-  private async read(): Promise<Coupon[]> {
-    let rows: Coupon[];
+  private async read(): Promise<IssuedCoupon[]> {
+    let rows: IssuedCoupon[];
     try {
-      rows = await this.db.readCollection<Coupon>(COUPONS_COLLECTION);
+      rows = await this.db.readCollection<IssuedCoupon>(COUPONS_COLLECTION);
     } catch (error) {
       throw new IssuanceError('STORAGE_FAILURE', `쿠폰 컬렉션을 읽지 못했다 — ${messageOf(error)}`);
     }
@@ -64,7 +77,7 @@ export class JsonCouponRepository implements CouponRepository {
     return rows;
   }
 
-  private async write(rows: readonly Coupon[]): Promise<void> {
+  private async write(rows: readonly IssuedCoupon[]): Promise<void> {
     try {
       await this.db.writeCollection(COUPONS_COLLECTION, rows);
     } catch (error) {
@@ -92,4 +105,13 @@ export class JsonCouponRepository implements CouponRepository {
 /** 감싼 예외가 원인을 삼키지 않게 원래 오류의 말을 메시지에 남긴다. */
 function messageOf(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
+}
+
+/** 소비 쿠폰의 상태·금액 계약과 구분되는 기존 발급 레코드 표식이다. */
+function isIssuedCoupon(value: unknown): value is IssuedCoupon {
+  if (value === null || typeof value !== 'object') return false;
+  const row = value as Record<string, unknown>;
+  return typeof row.id === 'string' && row.status === 'held' &&
+    row.trigger === 'manual' && typeof row.ownerId === 'string' &&
+    typeof row.faceValue === 'number';
 }

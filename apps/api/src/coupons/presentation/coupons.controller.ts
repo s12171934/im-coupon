@@ -1,5 +1,5 @@
 import { Controller, Post, Req } from '@nestjs/common';
-import type { IssueCouponRequest, IssueCouponResponse } from '@im-coupon/contracts';
+import type { IssuanceRequest, IssueCouponResponse } from '@im-coupon/contracts';
 import { ISSUE_COUPON_PATH } from '@im-coupon/contracts';
 
 import { IssuanceError } from '../../issuance/domain/services/engine';
@@ -25,7 +25,7 @@ const ISSUE_ROUTE = ISSUE_COUPON_PATH.slice(GLOBAL_PREFIX.length);
 interface IssueRequest {
   headers: { 'content-type'?: string };
   /** 파서가 JSON 으로 읽어 낸 본문. 파서가 건너뛰었으면 값이 없다 */
-  body?: IssueCouponRequest;
+  body?: IssuanceRequest;
 }
 
 /**
