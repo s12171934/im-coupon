@@ -68,12 +68,12 @@ export class JsonFileDb {
   }
 
   /**
-   * 런타임 디렉터리가 비어 있을 때만 시드를 복사한다.
+   * 도메인 컬렉션이 없을 때만 시드를 복사한다 (_meta.json 만 있는 경우 포함).
    * 시연 중 쌓인 런타임 데이터를 재기동이 지우지 않게 하기 위한 조건이다.
    */
   async bootstrapFromSeed(seedDir: string): Promise<void> {
     await mkdir(this.dataDir, { recursive: true });
-    if ((await this.listCollections()).length > 0) return;
+    if ((await this.listCollections()).some((name) => name !== META_COLLECTION)) return;
     await cp(seedDir, this.dataDir, { recursive: true });
   }
 
