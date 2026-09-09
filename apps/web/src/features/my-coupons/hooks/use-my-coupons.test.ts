@@ -5,7 +5,7 @@ import {
   OWNER_ID_QUERY,
   type ApiErrorCode,
   type ApiErrorResponse,
-  type Coupon,
+  type IssuedCoupon,
   type ListCouponsResponse,
 } from '@im-coupon/contracts';
 
@@ -15,7 +15,7 @@ const OWNER_A = 'cit-001';
 const OWNER_B = 'cit-002';
 
 /** 설계문서 7장 `coupons` 예시 레코드. 수치는 값 표의 시연 기본값이고 세 시각은 `Z` 다. */
-const COUPON: Coupon = {
+const COUPON: IssuedCoupon = {
   id: 'cpn-9b1c6a2e-3f47-4a6b-8f0e-2d5c7e1a4b93',
   status: 'held',
   trigger: 'manual',
@@ -30,7 +30,7 @@ const COUPON: Coupon = {
   expiresAt: '2026-09-15T05:00:00.000Z',
 };
 
-function couponOf(overrides: Partial<Coupon>): Coupon {
+function couponOf(overrides: Partial<IssuedCoupon>): IssuedCoupon {
   return { ...COUPON, ...overrides };
 }
 
@@ -51,7 +51,7 @@ const COUPON_B = couponOf({
  * `issuedAt` 이 내림차순이 **아닌** 두 건. 훅이 정렬을 더하면 이 순서가 뒤집혀 드러난다 —
  * 순서는 서버가 지는 계약이고(설계문서 8장) 화면이 다시 정하는 값이 아니다.
  */
-const UNSORTED: Coupon[] = [
+const UNSORTED: IssuedCoupon[] = [
   couponOf({ id: 'cpn-old', issuedAt: '2026-09-01T05:00:00.000Z' }),
   couponOf({ id: 'cpn-new', issuedAt: '2026-09-20T05:00:00.000Z' }),
 ];
@@ -93,7 +93,7 @@ function errorResponse(status: number, code: ApiErrorCode, message: string): Res
   return jsonResponse(status, body);
 }
 
-function listed(coupons: Coupon[]): Response {
+function listed(coupons: IssuedCoupon[]): Response {
   return jsonResponse(200, { coupons } satisfies ListCouponsResponse);
 }
 

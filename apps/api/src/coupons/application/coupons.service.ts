@@ -1,7 +1,7 @@
 import { OWNER_DIRECTORY, type OwnerDirectory } from './ports/owner-directory';
 import { Inject, Injectable } from '@nestjs/common';
 import type {
-  Coupon,
+  IssuedCoupon,
   IssueCouponResponse,
   ListCouponsResponse,
   SignalWeights,
@@ -99,7 +99,7 @@ export class CouponsService {
    * 두 기한은 일수가 아니라 절대 시각으로 저장한다. 화면과 테스트가 계산 없이 판정하고,
    * 파라미터를 고쳐도 이미 발급된 쿠폰의 기한이 소급해 움직이지 않게 하는 것이다.
    */
-  private mint(candidate: Candidate, trigger: TriggerType): Coupon {
+  private mint(candidate: Candidate, trigger: TriggerType): IssuedCoupon {
     const { faceValue, benefitSplit, ownerHoldDays, openValidDays } = DEFAULT_ISSUANCE_PARAMS;
     const issuedAt = this.now();
     const heldUntil = new Date(issuedAt.getTime() + ownerHoldDays * DAY_MS);
