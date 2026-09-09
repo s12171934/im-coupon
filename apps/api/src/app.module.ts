@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 
 import { CitizensModule } from './citizens/citizens.module';
+import { ConsumptionModule } from './consumption/consumption.module';
 import { CouponsModule } from './coupons/coupons.module';
 import { IssuanceErrorFilter } from './coupons/presentation/issuance-error.filter';
 import { HealthModule } from './health/health.module';
@@ -11,7 +12,7 @@ import { HealthModule } from './health/health.module';
  * 본문 파싱 실패가 그렇다 — 를 지나치므로, 오류 응답 본문이 경로에 따라 두 모양으로 갈린다.
  */
 @Module({
-  imports: [HealthModule, CouponsModule, CitizensModule],
+  imports: [HealthModule, CouponsModule, CitizensModule, ConsumptionModule],
   providers: [{ provide: APP_FILTER, useClass: IssuanceErrorFilter }],
 })
 export class AppModule {}
