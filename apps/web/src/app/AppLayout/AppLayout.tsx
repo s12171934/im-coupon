@@ -11,6 +11,8 @@ export function AppLayout() {
         <NavLink to={APP_PATHS.issue}>발급 실행</NavLink>
         {' · '}
         <NavLink to={APP_PATHS.myCoupons}>내 쿠폰</NavLink>
+        {' · '}
+        <NavLink to={APP_PATHS.consumption}>소비 시연</NavLink>
       </nav>
       <Outlet />
     </main>
