@@ -1,4 +1,4 @@
-import type { IssueCouponRequest, SignalWeights } from '@im-coupon/contracts';
+import type { IssuanceRequest, SignalWeights } from '@im-coupon/contracts';
 import { describe, expect, it } from 'vitest';
 
 import { manualTrigger } from './manual-trigger';
@@ -6,7 +6,7 @@ import type { IssueCommand } from '../issue-trigger';
 
 describe('manualTrigger', () => {
   it('TC-02-03 발급 가중치 덮어쓰기가 든 요청 본문을 `manual` 과 그 가중치를 실은 발급 명령으로 옮긴다', () => {
-    const request: IssueCouponRequest = { weights: { random: 7 } };
+    const request: IssuanceRequest = { weights: { random: 7 } };
 
     expect(manualTrigger.toCommand(request)).toEqual({
       trigger: 'manual',

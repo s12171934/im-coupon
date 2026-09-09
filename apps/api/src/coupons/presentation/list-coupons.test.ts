@@ -1,4 +1,4 @@
-import type { ApiErrorResponse, Coupon, ListCouponsResponse } from '@im-coupon/contracts';
+import type { ApiErrorResponse, IssuedCoupon, ListCouponsResponse } from '@im-coupon/contracts';
 import { COUPONS_PATH, OWNER_ID_QUERY } from '@im-coupon/contracts';
 import { JsonFileDb } from '@im-coupon/db';
 import type { INestApplication } from '@nestjs/common';
@@ -29,7 +29,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
  * 두 기한을 발급 시각에서 계산해 두는 것은 레코드가 7장의 "이후" 조건을 지키게 하려는
  * 것이다. 고정 문자열로 박으면 발급 시각을 케이스마다 바꿀 때 기한이 발급 이전으로 넘어간다.
  */
-function coupon(serial: string, ownerId: string, issuedAt: string): Coupon {
+function coupon(serial: string, ownerId: string, issuedAt: string): IssuedCoupon {
   const { faceValue, benefitSplit, ownerHoldDays, openValidDays } = DEFAULT_ISSUANCE_PARAMS;
   const issued = new Date(issuedAt);
   const held = new Date(issued.getTime() + ownerHoldDays * DAY_MS);
@@ -82,10 +82,10 @@ async function boot(options: BootOptions = {}): Promise<void> {
 }
 
 /** 시드를 부트스트랩한 뒤 `coupons` 컬렉션을 주어진 레코드로 채운다. */
-function withCoupons(...rows: Coupon[]): (dir: string) => Promise<void> {
+function withCoupons(...rows: IssuedCoupon[]): (dir: string) => Promise<void> {
   return async (dir) => {
     await bootstrapSeed(dir);
-    await new JsonFileDb(dir).writeCollection('coupons', rows);
+    await new JsonFileDb(dir).writeCollection('issued-coupons', rows);
   };
 }
 
@@ -303,7 +303,7 @@ describe(`GET ${COUPONS_PATH} 의 저장소 경로`, () => {
     await boot({
       prepare: async (dir) => {
         await bootstrapSeed(dir);
-        await writeFile(join(dir, 'coupons.json'), '{깨진 JSON', 'utf8');
+        await writeFile(join(dir, 'issued-coupons.json'), '{깨진 JSON', 'utf8');
       },
     });
 

@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 import {
   ISSUE_COUPON_PATH,
   type ApiErrorResponse,
-  type IssueCouponRequest,
+  type IssuanceRequest,
   type IssueCouponResponse,
   type SignalWeights,
 } from '@im-coupon/contracts';
@@ -143,7 +143,7 @@ function contractErrorOf(body: unknown): IssueFailure | undefined {
  * 키가 전부 빠져도 `weights` 를 생략하지 않고 `{}` 로 보낸다. 8장이 둘을 같게 다루므로
  * 어느 쪽이든 맞고, 한 모양으로 굳혀 두면 본문을 만드는 경로가 하나로 남는다.
  */
-function toRequest(draft: WeightsDraft): IssueCouponRequest {
+function toRequest(draft: WeightsDraft): IssuanceRequest {
   const weights: Partial<Record<keyof SignalWeights, number>> = {};
 
   for (const key of Object.keys(draft) as (keyof SignalWeights)[]) {
