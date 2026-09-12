@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="740" height="343" viewBox="0 0 1100 510" role="img" aria-labelledby="title"><title id="title">동기 신호 확장점 · 점선은 범위 제외</title>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#52647a"/></marker></defs>
+<rect width="1100" height="510" fill="#f8fafc"/>
+<text x="28" y="36" font-family="sans-serif" font-size="22" fill="#142b45">동기 신호 확장점 · 점선은 범위 제외</text>
+<rect x="30" y="85" width="300" height="95" rx="8" fill="white" stroke="#41698b" stroke-width="2"/>
+<text x="42" y="110" font-family="sans-serif" font-size="15" fill="#142b45">준비 결과</text>
+<text x="42" y="133" font-family="sans-serif" font-size="15" fill="#142b45">스냅숏 → 행동 프로필</text>
+<text x="42" y="156" font-family="sans-serif" font-size="15" fill="#142b45">점수 맵 / 비활성 이유</text>
+<rect x="445" y="80" width="280" height="70" rx="8" fill="white" stroke="#41698b" stroke-width="2"/>
+<text x="457" y="105" font-family="sans-serif" font-size="15" fill="#142b45">S6</text>
+<text x="457" y="128" font-family="sans-serif" font-size="15" fill="#142b45">동기 score → 숫자</text>
+<rect x="445" y="225" width="280" height="70" rx="8" fill="white" stroke="#41698b" stroke-width="2"/>
+<text x="457" y="250" font-family="sans-serif" font-size="15" fill="#142b45">대체 신호</text>
+<text x="457" y="273" font-family="sans-serif" font-size="15" fill="#142b45">동기 score → 유한한 0</text>
+<rect x="830" y="140" width="240" height="75" rx="8" fill="white" stroke="#41698b" stroke-width="2"/>
+<text x="842" y="165" font-family="sans-serif" font-size="15" fill="#142b45">가중합 엔진</text>
+<text x="842" y="188" font-family="sans-serif" font-size="15" fill="#142b45">최고 하나 / 동점 첫 후보</text>
+<rect x="30" y="385" width="300" height="70" rx="8" fill="white" stroke="#41698b" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="42" y="410" font-family="sans-serif" font-size="15" fill="#142b45">실로그 어댑터</text>
+<text x="42" y="433" font-family="sans-serif" font-size="15" fill="#142b45">실제 사용자 검증 필요</text>
+<rect x="445" y="385" width="280" height="70" rx="8" fill="white" stroke="#41698b" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="457" y="410" font-family="sans-serif" font-size="15" fill="#142b45">S1·S2·S3·S4·S5</text>
+<text x="457" y="433" font-family="sans-serif" font-size="15" fill="#142b45">별도 후속 구현</text>
+<rect x="830" y="385" width="240" height="70" rx="8" fill="white" stroke="#41698b" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="842" y="410" font-family="sans-serif" font-size="15" fill="#142b45">발급 연결</text>
+<text x="842" y="433" font-family="sans-serif" font-size="15" fill="#142b45">별도 후속 구현</text>
+<path d="M330 110 H435" fill="none" stroke="#52647a" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="348" y="100" font-family="sans-serif" font-size="13" fill="#142b45" stroke="#f8fafc" stroke-width="4" paint-order="stroke">준비 성공</text>
+<path d="M330 155 H375 V260 H435" fill="none" stroke="#52647a" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="343" y="245" font-family="sans-serif" font-size="13" fill="#142b45" stroke="#f8fafc" stroke-width="4" paint-order="stroke">준비 실패</text>
+<path d="M725 115 H775 V160 H820" fill="none" stroke="#52647a" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="747" y="102" font-family="sans-serif" font-size="13" fill="#142b45" stroke="#f8fafc" stroke-width="4" paint-order="stroke">점수</text>
+<path d="M725 260 H775 V195 H820" fill="none" stroke="#52647a" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="750" y="283" font-family="sans-serif" font-size="13" fill="#142b45" stroke="#f8fafc" stroke-width="4" paint-order="stroke">0 점수</text>
+<path d="M180 385 V190" fill="none" stroke="#52647a" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="7 5"/>
+<text x="193" y="337" font-family="sans-serif" font-size="13" fill="#142b45" stroke="#f8fafc" stroke-width="4" paint-order="stroke">사용 사건</text>
+<path d="M725 420 H790 V210 H820" fill="none" stroke="#52647a" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="7 5"/>
+<text x="742" y="365" font-family="sans-serif" font-size="13" fill="#142b45" stroke="#f8fafc" stroke-width="4" paint-order="stroke">후속 점수</text>
+<path d="M950 215 V375" fill="none" stroke="#52647a" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="7 5"/>
+<text x="965" y="307" font-family="sans-serif" font-size="13" fill="#142b45" stroke="#f8fafc" stroke-width="4" paint-order="stroke">선택 사용처</text>
+</svg>

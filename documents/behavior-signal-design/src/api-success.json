@@ -1,0 +1,40 @@
+{
+  "recommendationId": "rec-1",
+  "citizenId": "cit-demo-1",
+  "asOf": "2026-09-13T00:00:00.000Z",
+  "dataMode": "synthetic",
+  "candidateCount": 1,
+  "selectedMerchantId": "mer-demo-a",
+  "enabled": true,
+  "disabledReasons": [],
+  "requestedWeights": {
+    "personalFit": 0.95,
+    "random": 0.05
+  },
+  "effectiveWeights": {
+    "personalFit": 0.95,
+    "random": 0.05
+  },
+  "rankings": [
+    {
+      "merchant_id": "mer-demo-a",
+      "rank": 1,
+      "scores": {
+        "personalFit": 1,
+        "random": 0.5
+      },
+      "contributions": {
+        "personalFit": 0.95,
+        "random": 0.025
+      },
+      "total": 0.975,
+      "reason_codes": [
+        "SHARED_CATEGORY",
+        "SINGLE_HISTORY"
+      ]
+    }
+  ],
+  "snapshotId": "snapshot-1",
+  "profileVersion": "personalFit.behavior.v1",
+  "modelRevision": "fixture-only"
+}
