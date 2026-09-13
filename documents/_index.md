@@ -21,6 +21,8 @@ iM뱅크 주최 `2026 AI Blockchain Challenge in Daegu` 공모전(접수 마감 
 
 - [KAN-24 personalFitSignal 구현 착수 계획](behavior-signal-design/implementation-plan.md) — 구현 Draft의 체크리스트와 미실행 상태. 상세 계약은 S6 설계문서를 따른다.
 
+- [KAN-24 personalFit 최종 검증 기록](personal-fit-validation.md) — CB1~3 코드의 TC-01~15 추적성, 루트 검증 결과, RED·타입검사 범위와 재사용 근거.
+
 <!-- 등록 형식: - [문서 제목](파일명.md) — 이 문서가 무엇을 결정·기록하는지 한 줄 -->
 
 ## 아직 기록되지 않은 것
@@ -31,6 +33,8 @@ iM뱅크 주최 `2026 AI Blockchain Challenge in Daegu` 공모전(접수 마감 
 - [ ] **어뷰징 방지 룰의 판별식** — 방지 대상과 방향은 [쿠폰 도메인 규칙](쿠폰-도메인-규칙.md) 에 있으나, 탐지 조건의 수치가 정해지지 않았다
 
 ## 진행경과
+
+- 2026-09-13 — KAN-24 CB1~3의 독립 personalFit 입력·준비 계산·시민별 조회 구현과 주요 한국어 흐름 주석을 완료했다. 루트 typecheck/test/build가 통과했으며 API 197개를 새 실행했다. 상세 근거는 [최종 검증 기록](personal-fit-validation.md)에 남겼다. 서비스 활성화는 범위 밖이며 CB4 검증 기록은 독립 리뷰 한 라운드(A 발견 0건, B P3 1건 정정)를 완료하여 본 커밋에 포함했다. 아래 착수 기록은 구현 전 시점의 이력이다.
 
 - 2026-09-13 — S6 설계를 signal 하나로 축소하고 Jira MCP로 에픽 KAN-22·설계 KAN-23·구현 KAN-24를 생성했다. 설계 PR #19 → 구현 PR #20을 gh-stack의 stack #21로 연결했다. 구현 PR #20은 작업 계획만 담은 Draft다. 앱 구현·테스트는 미실행이다.
 
