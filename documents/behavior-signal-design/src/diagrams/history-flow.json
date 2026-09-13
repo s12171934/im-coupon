@@ -1,0 +1,160 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "S6 내부 로직 1 · 이력 정제",
+    "quality_profile": "showcase"
+  },
+  "lanes": [
+    {
+      "id": "history",
+      "label": "preparePersonalFit · 최신 상태에서 유효 이력까지"
+    },
+    {
+      "id": "exit",
+      "label": "무효 입력과 이력 없음",
+      "variant": "exception"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "input",
+      "lane": "history",
+      "col": 0,
+      "type": "external",
+      "label": "입력 고정",
+      "sublabel": "시민·후보·시각·파라미터",
+      "width": 150
+    },
+    {
+      "id": "revision",
+      "lane": "history",
+      "col": 1,
+      "type": "backend",
+      "label": "최신 revision 선택",
+      "sublabel": "기준 시각까지 알려진 거래",
+      "width": 150
+    },
+    {
+      "id": "conflict",
+      "lane": "history",
+      "col": 2,
+      "type": "backend",
+      "label": "revision 충돌 검사",
+      "sublabel": "같은 revision·상이 payload",
+      "width": 150
+    },
+    {
+      "id": "filter",
+      "lane": "history",
+      "col": 3,
+      "type": "backend",
+      "label": "실제 사용자 필터",
+      "sublabel": "구간 내 확정·순사용액 양수",
+      "width": 150
+    },
+    {
+      "id": "dedup",
+      "lane": "history",
+      "col": 4,
+      "type": "backend",
+      "label": "날짜별 1건 유지",
+      "sublabel": "시민 × 가게 × KST 날짜",
+      "width": 150
+    },
+    {
+      "id": "next",
+      "lane": "history",
+      "col": 5,
+      "type": "backend",
+      "label": "벡터·프로필 계산으로",
+      "sublabel": "유효 이력 전달",
+      "width": 150
+    },
+    {
+      "id": "invalid",
+      "lane": "exit",
+      "col": 2,
+      "type": "backend",
+      "label": "무효 입력 종료",
+      "sublabel": "충돌 상태를 임의 선택하지 않음",
+      "width": 150
+    },
+    {
+      "id": "empty",
+      "lane": "exit",
+      "col": 4,
+      "type": "backend",
+      "label": "전체 비활성 반환",
+      "sublabel": "이 시민의 모든 후보 점수 0",
+      "width": 150
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-0",
+      "from": "input",
+      "to": "revision"
+    },
+    {
+      "id": "edge-1",
+      "from": "revision",
+      "to": "conflict"
+    },
+    {
+      "id": "edge-2",
+      "from": "conflict",
+      "to": "filter",
+      "label": "충돌 없음"
+    },
+    {
+      "id": "edge-3",
+      "from": "conflict",
+      "to": "invalid",
+      "label": "충돌"
+    },
+    {
+      "id": "edge-4",
+      "from": "filter",
+      "to": "dedup"
+    },
+    {
+      "id": "edge-5",
+      "from": "dedup",
+      "to": "next",
+      "label": "이력 있음"
+    },
+    {
+      "id": "edge-6",
+      "from": "dedup",
+      "to": "empty",
+      "label": "이력 없음"
+    }
+  ],
+  "mainPath": [
+    "input",
+    "revision",
+    "conflict",
+    "filter",
+    "dedup",
+    "next"
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "순서가 중요한 이유",
+      "items": [
+        "거래별 최신 revision을 먼저 고른 뒤 실제 사용자를 필터링한다.",
+        "전액 취소·미확정·사용자 불명은 제외하고 부분 취소의 양수 사용은 유지한다."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "시간과 중복",
+      "items": [
+        "관측 구간은 시작 포함·끝 제외. 미래 기록은 읽지 않는다.",
+        "날짜별 최근 사건을 남기며 동시각이면 거래 ID 오름차순으로 고른다."
+      ]
+    }
+  ]
+}

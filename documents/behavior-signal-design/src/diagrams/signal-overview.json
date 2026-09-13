@@ -1,0 +1,127 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "S6 · 입력에서 시그널 점수까지",
+    "quality_profile": "showcase"
+  },
+  "lanes": [
+    {
+      "id": "calc",
+      "label": "도메인 내부 · 메모리 계산"
+    },
+    {
+      "id": "invoke",
+      "label": "호출자 / 단위 테스트"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "source",
+      "lane": "calc",
+      "col": 0,
+      "type": "external",
+      "label": "외부 준비 입력",
+      "sublabel": "사용 사건·벡터·기준 시각",
+      "width": 150
+    },
+    {
+      "id": "prepare",
+      "lane": "calc",
+      "col": 1,
+      "type": "backend",
+      "label": "preparePersonalFit",
+      "sublabel": "정제·프로필·후보별 점수",
+      "width": 150
+    },
+    {
+      "id": "context",
+      "lane": "calc",
+      "col": 2,
+      "type": "backend",
+      "label": "PersonalFitContext",
+      "sublabel": "시민별 불변 준비 결과",
+      "width": 150
+    },
+    {
+      "id": "signal",
+      "lane": "calc",
+      "col": 3,
+      "type": "backend",
+      "label": "personalFitSignal",
+      "sublabel": "동기 score 조회",
+      "width": 150
+    },
+    {
+      "id": "output",
+      "lane": "calc",
+      "col": 4,
+      "type": "backend",
+      "label": "숫자 점수",
+      "sublabel": "후보 하나에 0~1 반환",
+      "width": 150
+    },
+    {
+      "id": "candidate",
+      "lane": "invoke",
+      "col": 3,
+      "type": "external",
+      "label": "Candidate 전달",
+      "sublabel": "시민 ID + 가게 ID",
+      "width": 150
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-0",
+      "from": "source",
+      "to": "prepare"
+    },
+    {
+      "id": "edge-1",
+      "from": "prepare",
+      "to": "context",
+      "label": "준비 결과"
+    },
+    {
+      "id": "edge-2",
+      "from": "context",
+      "to": "signal",
+      "label": "주입"
+    },
+    {
+      "id": "edge-3",
+      "from": "signal",
+      "to": "output"
+    },
+    {
+      "id": "edge-4",
+      "from": "candidate",
+      "to": "signal",
+      "label": "score 호출"
+    }
+  ],
+  "mainPath": [
+    "source",
+    "prepare",
+    "context",
+    "signal",
+    "output"
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "이번 구현",
+      "items": [
+        "apps/api의 signal 인스턴스·입력 타입·순수 준비 함수·단위 테스트"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "연결 경계",
+      "items": [
+        "web·신규 HTTP·DB·발급 서비스 활성화는 포함하지 않는다."
+      ]
+    }
+  ]
+}

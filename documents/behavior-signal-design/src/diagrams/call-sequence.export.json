@@ -1,0 +1,18 @@
+{
+  "source_html_sha256": "d2d5cb6972e1ace0011c5e3b001a5683d1c7e98413f1c61c8b7e8ced6c282d66",
+  "method": "Archify.exportMenu.run; canonical viewer export",
+  "exports": [
+    {
+      "format": "svg",
+      "bytes": 48897,
+      "sha256": "4abc5500f7b5b1659912f322855cd1e241d94652ed5dc54f37de7ca76ea84a57",
+      "canonical": true
+    },
+    {
+      "format": "png",
+      "bytes": 322448,
+      "sha256": "3bd7a8dbfd8d587a66b89304db294d5e13cf78fa980846a16d841971a84bf968",
+      "canonical": true
+    }
+  ]
+}

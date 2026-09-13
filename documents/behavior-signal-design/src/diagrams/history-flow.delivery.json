@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "deliver",
+  "type": "workflow",
+  "input": "documents/behavior-signal-design/src/diagrams/history-flow.json",
+  "output": "documents/behavior-signal-design/src/diagrams/history-flow.html",
+  "specification": {
+    "sha256": "65cafd32753c59886c0d7294690a5b1db89ccd0b1240384f1a6e2afa1c6ce3f1",
+    "bytes": 3573
+  },
+  "artifact": {
+    "sha256": "21f9a55af862d8d34ac135b754fe4070e1545dcc5868f62ca7d06e101f4b1bb2",
+    "bytes": 710385
+  },
+  "validation": {
+    "checksPassed": 9,
+    "checkCount": 9,
+    "compositionProfile": "showcase",
+    "compositionStatus": "pass",
+    "errors": 0,
+    "warnings": 0
+  }
+}

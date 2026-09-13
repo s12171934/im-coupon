@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "deliver",
+  "type": "workflow",
+  "input": "documents/behavior-signal-design/src/diagrams/profile-flow.json",
+  "output": "documents/behavior-signal-design/src/diagrams/profile-flow.html",
+  "specification": {
+    "sha256": "c9e617ca807b99f71d70b10b77c663bc72567f9620f2f2e694a55696eb96c4da",
+    "bytes": 3803
+  },
+  "artifact": {
+    "sha256": "c4a65d05d5e5bd3b910b689cc1eccdfb02ab87053bb0b7fa32d89d0705628d49",
+    "bytes": 712453
+  },
+  "validation": {
+    "checksPassed": 9,
+    "checkCount": 9,
+    "compositionProfile": "showcase",
+    "compositionStatus": "pass",
+    "errors": 0,
+    "warnings": 0
+  }
+}

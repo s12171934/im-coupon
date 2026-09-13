@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "deliver",
+  "type": "workflow",
+  "input": "documents/behavior-signal-design/src/diagrams/score-flow.json",
+  "output": "documents/behavior-signal-design/src/diagrams/score-flow.html",
+  "specification": {
+    "sha256": "3b5e22e7b7e003fc0e67001a51948ccbd9888b769e73f58803afcca8afe7d29b",
+    "bytes": 2699
+  },
+  "artifact": {
+    "sha256": "f46b9d8c7ace70e8c8558efb4f9a56c98ea3b427dc74dd56a2e16d8ed680d9c1",
+    "bytes": 706832
+  },
+  "validation": {
+    "checksPassed": 9,
+    "checkCount": 9,
+    "compositionProfile": "showcase",
+    "compositionStatus": "pass",
+    "errors": 0,
+    "warnings": 0
+  }
+}
