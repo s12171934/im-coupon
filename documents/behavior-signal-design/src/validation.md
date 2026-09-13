@@ -1,31 +1,33 @@
-> 2026-09-13에 수행한 S6 설계 문서 검증 기록이다. 앱 테스트·모델 추론·실사용 평가 결과와 구분한다.
-
 # 문서 검증 기록
 
-- 대상 — [14장 설계](../design.md), SVG 5개, JSON 예시 4개, 인덱스 등록과 후속 범위 주석.
-- 재실행 — 저장소 루트에서 `python3 documents/behavior-signal-design/src/build-doc-assets.py`와 `python3 documents/behavior-signal-design/src/validate-doc.py`를 차례로 실행한다.
-- 자동 결과 — [검증 JSON](./validation.json)에 장 순서, 브랜치 집합, 추적성, 레코드 필드, 벡터 차원·노름, 점수·기여·해시, 링크, SVG 구조를 기록한다.
-- 시각 확인 — macOS Quick Look으로 SVG 5개를 PNG로 렌더링하고 모두 직접 열어 확인했다. 처음 미리보기의 가로 잘림을 발견하여 SVG 표시 크기를 조정한 뒤 다시 확인했다.
-- PNG — `project.svg.png`, `internals.svg.png`, `extensions.svg.png`, `branches.svg.png`, `flows.svg.png`는 해당 시각 검증 산출물이다. 마크다운의 원본 연결은 SVG다.
-- 경로 범위 — 앱 코드·볼트·원 main 체크아웃을 수정하지 않았다. 시작 시 이 체크아웃의 작업 트리는 깨끗했고 HEAD는 `17ce19c301eb94e75dc9fa49944fc7bfc5334086`이었다.
-- 수동 대조 — 현재 엔진의 동기 score, random 전용 context·가중치, 0 가중치 호출, 최고 하나·동점 첫 후보, 현재 전체 시민×가게 후보, 소비 이름 계약을 직접 확인했다.
-- 수동 대조 — 14장 SSOT 전체, 두 기획 원문 전체, 기존 기술·범위·도메인·티켓 문서를 읽었다. 에픽 미확정 예외와 설계용 `src/` 규칙을 적용했다.
-- 수동 대조 — 계획 파일맵의 생성·수정·삭제, B05 3층 분해, 6개 RED, 15개 컴포넌트별 커밋, 미래 테스트 완료 조건을 확인했다.
-- 산식 — 가상 U1 점수 A=0.983869910099908, B=0.447213595499958, C=0.894427190999916 및 A>C>B를 재계산했다. 반감기 비와 가게 상한도 산술로 검산했다.
-- 출처 확인 — E5 공식 모델 카드와 Google 콘텐츠 추천 페이지를 열었다. 공식 모델 카드 원문에서 차원·접두어·정규화·토큰 제한을 확인했다.
-- 외부 확인 한계 — 공모전 홈페이지·FAQ는 도구 오류로 재확인하지 못했다. 최신 Jira 티켓 조회 도구가 없어 로컬 티켓 근거까지만 확인했다.
-- JSON 한계 — 레코드는 명시적 synthetic 구조 예시다. `fixture-only` revision과 기저 벡터는 모델 출력이 아니며, 실제 임베딩 실행 성공을 증명하지 않는다.
+- 검증일 — 2026-09-13.
+- 대상 — [현재 설계](../design.md), 문서 인덱스, 프로토타입 범위의 연결 설명.
+- 코드 대조 — 기존 Signal·SignalContext, randomSignal, 발급 엔진, 서비스 등록 맵, SignalWeights와 web SIGNAL_LABELS의 타입 결합을 확인했다.
+- 범위 — apps/api 도메인의 signal·입력·순수 준비 함수·단위 테스트만 구현 대상으로 남겼다. web·공유 계약·DB·e2e는 변경 없는 워크스페이스다.
+- 정합성 — 14장 순서, 설계 D01·구현 B01 계획, 상대 링크, 가상 벡터의 점수 및 순위를 확인했다.
+- 이전 산출물 — 추천 API·저장소·화면을 전제한 SVG·PNG·JSON과 생성/검증 스크립트는 현재 설계와 맞지 않아 제거했다. 이전 검증 결과를 현재 설계의 통과 근거로 사용하지 않는다.
+- 미실행 — 앱 코드 구현, pnpm 테스트·타입 검사·빌드·E2E, 모델 추론, 실제 데이터 연동·성능 평가.
 
-## 두 차례 검토 반영
+## Archify 다이어그램 검증
 
-| 라운드 | 관점 | 발견 | 반영 위치 |
+아래는 이전 설계 작업에서 수행한 검증 기록을 보존한 것이다. 티켓·브랜치 연결 작업에서 도표를 재생성하거나 시각 검증을 재실행하지 않았다.
+
+- 최종 표현 — 본문에 SVG 5개를 직접 삽입하고 PNG·확대용 HTML을 연결했다. Mermaid 코드 블록은 제거했다.
+- 도표 — 구성 흐름, 이력 정제, 프로필·점수 계산, score 조회, 호출 시퀀스. 앞 4개는 workflow, 마지막은 sequence다.
+- 정합성 — 최신 revision → 사용자 필터 순서, 날짜별 중복 제거, 벡터 검증, 최근성·상한·프로필 계산, 내적 유한성 검사 후 clip, 해당 시민 전체 0 처리와 score 조회 분기를 본문 계약과 대조했다.
+- 결정적 검증 — 5개 모두 Archify showcase 9/9, 구성 오류 0·경고 0. 원본 JSON과 HTML의 SHA-256·바이트 수는 각 `*.delivery.json`에 보관한다.
+- 브라우저 검증 — 5개 모두 `visual-check` 통과. 1440×900, 1600×1000, 1920×1080, 2048×1320에서 가로·세로 넘침이 없었다. 원본에 결합된 측정·밝은/어두운 화면 캡처는 각 `*.visual-check.json`과 이미지에 보관한다.
+- 시각 검토 — Codex가 내보낸 PNG 5개와 2048×1320의 HTML 밝은/어두운 테마 이미지 10개를 직접 열어 글자·분기·연결선·범위 표시를 확인했다. 자동 측정의 `visualReview: pending`과 별개로 사람/이미지 검토 결과는 아래 요약 JSON에 기록한다.
+- 내보내기 — 검증된 HTML의 Archify Export 기능으로 SVG·PNG를 생성했다. 모두 canonical=true이며 뷰어의 임시 상태·조작 메뉴를 제외한다. HTML 및 내보낸 파일의 해시는 각 `*.export.json`에 기록한다.
+- 언어 — 도표 내용은 한국어다. Archify 고정 뷰어 UI·`html lang`은 영어 기본값이며 일부 범례도 영어다.
+- 이전 시도 — 이전 턴의 단일 HTML 흐름은 분기선 겹침으로 채택하지 않았다. 이번에는 의미별 도표로 다시 구성해 검증과 내보내기를 완료했다.
+- 전체 결과 — [다이어그램 검증 요약](./diagrams/verification.json).
+- 재생성 — 해당 JSON을 Archify `validate` → `deliver` → `visual-check`로 검증하고, 검증된 HTML의 Export → SVG / PNG로 내보낸다. JSON이 편집 원본이며 SVG를 별도로 수작업 수정하지 않는다.
+
+| 도표 | 원본 JSON | 검증된 HTML | 배포·해시 기록 |
 | --- | --- | --- | --- |
-| 1 | 공모전 적합성 | 모의 이력을 시민 분포·실사용 정답으로 오인 | 1·7·12장 |
-| 1 | 기술 구현 | 이름 기반 소비 계약·0 가중치 호출·사용자 정정 순서 | 1·4·7장 |
-| 2 | 공모전 적합성 | 비활성 추천의 AI 표시·관련성 라벨 과장 | 8·10·12장 |
-| 2 | 기술 구현 | 다중 파일 쓰기·재현 입력·랜덤 재호출·발급 호환 | 4·7·8·10장 |
-
-- 검토 주체 — 이 탭의 Codex가 두 차례 자기 검토했다. 독립 심사위원·별도 에이전트 검토로 표시하지 않는다.
-- 문서 결과 — 추적성과 산술·예시·링크·도표 검증을 수행했다. 자동 검증의 최신 통과 항목 수는 검증 JSON이 기준이다.
-- 착수 판정 — 실 에픽·모델 revision·실행 환경·실제 사용자 로그·과거 내용 대응은 미확인이다. 따라서 모든 전제 확인 및 실제 개인화 구현 완료 판정은 열려 있다.
-- 미실행 — `pnpm test`, `pnpm typecheck`, `pnpm build`, `pnpm e2e`, 모델 다운로드·추론, 공공 API 적재, 개인 데이터 학습, 실사용 효과 측정.
+| signal-overview | [JSON](./diagrams/signal-overview.json) | [HTML](./diagrams/signal-overview.html) | [배포 기록](./diagrams/signal-overview.delivery.json) |
+| history-flow | [JSON](./diagrams/history-flow.json) | [HTML](./diagrams/history-flow.html) | [배포 기록](./diagrams/history-flow.delivery.json) |
+| profile-flow | [JSON](./diagrams/profile-flow.json) | [HTML](./diagrams/profile-flow.html) | [배포 기록](./diagrams/profile-flow.delivery.json) |
+| score-flow | [JSON](./diagrams/score-flow.json) | [HTML](./diagrams/score-flow.html) | [배포 기록](./diagrams/score-flow.delivery.json) |
+| call-sequence | [JSON](./diagrams/call-sequence.json) | [HTML](./diagrams/call-sequence.html) | [배포 기록](./diagrams/call-sequence.delivery.json) |

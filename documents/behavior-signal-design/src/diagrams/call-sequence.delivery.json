@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "deliver",
+  "type": "sequence",
+  "input": "documents/behavior-signal-design/src/diagrams/call-sequence.json",
+  "output": "documents/behavior-signal-design/src/diagrams/call-sequence.html",
+  "specification": {
+    "sha256": "53aa3952701fc579b58464d1d4f3aa5fd86367cc8734272b77fd19cc7ebe76dd",
+    "bytes": 2292
+  },
+  "artifact": {
+    "sha256": "d2d5cb6972e1ace0011c5e3b001a5683d1c7e98413f1c61c8b7e8ced6c282d66",
+    "bytes": 704785
+  },
+  "validation": {
+    "checksPassed": 9,
+    "checkCount": 9,
+    "compositionProfile": "showcase",
+    "compositionStatus": "pass",
+    "errors": 0,
+    "warnings": 0
+  }
+}

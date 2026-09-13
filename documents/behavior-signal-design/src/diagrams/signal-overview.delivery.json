@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "deliver",
+  "type": "workflow",
+  "input": "documents/behavior-signal-design/src/diagrams/signal-overview.json",
+  "output": "documents/behavior-signal-design/src/diagrams/signal-overview.html",
+  "specification": {
+    "sha256": "8e9ba1aa6840dd04799ae5f15da230cabec2aee0cb0e2402402e5f60f9d3c658",
+    "bytes": 2581
+  },
+  "artifact": {
+    "sha256": "6ee2506254ba348bc600a8e3d6e595deb840d5c05ecf50198f7230889d5e69b0",
+    "bytes": 705707
+  },
+  "validation": {
+    "checksPassed": 9,
+    "checkCount": 9,
+    "compositionProfile": "showcase",
+    "compositionStatus": "pass",
+    "errors": 0,
+    "warnings": 0
+  }
+}
