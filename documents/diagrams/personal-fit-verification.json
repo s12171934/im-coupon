@@ -1,0 +1,94 @@
+{
+  "prepare": {
+    "specification": {
+      "sha256": "1bc36720e535a244b30a85889ba220c3f0ac48d2aed5e9da210f89ab5435117c",
+      "bytes": 4292
+    },
+    "artifact": {
+      "sha256": "0b930301b2e7d1deb05b62946f6247c2f3f4642b8e7862b412d5d75d0887310f",
+      "bytes": 716282
+    },
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browser_evidence": "pass",
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 900,
+        "scrollWidth": 1440,
+        "scrollHeight": 900
+      },
+      {
+        "width": 1600,
+        "height": 1000,
+        "scrollWidth": 1600,
+        "scrollHeight": 1000
+      },
+      {
+        "width": 1920,
+        "height": 1080,
+        "scrollWidth": 1920,
+        "scrollHeight": 1080
+      },
+      {
+        "width": 2048,
+        "height": 1320,
+        "scrollWidth": 2048,
+        "scrollHeight": 1320
+      }
+    ],
+    "png_sha256": "834fd83a04f18f9dc3709552bab7f22a508d5c4527d67ea4b9b34f5bcb760a03"
+  },
+  "lookup": {
+    "specification": {
+      "sha256": "ee04d3cb3b75749df0e35e752f5bae781a51a5e86a7f33888ea63ea6c6591c81",
+      "bytes": 4257
+    },
+    "artifact": {
+      "sha256": "ab113b132798c64fc0ab08a620273ca692f71413464613d69aebd051eab32ced",
+      "bytes": 715083
+    },
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browser_evidence": "pass",
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 900,
+        "scrollWidth": 1440,
+        "scrollHeight": 900
+      },
+      {
+        "width": 1600,
+        "height": 1000,
+        "scrollWidth": 1600,
+        "scrollHeight": 1000
+      },
+      {
+        "width": 1920,
+        "height": 1080,
+        "scrollWidth": 1920,
+        "scrollHeight": 1080
+      },
+      {
+        "width": 2048,
+        "height": 1320,
+        "scrollWidth": 2048,
+        "scrollHeight": 1320
+      }
+    ],
+    "png_sha256": "e13ebee27868464bcb569d9fd4e4dae53378c21c40fc8e175bd89c79a5001768"
+  }
+}

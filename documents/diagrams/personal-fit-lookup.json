@@ -1,0 +1,218 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "KAN-24 · 시민별 동기 점수 조회",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "계산 및 조회"
+        },
+        "security": {
+          "label": "오류 및 비활성"
+        }
+      }
+    }
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "정상 흐름"
+    },
+    {
+      "id": "exception",
+      "label": "조기 종료",
+      "variant": "exception"
+    }
+  ],
+  "mainPath": [
+    "s1",
+    "s2",
+    "s3",
+    "s4",
+    "s5",
+    "s6"
+  ],
+  "nodes": [
+    {
+      "id": "s1",
+      "col": 0,
+      "label": "S1 시민 결과 조회",
+      "sublabel": "시민 ID로 찾기",
+      "lane": "main",
+      "type": "backend",
+      "width": 132
+    },
+    {
+      "id": "s2",
+      "col": 1,
+      "label": "S2 시민 일치 검사",
+      "sublabel": "시민 ID 비교",
+      "lane": "main",
+      "type": "backend",
+      "width": 132
+    },
+    {
+      "id": "s3",
+      "col": 2,
+      "label": "S3 활성 여부",
+      "sublabel": "enabled 검사",
+      "lane": "main",
+      "type": "backend",
+      "width": 132
+    },
+    {
+      "id": "s4",
+      "col": 3,
+      "label": "S4 후보 소유 키",
+      "sublabel": "직접 보유한 키",
+      "lane": "main",
+      "type": "backend",
+      "width": 132
+    },
+    {
+      "id": "s5",
+      "col": 4,
+      "label": "S5 점수 유효성",
+      "sublabel": "유한한 숫자 · 0~1",
+      "lane": "main",
+      "type": "backend",
+      "width": 132
+    },
+    {
+      "id": "s6",
+      "col": 5,
+      "label": "S6 점수 반환",
+      "sublabel": "저장된 값 그대로",
+      "lane": "main",
+      "type": "backend",
+      "width": 132
+    },
+    {
+      "id": "z1",
+      "col": 0,
+      "label": "Z1 준비 없음",
+      "sublabel": "0 반환",
+      "lane": "exception",
+      "type": "backend",
+      "width": 132
+    },
+    {
+      "id": "e2",
+      "col": 1,
+      "label": "E2 시민 불일치",
+      "sublabel": "다른 시민의 결과",
+      "lane": "exception",
+      "type": "security",
+      "width": 132
+    },
+    {
+      "id": "z3",
+      "col": 2,
+      "label": "Z3 비활성",
+      "sublabel": "0 반환",
+      "lane": "exception",
+      "type": "backend",
+      "width": 132
+    },
+    {
+      "id": "e4",
+      "col": 3,
+      "label": "E4 미준비 후보",
+      "sublabel": "후보 키 없음",
+      "lane": "exception",
+      "type": "security",
+      "width": 132
+    },
+    {
+      "id": "e5",
+      "col": 4,
+      "label": "E5 점수 오류",
+      "sublabel": "점수 계약 위반",
+      "lane": "exception",
+      "type": "security",
+      "width": 132
+    }
+  ],
+  "edges": [
+    {
+      "id": "s1-s2",
+      "from": "s1",
+      "to": "s2",
+      "label": "결과 있음"
+    },
+    {
+      "id": "s2-s3",
+      "from": "s2",
+      "to": "s3",
+      "label": "동일 시민"
+    },
+    {
+      "id": "s3-s4",
+      "from": "s3",
+      "to": "s4",
+      "label": "활성"
+    },
+    {
+      "id": "s4-s5",
+      "from": "s4",
+      "to": "s5",
+      "label": "소유 키 있음"
+    },
+    {
+      "id": "s5-s6",
+      "from": "s5",
+      "to": "s6",
+      "label": "정상 점수"
+    },
+    {
+      "id": "s1-z1",
+      "from": "s1",
+      "to": "z1",
+      "label": "결과 없음"
+    },
+    {
+      "id": "s2-e2",
+      "from": "s2",
+      "to": "e2",
+      "label": "불일치"
+    },
+    {
+      "id": "s3-z3",
+      "from": "s3",
+      "to": "z3",
+      "label": "비활성"
+    },
+    {
+      "id": "s4-e4",
+      "from": "s4",
+      "to": "e4",
+      "label": "소유 키 없음"
+    },
+    {
+      "id": "s5-e5",
+      "from": "s5",
+      "to": "e5",
+      "label": "계약 위반"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "호출자 책임",
+      "items": [
+        "시민별 준비 결과를 context Map에 주입",
+        "후보·내용 버전 변경 시 재준비하고 교체"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "현재 서비스 연결 범위",
+      "items": [
+        "발급 서비스에는 random만 등록됨",
+        "personalFit의 HTTP·DB·가중치 연결은 아직 없음"
+      ]
+    }
+  ]
+}
