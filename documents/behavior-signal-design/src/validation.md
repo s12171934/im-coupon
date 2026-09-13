@@ -31,3 +31,10 @@
 | profile-flow | [JSON](./diagrams/profile-flow.json) | [HTML](./diagrams/profile-flow.html) | [배포 기록](./diagrams/profile-flow.delivery.json) |
 | score-flow | [JSON](./diagrams/score-flow.json) | [HTML](./diagrams/score-flow.html) | [배포 기록](./diagrams/score-flow.delivery.json) |
 | call-sequence | [JSON](./diagrams/call-sequence.json) | [HTML](./diagrams/call-sequence.html) | [배포 기록](./diagrams/call-sequence.delivery.json) |
+
+## 티켓·브랜치 연결 검증
+
+- 2026-09-13 — Jira MCP 재조회로 에픽 KAN-22, Task KAN-23·KAN-24의 유형·부모 및 실제 체크박스 저장을 확인했다.
+- 상대 링크 검사에서는 인덱스의 HTML 주석 안 등록 예시를 제외하고 실제 링크를 확인했다. 14장 순서와 티켓·브랜치 매핑도 확인했다.
+- Markdown 변경의 공백 검사는 통과했다. 전체 변경 검사에서는 이전 Archify SVG 내보내기 CSS의 줄 끝 공백이 보고됐다. 내보내기 해시와 원본 바이트를 보존하기 위해 생성 SVG는 수정하지 않았다.
+- gh-stack으로 PR #19 → #20 및 네이티브 stack #21 생성을 확인했다. 구현 PR은 작업 계획 Draft이며 앱 테스트·타입 검사·빌드는 미실행이다.

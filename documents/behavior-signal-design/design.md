@@ -228,8 +228,10 @@ B01의 첫 검증은 같은 후보에 서로 다른 시민의 준비 점수를 �
 | 단계 | 티켓 | 브랜치 | PR | 커밋·완료 범위 |
 | --- | --- | --- | --- | --- |
 | 에픽 | [KAN-22](https://ssong9520.atlassian.net/browse/KAN-22) | — | — | 설계와 구현의 상위 묶음 |
-| D01 설계 | [KAN-23](https://ssong9520.atlassian.net/browse/KAN-23) | `s12171934/behavior-signal-design` | 생성 후 기록 | 범위 축소·도표·티켓맵·브랜치 연결 |
-| B01 구현 | [KAN-24](https://ssong9520.atlassian.net/browse/KAN-24) | `s12171934/kan-24-personal-fit-signal` | Draft 생성 후 기록 | 현재 작업 계획만 작성. 후속: 타입·입력 / 준비 계산·테스트 / signal·테스트 |
+| D01 설계 | [KAN-23](https://ssong9520.atlassian.net/browse/KAN-23) | `s12171934/behavior-signal-design` | [PR #19](https://github.com/s12171934/im-coupon/pull/19) | 범위 축소·도표·티켓맵·브랜치 연결 |
+| B01 구현 | [KAN-24](https://ssong9520.atlassian.net/browse/KAN-24) | `s12171934/kan-24-personal-fit-signal` | [PR #20 · Draft](https://github.com/s12171934/im-coupon/pull/20) | 현재 작업 계획만 작성. 후속: 타입·입력 / 준비 계산·테스트 / signal·테스트 |
+
+`gh stack link`로 GitHub 네이티브 stack #21에 PR #19 → #20을 연결했다.
 
 두 실행 티켓은 서브태스크가 아닌 Task이며 부모는 KAN-22다. KAN-4와 Relates 링크를 만들지 않는다. 이전 초안의 추천 API·저장소·web·평가 E2E 티켓 계획은 이번 범위에서 제거한다.
 
@@ -243,3 +245,4 @@ B01의 첫 검증은 같은 후보에 서로 다른 시민의 준비 점수를 �
 - 2026-09-13 — Mermaid 블록을 Archify SVG 5개로 교체했다. 이력 정제와 프로필 계산을 나눠 정상·실패 분기를 보존하고, PNG·HTML·원본 JSON 및 검증 기록을 함께 보관한다.
 
 - 2026-09-13 — Jira MCP로 에픽 KAN-22와 설계 Task KAN-23·구현 Task KAN-24를 생성했다. 기존 설계 브랜치와 별도 구현 브랜치의 2단계 스택을 정의하고 구현은 작업 계획 Draft로 시작한다.
+- 2026-09-13 — PR #19(설계, base main)와 PR #20(구현 계획 Draft, base 설계 브랜치)을 생성하고 gh-stack으로 stack #21에 연결했다. 실제 PR 번호를 티켓맵에 반영했다.
