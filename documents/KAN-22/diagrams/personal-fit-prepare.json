@@ -1,0 +1,218 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "KAN-24 · 개인화 점수 준비",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "계산 및 조회"
+        },
+        "security": {
+          "label": "오류 및 비활성"
+        }
+      }
+    }
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "정상 흐름"
+    },
+    {
+      "id": "exception",
+      "label": "조기 종료",
+      "variant": "exception"
+    }
+  ],
+  "mainPath": [
+    "p1",
+    "p2",
+    "p3",
+    "p4",
+    "p5",
+    "p6"
+  ],
+  "nodes": [
+    {
+      "id": "p1",
+      "col": 0,
+      "label": "P1 요청 검증",
+      "sublabel": "시민 · 후보 · 시점",
+      "lane": "main",
+      "type": "backend",
+      "width": 132
+    },
+    {
+      "id": "p2",
+      "col": 1,
+      "label": "P2 이력 정제",
+      "sublabel": "정정 · 시민 · 날짜",
+      "lane": "main",
+      "type": "backend",
+      "width": 132
+    },
+    {
+      "id": "p3",
+      "col": 2,
+      "label": "P3 벡터 검증",
+      "sublabel": "버전 · 시점 일치",
+      "lane": "main",
+      "type": "backend",
+      "width": 132
+    },
+    {
+      "id": "p4",
+      "col": 3,
+      "label": "P4 프로필 계산",
+      "sublabel": "최근성 · 가게 상한",
+      "lane": "main",
+      "type": "backend",
+      "width": 132
+    },
+    {
+      "id": "p5",
+      "col": 4,
+      "label": "P5 후보 점수",
+      "sublabel": "내적을 0~1로 제한",
+      "lane": "main",
+      "type": "backend",
+      "width": 132
+    },
+    {
+      "id": "p6",
+      "col": 5,
+      "label": "P6 결과 동결",
+      "sublabel": "시민별 준비 결과",
+      "lane": "main",
+      "type": "backend",
+      "width": 132
+    },
+    {
+      "id": "x1",
+      "col": 0,
+      "label": "X1 요청 오류",
+      "sublabel": "TypeError",
+      "lane": "exception",
+      "type": "security",
+      "width": 132
+    },
+    {
+      "id": "d2",
+      "col": 1,
+      "label": "D2 이력 비활성",
+      "sublabel": "무효 / 없음",
+      "lane": "exception",
+      "type": "security",
+      "width": 132
+    },
+    {
+      "id": "d3",
+      "col": 2,
+      "label": "D3 벡터 비활성",
+      "sublabel": "벡터 누락 / 무효",
+      "lane": "exception",
+      "type": "security",
+      "width": 132
+    },
+    {
+      "id": "d4",
+      "col": 3,
+      "label": "D4 프로필 비활성",
+      "sublabel": "방향 계산 불가",
+      "lane": "exception",
+      "type": "security",
+      "width": 132
+    },
+    {
+      "id": "d5",
+      "col": 4,
+      "label": "D5 점수 비활성",
+      "sublabel": "내적 비유한",
+      "lane": "exception",
+      "type": "security",
+      "width": 132
+    }
+  ],
+  "edges": [
+    {
+      "id": "p1-p2",
+      "from": "p1",
+      "to": "p2",
+      "label": "유효 요청"
+    },
+    {
+      "id": "p2-p3",
+      "from": "p2",
+      "to": "p3",
+      "label": "사용 이력"
+    },
+    {
+      "id": "p3-p4",
+      "from": "p3",
+      "to": "p4",
+      "label": "단위 벡터"
+    },
+    {
+      "id": "p4-p5",
+      "from": "p4",
+      "to": "p5",
+      "label": "단위 프로필"
+    },
+    {
+      "id": "p5-p6",
+      "from": "p5",
+      "to": "p6",
+      "label": "전체 점수"
+    },
+    {
+      "id": "p1-x1",
+      "from": "p1",
+      "to": "x1",
+      "label": "계약 위반"
+    },
+    {
+      "id": "p2-d2",
+      "from": "p2",
+      "to": "d2",
+      "label": "정제 실패"
+    },
+    {
+      "id": "p3-d3",
+      "from": "p3",
+      "to": "d3",
+      "label": "검증 실패"
+    },
+    {
+      "id": "p4-d4",
+      "from": "p4",
+      "to": "d4",
+      "label": "계산 실패"
+    },
+    {
+      "id": "p5-d5",
+      "from": "p5",
+      "to": "d5",
+      "label": "계산 실패"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "D2~D5의 공통 반환",
+      "items": [
+        "enabled=false · 이유 보존 · 전 후보 0점",
+        "비활성 결과도 P6와 같은 복사·동결 규칙 적용"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "준비 함수의 경계",
+      "items": [
+        "시민·후보 집합마다 한 번 계산",
+        "외부 조회·모델 추론·난수 소비 없음"
+      ]
+    }
+  ]
+}
