@@ -19,6 +19,8 @@ iM뱅크 주최 `2026 AI Blockchain Challenge in Daegu` 공모전(접수 마감 
 
 - [S6 행동 이력 기반 signal 추가 — 설계](behavior-signal-design/design.md) — randomSignal과 같은 signal 인스턴스 추가 설계. web·신규 API·DB 제외. 에픽 KAN-22, 설계 KAN-23·구현 KAN-24의 브랜치·PR 매핑
 
+- [KAN-24 personalFitSignal 구현 착수 계획](behavior-signal-design/implementation-plan.md) — 구현 Draft의 체크리스트와 미실행 상태. 상세 계약은 S6 설계문서를 따른다.
+
 <!-- 등록 형식: - [문서 제목](파일명.md) — 이 문서가 무엇을 결정·기록하는지 한 줄 -->
 
 ## 아직 기록되지 않은 것
