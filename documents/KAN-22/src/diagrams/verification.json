@@ -1,0 +1,77 @@
+[
+  {
+    "diagram_type": "workflow",
+    "output": "signal-overview.html",
+    "specification_sha256": "8e9ba1aa6840dd04799ae5f15da230cabec2aee0cb0e2402402e5f60f9d3c658",
+    "artifact_sha256": "6ee2506254ba348bc600a8e3d6e595deb840d5c05ecf50198f7230889d5e69b0",
+    "validation": "9/9 showcase, 0 errors, 0 warnings",
+    "browser_evidence": "passed",
+    "visual_review": "passed",
+    "visual_review_evidence": [
+      "signal-overview.png",
+      "signal-overview.visual-check.2048x1320.light.png",
+      "signal-overview.visual-check.2048x1320.dark.png"
+    ],
+    "correction_rounds": 1
+  },
+  {
+    "diagram_type": "workflow",
+    "output": "history-flow.html",
+    "specification_sha256": "65cafd32753c59886c0d7294690a5b1db89ccd0b1240384f1a6e2afa1c6ce3f1",
+    "artifact_sha256": "21f9a55af862d8d34ac135b754fe4070e1545dcc5868f62ca7d06e101f4b1bb2",
+    "validation": "9/9 showcase, 0 errors, 0 warnings",
+    "browser_evidence": "passed",
+    "visual_review": "passed",
+    "visual_review_evidence": [
+      "history-flow.png",
+      "history-flow.visual-check.2048x1320.light.png",
+      "history-flow.visual-check.2048x1320.dark.png"
+    ],
+    "correction_rounds": 1
+  },
+  {
+    "diagram_type": "workflow",
+    "output": "profile-flow.html",
+    "specification_sha256": "c9e617ca807b99f71d70b10b77c663bc72567f9620f2f2e694a55696eb96c4da",
+    "artifact_sha256": "c4a65d05d5e5bd3b910b689cc1eccdfb02ab87053bb0b7fa32d89d0705628d49",
+    "validation": "9/9 showcase, 0 errors, 0 warnings",
+    "browser_evidence": "passed",
+    "visual_review": "passed",
+    "visual_review_evidence": [
+      "profile-flow.png",
+      "profile-flow.visual-check.2048x1320.light.png",
+      "profile-flow.visual-check.2048x1320.dark.png"
+    ],
+    "correction_rounds": 1
+  },
+  {
+    "diagram_type": "workflow",
+    "output": "score-flow.html",
+    "specification_sha256": "3b5e22e7b7e003fc0e67001a51948ccbd9888b769e73f58803afcca8afe7d29b",
+    "artifact_sha256": "f46b9d8c7ace70e8c8558efb4f9a56c98ea3b427dc74dd56a2e16d8ed680d9c1",
+    "validation": "9/9 showcase, 0 errors, 0 warnings",
+    "browser_evidence": "passed",
+    "visual_review": "passed",
+    "visual_review_evidence": [
+      "score-flow.png",
+      "score-flow.visual-check.2048x1320.light.png",
+      "score-flow.visual-check.2048x1320.dark.png"
+    ],
+    "correction_rounds": 0
+  },
+  {
+    "diagram_type": "sequence",
+    "output": "call-sequence.html",
+    "specification_sha256": "53aa3952701fc579b58464d1d4f3aa5fd86367cc8734272b77fd19cc7ebe76dd",
+    "artifact_sha256": "d2d5cb6972e1ace0011c5e3b001a5683d1c7e98413f1c61c8b7e8ced6c282d66",
+    "validation": "9/9 showcase, 0 errors, 0 warnings",
+    "browser_evidence": "passed",
+    "visual_review": "passed",
+    "visual_review_evidence": [
+      "call-sequence.png",
+      "call-sequence.visual-check.2048x1320.light.png",
+      "call-sequence.visual-check.2048x1320.dark.png"
+    ],
+    "correction_rounds": 0
+  }
+]

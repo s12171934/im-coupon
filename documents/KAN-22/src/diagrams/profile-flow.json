@@ -1,0 +1,176 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "S6 내부 로직 2 · 프로필과 점수 계산",
+    "quality_profile": "showcase"
+  },
+  "lanes": [
+    {
+      "id": "compute",
+      "label": "preparePersonalFit · 같은 명세의 벡터로 계산"
+    },
+    {
+      "id": "fallback",
+      "label": "어느 단계든 실패하면 해당 시민 전체 비활성",
+      "variant": "exception"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "vectors",
+      "lane": "compute",
+      "col": 0,
+      "type": "backend",
+      "label": "벡터 조회·검증",
+      "sublabel": "당시 내용·명세·차원·유한성",
+      "width": 150
+    },
+    {
+      "id": "weights",
+      "lane": "compute",
+      "col": 1,
+      "type": "backend",
+      "label": "최근성·상한 계산",
+      "sublabel": "정규화 → r → W → a",
+      "width": 150
+    },
+    {
+      "id": "profile",
+      "lane": "compute",
+      "col": 2,
+      "type": "backend",
+      "label": "가중 평균 z 검증",
+      "sublabel": "분모·성분 유한, 노름 > ε",
+      "width": 150
+    },
+    {
+      "id": "dot",
+      "lane": "compute",
+      "col": 3,
+      "type": "backend",
+      "label": "프로필 p와 후보 내적",
+      "sublabel": "p 정규화 → 모든 dot 계산",
+      "width": 150
+    },
+    {
+      "id": "clip",
+      "lane": "compute",
+      "col": 4,
+      "type": "backend",
+      "label": "0~1로 clip",
+      "sublabel": "유한성 검사 이후 적용",
+      "width": 150
+    },
+    {
+      "id": "ready",
+      "lane": "compute",
+      "col": 5,
+      "type": "backend",
+      "label": "활성 준비 결과",
+      "sublabel": "불변 점수 맵 반환",
+      "width": 150
+    },
+    {
+      "id": "badvector",
+      "lane": "fallback",
+      "col": 0,
+      "type": "backend",
+      "label": "전체 0 + 이유",
+      "sublabel": "누락·미래 내용·벡터 무효",
+      "width": 150
+    },
+    {
+      "id": "badprofile",
+      "lane": "fallback",
+      "col": 2,
+      "type": "backend",
+      "label": "전체 0 + 이유",
+      "sublabel": "분모 무효·노름 상쇄",
+      "width": 150
+    },
+    {
+      "id": "baddot",
+      "lane": "fallback",
+      "col": 3,
+      "type": "backend",
+      "label": "전체 0 + 이유",
+      "sublabel": "내적 하나라도 비유한",
+      "width": 150
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-0",
+      "from": "vectors",
+      "to": "weights",
+      "label": "모두 유효"
+    },
+    {
+      "id": "edge-1",
+      "from": "vectors",
+      "to": "badvector",
+      "label": "무효"
+    },
+    {
+      "id": "edge-2",
+      "from": "weights",
+      "to": "profile"
+    },
+    {
+      "id": "edge-3",
+      "from": "profile",
+      "to": "dot",
+      "label": "유효"
+    },
+    {
+      "id": "edge-4",
+      "from": "profile",
+      "to": "badprofile",
+      "label": "무효"
+    },
+    {
+      "id": "edge-5",
+      "from": "dot",
+      "to": "clip",
+      "label": "모두 유한"
+    },
+    {
+      "id": "edge-6",
+      "from": "dot",
+      "to": "baddot",
+      "label": "비유한"
+    },
+    {
+      "id": "edge-7",
+      "from": "clip",
+      "to": "ready"
+    }
+  ],
+  "mainPath": [
+    "vectors",
+    "weights",
+    "profile",
+    "dot",
+    "clip",
+    "ready"
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "최근성·가게별 상한",
+      "items": [
+        "r = 2^(-age / half_life), W = 가게별 r의 합",
+        "a = r × min(1, cap / W), z = Σ(a × v) / Σa"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "검증과 반환",
+      "items": [
+        "같은 명세·차원의 유한한 비영 벡터를 정규화한다.",
+        "실패 분기는 모두 enabled=false. 다른 시민의 결과는 유지한다."
+      ]
+    }
+  ]
+}

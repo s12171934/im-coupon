@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "S6 · 준비와 반복 조회 순서",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1400,
+      850
+    ]
+  },
+  "participants": [
+    {
+      "id": "caller",
+      "type": "external",
+      "label": "호출자 / 테스트"
+    },
+    {
+      "id": "prepare",
+      "type": "backend",
+      "label": "preparePersonalFit"
+    },
+    {
+      "id": "context",
+      "type": "backend",
+      "label": "PersonalFitContext"
+    },
+    {
+      "id": "signal",
+      "type": "backend",
+      "label": "personalFitSignal"
+    }
+  ],
+  "messages": [
+    {
+      "id": "message-0",
+      "from": "caller",
+      "to": "prepare",
+      "y": 180,
+      "label": "시민·후보·이력·벡터·시각",
+      "variant": "default"
+    },
+    {
+      "id": "message-1",
+      "from": "prepare",
+      "to": "caller",
+      "y": 255,
+      "label": "활성 점수 맵 또는 전체 0",
+      "variant": "return"
+    },
+    {
+      "id": "message-2",
+      "from": "caller",
+      "to": "context",
+      "y": 330,
+      "label": "시민별 준비 결과 주입",
+      "variant": "default"
+    },
+    {
+      "id": "message-3",
+      "from": "caller",
+      "to": "signal",
+      "y": 405,
+      "label": "후보별 score(candidate, context)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "message-4",
+      "from": "signal",
+      "to": "context",
+      "y": 480,
+      "label": "시민 ID·가게 ID로 조회",
+      "variant": "default"
+    },
+    {
+      "id": "message-5",
+      "from": "context",
+      "to": "signal",
+      "y": 555,
+      "label": "준비 결과와 점수",
+      "variant": "return"
+    },
+    {
+      "id": "message-6",
+      "from": "signal",
+      "to": "caller",
+      "y": 630,
+      "label": "숫자 점수 반환",
+      "variant": "return"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "후보별 반복",
+      "items": [
+        "준비된 후보마다 score 호출 → context 조회 → 숫자 반환을 반복한다."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "재준비",
+      "items": [
+        "이력·후보·기준 시각 변경 시 준비 단계부터 다시 수행한다."
+      ]
+    }
+  ]
+}

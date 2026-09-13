@@ -1,0 +1,129 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "S6 내부 로직 3 · score 조회와 반환",
+    "quality_profile": "showcase"
+  },
+  "lanes": [
+    {
+      "id": "lookup",
+      "label": "personalFitSignal.score(candidate, context)"
+    },
+    {
+      "id": "other",
+      "label": "준비 없음·비활성·호출 계약 오류",
+      "variant": "exception"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "invoke",
+      "lane": "lookup",
+      "col": 0,
+      "type": "external",
+      "label": "score 호출",
+      "sublabel": "Candidate + context",
+      "width": 200
+    },
+    {
+      "id": "active",
+      "lane": "lookup",
+      "col": 1,
+      "type": "backend",
+      "label": "시민 결과 조회",
+      "sublabel": "존재하고 enabled=true?",
+      "width": 200
+    },
+    {
+      "id": "member",
+      "lane": "lookup",
+      "col": 2,
+      "type": "backend",
+      "label": "후보 집합 확인",
+      "sublabel": "merchant.id가 포함되는가?",
+      "width": 200
+    },
+    {
+      "id": "return",
+      "lane": "lookup",
+      "col": 3,
+      "type": "backend",
+      "label": "준비 점수 반환",
+      "sublabel": "0~1의 유한한 숫자",
+      "width": 200
+    },
+    {
+      "id": "zero",
+      "lane": "other",
+      "col": 1,
+      "type": "backend",
+      "label": "숫자 0 반환",
+      "sublabel": "준비 없음 또는 비활성",
+      "width": 200
+    },
+    {
+      "id": "error",
+      "lane": "other",
+      "col": 2,
+      "type": "backend",
+      "label": "호출 계약 오류",
+      "sublabel": "바뀐 후보 집합으로 재준비",
+      "width": 200
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-0",
+      "from": "invoke",
+      "to": "active",
+      "label": "citizen.id"
+    },
+    {
+      "id": "edge-1",
+      "from": "active",
+      "to": "member",
+      "label": "활성"
+    },
+    {
+      "id": "edge-2",
+      "from": "active",
+      "to": "zero",
+      "label": "없음·비활성"
+    },
+    {
+      "id": "edge-3",
+      "from": "member",
+      "to": "return",
+      "label": "포함"
+    },
+    {
+      "id": "edge-4",
+      "from": "member",
+      "to": "error",
+      "label": "미포함"
+    }
+  ],
+  "mainPath": [
+    "invoke",
+    "active",
+    "member",
+    "return"
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "동기 조회 경계",
+      "items": [
+        "이력 정제·모델 추론·I/O·가중치 변경은 score 내부에서 수행하지 않는다."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "입력이 바뀌면",
+      "items": [
+        "이력·후보·기준 시각이 바뀌면 준비 함수를 다시 호출한다."
+      ]
+    }
+  ]
+}
