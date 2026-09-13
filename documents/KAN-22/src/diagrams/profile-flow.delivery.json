@@ -3,8 +3,8 @@
   "ok": true,
   "command": "deliver",
   "type": "workflow",
-  "input": "documents/behavior-signal-design/src/diagrams/profile-flow.json",
-  "output": "documents/behavior-signal-design/src/diagrams/profile-flow.html",
+  "input": "documents/KAN-22/src/diagrams/profile-flow.json",
+  "output": "documents/KAN-22/src/diagrams/profile-flow.html",
   "specification": {
     "sha256": "c9e617ca807b99f71d70b10b77c663bc72567f9620f2f2e694a55696eb96c4da",
     "bytes": 3803

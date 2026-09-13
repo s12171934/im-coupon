@@ -17,7 +17,7 @@ iM뱅크 주최 `2026 AI Blockchain Challenge in Daegu` 공모전(접수 마감 
 - [지라 티켓 연결](지라-티켓-연결.md) — 티켓과 이 저장소 문서의 대응, 새 티켓을 만드는 규칙, 지라 쓰기 경계. 티켓을 열거나 만들 때 읽는다
 - [KAN-13 프로토타입 쿠폰 발급 구현 — 설계문서](KAN-13/design.md) — 에픽 KAN-13 의 구현 착수 전 설계. 랜덤 신호 하나로 발급 1건을 만들어 내 쿠폰 화면까지 보이는 범위의 브랜치 스택·API 계약·테스트 계획이 여기 있다
 
-- [S6 행동 이력 기반 signal 추가 — 설계](behavior-signal-design/design.md) — randomSignal과 같은 signal 인스턴스 추가 설계. web·신규 API·DB 제외. 에픽 KAN-22, 설계 KAN-23·구현 KAN-24의 브랜치·PR 매핑
+- [S6 행동 이력 기반 signal 추가 — 설계](KAN-22/design.md) — randomSignal과 같은 signal 인스턴스 추가 설계. web·신규 API·DB 제외. 에픽 KAN-22, 설계 KAN-23·구현 KAN-24의 브랜치·PR 매핑
 
 <!-- 등록 형식: - [문서 제목](파일명.md) — 이 문서가 무엇을 결정·기록하는지 한 줄 -->
 

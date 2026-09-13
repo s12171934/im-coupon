@@ -3,8 +3,8 @@
   "ok": true,
   "command": "deliver",
   "type": "sequence",
-  "input": "documents/behavior-signal-design/src/diagrams/call-sequence.json",
-  "output": "documents/behavior-signal-design/src/diagrams/call-sequence.html",
+  "input": "documents/KAN-22/src/diagrams/call-sequence.json",
+  "output": "documents/KAN-22/src/diagrams/call-sequence.html",
   "specification": {
     "sha256": "53aa3952701fc579b58464d1d4f3aa5fd86367cc8734272b77fd19cc7ebe76dd",
     "bytes": 2292

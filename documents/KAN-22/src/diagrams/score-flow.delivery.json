@@ -3,8 +3,8 @@
   "ok": true,
   "command": "deliver",
   "type": "workflow",
-  "input": "documents/behavior-signal-design/src/diagrams/score-flow.json",
-  "output": "documents/behavior-signal-design/src/diagrams/score-flow.html",
+  "input": "documents/KAN-22/src/diagrams/score-flow.json",
+  "output": "documents/KAN-22/src/diagrams/score-flow.html",
   "specification": {
     "sha256": "3b5e22e7b7e003fc0e67001a51948ccbd9888b769e73f58803afcca8afe7d29b",
     "bytes": 2699

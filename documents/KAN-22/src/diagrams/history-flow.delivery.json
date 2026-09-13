@@ -3,8 +3,8 @@
   "ok": true,
   "command": "deliver",
   "type": "workflow",
-  "input": "documents/behavior-signal-design/src/diagrams/history-flow.json",
-  "output": "documents/behavior-signal-design/src/diagrams/history-flow.html",
+  "input": "documents/KAN-22/src/diagrams/history-flow.json",
+  "output": "documents/KAN-22/src/diagrams/history-flow.html",
   "specification": {
     "sha256": "65cafd32753c59886c0d7294690a5b1db89ccd0b1240384f1a6e2afa1c6ce3f1",
     "bytes": 3573
