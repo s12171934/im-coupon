@@ -5,7 +5,7 @@
 현재 쿠폰 발급 서비스는 `random` 신호만 등록한다. 아래 순위는 개인화 점수 순위이며 실제 쿠폰 발급 결과는 아니다.
 
 - 기준 — 2026-09-13, 구현 커밋 `07a8193` 이후의 현재 코드.
-- 관련 문서 — [로직과 노드 흐름](personal-fit-flow.md), [검증 기록](personal-fit-validation.md), [문서 인덱스](_index.md).
+- 관련 문서 — [로직과 노드 흐름](personal-fit-flow.md), [검증 기록](personal-fit-validation.md), [문서 인덱스](../_index.md).
 
 ## 1. 최근 사용 이력에 더 높은 비중을 주는 경우
 
@@ -178,4 +178,4 @@ JS
 ## 확인 기록
 
 - 2026-09-13 — 위 실행 블록으로 현재 구현의 반환값을 확인했다. 표의 소수는 실행값을 소수점 아래 10자리로 반올림한 것이다.
-- 계산·경계 조건의 기존 테스트는 [prepare-personal-fit.test.ts](../apps/api/src/issuance/domain/signals/implementations/prepare-personal-fit.test.ts), 조회 테스트는 [personal-fit-signal.test.ts](../apps/api/src/issuance/domain/signals/implementations/personal-fit-signal.test.ts)에 있다.
+- 계산·경계 조건의 기존 테스트는 [prepare-personal-fit.test.ts](../../apps/api/src/issuance/domain/signals/implementations/prepare-personal-fit.test.ts), 조회 테스트는 [personal-fit-signal.test.ts](../../apps/api/src/issuance/domain/signals/implementations/personal-fit-signal.test.ts)에 있다.

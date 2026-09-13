@@ -1,0 +1,13 @@
+# KAN-22 행동 이력 기반 개인화 신호
+
+에픽 KAN-22의 설계(KAN-23)와 구현(KAN-24) 문서를 모았다. `preparePersonalFit`의 점수 준비와 `personalFitSignal`의 시민별 조회 구현 문서를 모았다. 현재 쿠폰 발급 서비스에는 개인화 신호가 등록되지 않았다.
+
+- [실행 결과 예시](personal-fit-examples.md) — 입력·반환 JSON, 상한 비교, 비활성·오류, 시민별 조회와 재현 명령.
+- [로직과 노드 흐름](personal-fit-flow.md) — 준비·조회 다이어그램과 계산식, 분기 및 호출자 책임.
+- [최종 검증 기록](personal-fit-validation.md) — 구현 완료 시점의 테스트·타입검사·빌드와 TC 추적성.
+- [구현 착수 계획](implementation-plan.md) — 구현 전 Draft 시점의 계획과 체크리스트를 보존한 기록. 완료 상태는 최종 검증 기록을 참고한다.
+- [다이어그램 자료](diagrams/) — 준비·조회 HTML, PNG, JSON 원본과 검증 지문.
+
+선행 [KAN-23 설계](design.md)에서 입력 계약과 설계 결정을 확인할 수 있다. 전체 문서는 [문서 인덱스](../_index.md)에서 찾는다.
+
+- 2026-09-13 — 구현 문서 4개와 관련 다이어그램 7개를 `documents/KAN-22/`로 모으고 상대 링크를 갱신했다.

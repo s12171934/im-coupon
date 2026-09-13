@@ -11,8 +11,9 @@ iM뱅크 주최 `2026 AI Blockchain Challenge in Daegu` 공모전(접수 마감 
 
 ## 문서 목록
 
-- [KAN-24 개인화 신호 로직과 노드 흐름](personal-fit-flow.md) — 준비·조회 다이어그램, 22개 노드와 분기, 계산 예제 및 서비스 연결 범위.
-- [KAN-24 개인화 신호 실행 결과 예시](personal-fit-examples.md) — 입력별 점수·비활성·오류 결과, 시민별 조회와 직접 실행 가능한 재현 명령.
+- [KAN-22 개인화 신호 문서](KAN-22/README.md) — 실행 예시·로직·검증·착수 계획과 다이어그램을 모은 폴더 안내.
+- [KAN-24 개인화 신호 로직과 노드 흐름](KAN-22/personal-fit-flow.md) — 준비·조회 다이어그램, 22개 노드와 분기, 계산 예제 및 서비스 연결 범위.
+- [KAN-24 개인화 신호 실행 결과 예시](KAN-22/personal-fit-examples.md) — 입력별 점수·비활성·오류 결과, 시민별 조회와 직접 실행 가능한 재현 명령.
 
 - [쿠폰 도메인 규칙](쿠폰-도메인-규칙.md) — 발급 트리거와 발급 대상 가중치, 혜택 이분화, 이중 기한, 공개 풀과 점유, 설계를 제약하는 법·재원 조건. **무엇을 만드는가**를 물을 때 읽는다
 - [프로토타입 범위](프로토타입-범위.md) — 포함과 제외의 경계, 목 데이터 추상화 방침, 파라미터로 빼 둘 값, 만드는 순서. **어디까지 만드는가**를 물을 때 읽는다
@@ -22,9 +23,9 @@ iM뱅크 주최 `2026 AI Blockchain Challenge in Daegu` 공모전(접수 마감 
 
 - [S6 행동 이력 기반 signal 추가 — 설계](KAN-22/design.md) — randomSignal과 같은 signal 인스턴스 추가 설계. web·신규 API·DB 제외. 에픽 KAN-22, 설계 KAN-23·구현 KAN-24의 브랜치·PR 매핑
 
-- [KAN-24 personalFitSignal 구현 착수 계획](behavior-signal-design/implementation-plan.md) — 구현 Draft의 체크리스트와 미실행 상태. 상세 계약은 S6 설계문서를 따른다.
+- [KAN-24 personalFitSignal 구현 착수 계획](KAN-22/implementation-plan.md) — 구현 Draft의 체크리스트와 미실행 상태. 상세 계약은 S6 설계문서를 따른다.
 
-- [KAN-24 personalFit 최종 검증 기록](personal-fit-validation.md) — CB1~3 코드의 TC-01~15 추적성, 루트 검증 결과, RED·타입검사 범위와 재사용 근거.
+- [KAN-24 personalFit 최종 검증 기록](KAN-22/personal-fit-validation.md) — CB1~3 코드의 TC-01~15 추적성, 루트 검증 결과, RED·타입검사 범위와 재사용 근거.
 
 <!-- 등록 형식: - [문서 제목](파일명.md) — 이 문서가 무엇을 결정·기록하는지 한 줄 -->
 
@@ -37,7 +38,7 @@ iM뱅크 주최 `2026 AI Blockchain Challenge in Daegu` 공모전(접수 마감 
 
 ## 진행경과
 
-- 2026-09-13 — KAN-24 CB1~3의 독립 personalFit 입력·준비 계산·시민별 조회 구현과 주요 한국어 흐름 주석을 완료했다. 루트 typecheck/test/build가 통과했으며 API 197개를 새 실행했다. 상세 근거는 [최종 검증 기록](personal-fit-validation.md)에 남겼다. 서비스 활성화는 범위 밖이며 CB4 검증 기록은 독립 리뷰 한 라운드(A 발견 0건, B P3 1건 정정)를 완료하여 본 커밋에 포함했다. 아래 착수 기록은 구현 전 시점의 이력이다.
+- 2026-09-13 — KAN-24 CB1~3의 독립 personalFit 입력·준비 계산·시민별 조회 구현과 주요 한국어 흐름 주석을 완료했다. 루트 typecheck/test/build가 통과했으며 API 197개를 새 실행했다. 상세 근거는 [최종 검증 기록](KAN-22/personal-fit-validation.md)에 남겼다. 서비스 활성화는 범위 밖이며 CB4 검증 기록은 독립 리뷰 한 라운드(A 발견 0건, B P3 1건 정정)를 완료하여 본 커밋에 포함했다. 아래 착수 기록은 구현 전 시점의 이력이다.
 
 - 2026-09-13 — S6 설계의 CP-01~03 구현계획을 상세화했다. 타입·입력 계약, 정제·벡터·점수 준비, 동기 조회의 작업 순서·오류 처리·완료 기준과 TC-10~15를 추가했다. 앱 구현·테스트는 미실행이다.
 

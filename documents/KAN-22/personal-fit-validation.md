@@ -38,11 +38,11 @@ SSOT의 신규 prepare/signal 및 기존 random/engine 대상별 명령은 동�
 
 파일 약어는 아래 실제 소스 링크를 뜻한다. 표의 TC 접두어는 테스트 이름에서 검색할 수 있으며, 한 테스트가 여러 TC를 검증하거나 `it.each`로 여러 사례를 실행한다. 15개 TC와 런타임 테스트 197개는 서로 다른 집계다.
 
-- P: [prepare-personal-fit.test.ts](../apps/api/src/issuance/domain/signals/implementations/prepare-personal-fit.test.ts)
-- S: [personal-fit-signal.test.ts](../apps/api/src/issuance/domain/signals/implementations/personal-fit-signal.test.ts)
-- R: [random-signal.test.ts](../apps/api/src/issuance/domain/signals/implementations/random-signal.test.ts)
-- E: [engine.test.ts](../apps/api/src/issuance/domain/services/engine.test.ts)
-- I: [personal-fit-input.test.ts](../apps/api/src/issuance/domain/signals/implementations/personal-fit-input.test.ts)
+- P: [prepare-personal-fit.test.ts](../../apps/api/src/issuance/domain/signals/implementations/prepare-personal-fit.test.ts)
+- S: [personal-fit-signal.test.ts](../../apps/api/src/issuance/domain/signals/implementations/personal-fit-signal.test.ts)
+- R: [random-signal.test.ts](../../apps/api/src/issuance/domain/signals/implementations/random-signal.test.ts)
+- E: [engine.test.ts](../../apps/api/src/issuance/domain/services/engine.test.ts)
+- I: [personal-fit-input.test.ts](../../apps/api/src/issuance/domain/signals/implementations/personal-fit-input.test.ts)
 
 모든 행의 실행 근거는 CB4 루트 test의 API 197개 GREEN이다.
 
@@ -76,7 +76,7 @@ TC-01의 CB3 기존 실행 로그를 열어 확인했다. 동일 명령 `pnpm --
 
 이는 CB3의 조회 구현 전 RED 이력이다. TC-01이 CB2 준비 함수 구현보다 먼저 실행되었다는 뜻은 아니다. 설계의 전체 작업 순서와 실제 체크박스 진행 순서는 이 지점에서 다르다. CB2의 극소 cap 결함은 별도 B1 회귀 4개 RED(4 failed/68 passed) 후 공통 가중치 스케일 수정으로 72개 GREEN이 된 기존 기록이다(`/tmp/kan24-cb2-b1-red.log`, `/tmp/kan24-cb2-b1-green.log`). P의 B1 사례는 이번 72개 실행에도 포함되었다.
 
-[API tsconfig](../apps/api/tsconfig.json)는 `src/**/*.test.ts`를 제외한다. 따라서 production typecheck/build 통과와 Vitest 런타임 테스트 성공을 테스트 소스 전체의 정적 타입검사 성공이라고 합쳐 주장하지 않는다. 실제 `personalFitSignal: Signal<'personalFit', PersonalFitContext>`와 기존 random·엔진·서비스의 production 타입 호환성은 루트 typecheck로 확인했다.
+[API tsconfig](../../apps/api/tsconfig.json)는 `src/**/*.test.ts`를 제외한다. 따라서 production typecheck/build 통과와 Vitest 런타임 테스트 성공을 테스트 소스 전체의 정적 타입검사 성공이라고 합쳐 주장하지 않는다. 실제 `personalFitSignal: Signal<'personalFit', PersonalFitContext>`와 기존 random·엔진·서비스의 production 타입 호환성은 루트 typecheck로 확인했다.
 
 CB2의 별도 test-source tsc는 다음 명령의 exit 0 기록(`/tmp/kan24-cb2-final-test-typecheck.log`, `/tmp/kan24-codex-cb2-final.md`)을 재사용한다.
 

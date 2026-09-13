@@ -2,7 +2,7 @@
 
 > KAN-24의 행동 이력 기반 개인화 신호가 사용 이력을 점수로 준비하고 시민별로 조회하는 과정을 설명한다. 실제 구현과 테스트를 확인하여 다이어그램의 모든 노드와 분기, 계산식, 호출자 책임을 연결했다. 현재 쿠폰 발급 서비스에는 개인화 신호가 아직 등록되지 않았다.
 
-- 상위 — [문서 인덱스](_index.md).
+- 상위 — [문서 인덱스](../_index.md).
 - 확인 기준 — 2026-09-13, 브랜치 `s12171934/kan-24-personal-fit-signal`, 커밋 `eab7b98d80a0d63f51c72cb92884e6b5e4ff6e0f`.
 - 읽는 순서 — 준비 다이어그램 `P1~P6` → 수치 예제 → 조회 다이어그램 `S1~S6` → 호출자 책임.
 - 다이어그램 표기 — 노드 번호는 이 문서의 설명 번호와 같다. 화살표 라벨은 다음 단계로 전달하는 값 또는 분기 조건이다.
@@ -202,11 +202,11 @@ profile   = mean / ||mean||
 
 | 노드 | 구현 |
 | --- | --- |
-| P1~P6, X1, D2~D5 | [prepare-personal-fit.ts](../apps/api/src/issuance/domain/signals/implementations/prepare-personal-fit.ts) |
-| S1~S6, Z1·Z3, E2·E4·E5 | [personal-fit-signal.ts](../apps/api/src/issuance/domain/signals/implementations/personal-fit-signal.ts) |
-| 입력·출력·기본값 | [personal-fit-input.ts](../apps/api/src/issuance/domain/signals/implementations/personal-fit-input.ts) |
-| 현재 신호 등록 | [coupons.service.ts](../apps/api/src/coupons/application/coupons.service.ts) |
-| 기존 가중합 엔진 | [engine.ts](../apps/api/src/issuance/domain/services/engine.ts) |
+| P1~P6, X1, D2~D5 | [prepare-personal-fit.ts](../../apps/api/src/issuance/domain/signals/implementations/prepare-personal-fit.ts) |
+| S1~S6, Z1·Z3, E2·E4·E5 | [personal-fit-signal.ts](../../apps/api/src/issuance/domain/signals/implementations/personal-fit-signal.ts) |
+| 입력·출력·기본값 | [personal-fit-input.ts](../../apps/api/src/issuance/domain/signals/implementations/personal-fit-input.ts) |
+| 현재 신호 등록 | [coupons.service.ts](../../apps/api/src/coupons/application/coupons.service.ts) |
+| 기존 가중합 엔진 | [engine.ts](../../apps/api/src/issuance/domain/services/engine.ts) |
 
 ## 변경 이력
 
