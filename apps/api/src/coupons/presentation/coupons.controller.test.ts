@@ -45,6 +45,7 @@ const COUPON_ID = /^cpn-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 interface BootOptions {
+  now?: () => Date;
   random?: () => number;
   /** 데이터 디렉터리를 채우는 단계. 생략하면 커밋된 시드를 그대로 부트스트랩한다 */
   prepare?: (dataDir: string) => Promise<void>;
@@ -83,7 +84,7 @@ async function boot(options: BootOptions = {}): Promise<void> {
     .overrideProvider(DATA_DIR)
     .useValue(dataDir)
     .overrideProvider(ISSUE_CLOCK)
-    .useValue(() => ISSUED_AT)
+    .useValue(options.now ?? (() => ISSUED_AT))
     .overrideProvider(ISSUE_RANDOM)
     .useValue(options.random ?? (() => SCORE))
     .compile();
@@ -441,7 +442,11 @@ describe('행동 이력 개인화 점수의 실제 발급 연결', () => {
           usedAt: ISSUED_AT.getTime() - DAY_MS, recordedAt: ISSUED_AT.getTime() - DAY_MS,
           status: 'confirmed', netAmount: 12000, contentVersion: 'test-v1',
         }]);
-        await db.writeCollection('personal-fit-vectors', ['mer-a', 'mer-b'].map((merchantId, index) => ({
+        await db.writeCollection('merchant-contents', ['mer-a', 'mer-b'].map((merchantId) => ({
+          merchantId, contentVersion: 'test-v1',
+          knownAt: ISSUED_AT.getTime() - 2 * DAY_MS, verifiedAt: ISSUED_AT.getTime() - 2 * DAY_MS,
+        })));
+        await db.writeCollection('merchant-vectors', ['mer-a', 'mer-b'].map((merchantId, index) => ({
           merchantId, contentVersion: 'test-v1', specId: 'test-2d',
           knownAt: ISSUED_AT.getTime() - 2 * DAY_MS, verifiedAt: ISSUED_AT.getTime() - 2 * DAY_MS,
           values: index === 0 ? [1, 0] : [0, 1],
@@ -461,4 +466,32 @@ describe('행동 이력 개인화 점수의 실제 발급 연결', () => {
     expect(exploratory.body.coupon.merchantId).toBe('mer-a');
     expect(exploratory.body.decision.total).toBeCloseTo(0.9);
   });
+});
+
+// 실제 E5 산출물로 개인화가 발급 대상을 바꾸는 경로를 고정한다.
+it('384차원 E5 가게 벡터와 소비 이력으로 쿠폰을 발급한다', async () => {
+  await boot({
+    now: () => new Date('2026-09-15T00:00:00Z'),
+    random: () => 0.5,
+    prepare: async (dir) => {
+      await bootstrapSeed(dir);
+      const db = new JsonFileDb(dir);
+      const vectors = await db.readCollection<{ merchantId: string; contentVersion: string; knownAt: number; verifiedAt: number; values: number[] }>('merchant-vectors');
+      const cafe = vectors.find((vector) => vector.merchantId === 'mer-003')!;
+      expect(cafe.values).toHaveLength(384);
+      await db.writeCollection('citizens', [{ id: 'cit-e5', name: '카페 이용 시민' }]);
+      await db.writeCollection('personal-fit-events', [{
+        transactionId: 'e5-history', revision: 0, actualUserId: 'cit-e5', merchantId: cafe.merchantId,
+        contentVersion: cafe.contentVersion, status: 'confirmed', netAmount: 9000,
+        usedAt: Math.max(cafe.knownAt, cafe.verifiedAt) + 1000,
+        recordedAt: Math.max(cafe.knownAt, cafe.verifiedAt) + 2000,
+      }]);
+    },
+  });
+  const response = await issue().send({ weights: { random: 0, personalFit: 1 } });
+  expect(response.status).toBe(201);
+  expect(response.body.coupon.ownerId).toBe('cit-e5');
+  expect(response.body.coupon.merchantId).toBe('mer-003');
+  expect(response.body.decision.personalFit).toEqual({ enabled: true, reason: null });
+  expect(response.body.decision.scores.personalFit).toBeCloseTo(1);
 });

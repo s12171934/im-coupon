@@ -7,6 +7,14 @@ import { DATA_DIR } from '../../shared/infrastructure/data-dir.token';
 import { readCollection } from '../../shared/infrastructure/read-collection';
 import type { PersonalFitSource } from '../application/ports/personal-fit-source';
 
+/** 후보의 내용 버전은 벡터 존재 여부와 독립적으로 결정한다. */
+interface MerchantContent {
+  merchantId: string;
+  contentVersion: string;
+  knownAt: number;
+  verifiedAt: number;
+}
+
 /** JSON은 입력 어댑터에서만 읽는다. main의 개인화 계산은 메모리 입력 그대로 사용한다. */
 @Injectable()
 export class JsonPersonalFitSource implements PersonalFitSource {
@@ -18,20 +26,23 @@ export class JsonPersonalFitSource implements PersonalFitSource {
   async prepare(candidates: readonly Candidate[], asOf: number): Promise<ReadonlyMap<string, PreparedPersonalFit>> {
     const prepared = new Map<string, PreparedPersonalFit>();
     if (candidates.length === 0) return prepared;
-    const [events, vectors] = await Promise.all([
+    const [events, vectors, contents] = await Promise.all([
       readCollection<PersonalFitUsageEvent>(this.db, 'personal-fit-events'),
-      readCollection<PersonalFitMerchantVector>(this.db, 'personal-fit-vectors'),
+      readCollection<PersonalFitMerchantVector>(this.db, 'merchant-vectors'),
+      readCollection<MerchantContent>(this.db, 'merchant-contents'),
     ]);
-    // 기준 시점까지 알려지고 검증된 최신 내용 버전만 현재 후보로 지목한다.
-    const current = new Map<string, PersonalFitMerchantVector>();
-    for (const vector of vectors) {
-      if (!vector || !Number.isFinite(vector.knownAt) || !Number.isFinite(vector.verifiedAt)
-        || vector.knownAt > asOf || vector.verifiedAt > asOf) continue;
-      const previous = current.get(vector.merchantId);
-      if (!previous || vector.knownAt > previous.knownAt
-        || (vector.knownAt === previous.knownAt && vector.verifiedAt > previous.verifiedAt)
-        || (vector.knownAt === previous.knownAt && vector.verifiedAt === previous.verifiedAt
-          && vector.contentVersion > previous.contentVersion)) current.set(vector.merchantId, vector);
+    // 최신 내용의 벡터가 없으면 MISSING_VECTOR로 알린다. 예전 메뉴 벡터로 대체하지 않는다.
+    const current = new Map<string, MerchantContent>();
+    for (const content of contents) {
+      if (!content || typeof content.merchantId !== 'string' || !content.merchantId.trim()
+        || typeof content.contentVersion !== 'string' || !content.contentVersion.trim()
+        || !Number.isFinite(content.knownAt) || !Number.isFinite(content.verifiedAt)
+        || content.knownAt > asOf || content.verifiedAt > asOf) continue;
+      const previous = current.get(content.merchantId);
+      if (!previous || content.knownAt > previous.knownAt
+        || (content.knownAt === previous.knownAt && content.verifiedAt > previous.verifiedAt)
+        || (content.knownAt === previous.knownAt && content.verifiedAt === previous.verifiedAt
+          && content.contentVersion > previous.contentVersion)) current.set(content.merchantId, content);
     }
     const merchantsByCitizen = new Map<string, Set<string>>();
     for (const candidate of candidates) {

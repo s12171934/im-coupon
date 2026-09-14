@@ -23,13 +23,13 @@ function expectUniqueIds(rows: readonly { id: string }[]): void {
 }
 
 describe('시드 데이터', () => {
-  it('TC-01-01 가맹점 15건·시민 20건의 목 데이터에 필수 필드가 채워져 있으며 id 가 컬렉션 안에서 유일하다', async () => {
+  it('TC-01-01 가맹점 12건·시민 20건의 목 데이터에 필수 필드가 채워져 있으며 id 가 컬렉션 안에서 유일하다', async () => {
     const seed = new JsonFileDb(SEED_DIR);
 
     const merchants = await seed.readCollection<Merchant>('merchants');
     const citizens = await seed.readCollection<Citizen>('citizens');
 
-    expect(merchants).toHaveLength(15);
+    expect(merchants).toHaveLength(12);
     expect(citizens).toHaveLength(20);
 
     for (const merchant of merchants) {
