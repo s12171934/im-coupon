@@ -25,6 +25,10 @@ export function IssuedCouponCard({ coupon, decision }: IssuedCouponCardProps) {
         <strong data-testid="issued-owner-name">{coupon.ownerName}</strong>
       </p>
       <p>{`액면 ${coupon.faceValue}원 · ${scoreText} · 발급 후보 ${decision.candidateCount}건`}</p>
+      <p>가중 합산 점수: {decision.total}</p>
+      {decision.personalFit && <p>{decision.personalFit.enabled
+        ? '행동 이력 개인화 점수가 계산됐습니다.'
+        : `개인화 점수는 0으로 처리됐습니다: ${personalFitReason(decision.personalFit.reason)}`}</p>}
       {/*
         두 기한은 응답의 ISO 8601 문자열을 그대로 보여준다. 세 시각을 UTC(`Z`)로 굳혀
         화면·테스트가 계산 없이 판정하게 한 결정(설계문서 7장)이 이 형태이고, 사람이 읽는
@@ -34,4 +38,15 @@ export function IssuedCouponCard({ coupon, decision }: IssuedCouponCardProps) {
       <p>{`소유자 점유 기한 ${coupon.heldUntil} · 유효 소비 기한 ${coupon.expiresAt}`}</p>
     </section>
   );
+}
+
+function personalFitReason(reason: string | null): string {
+  const reasons: Record<string, string> = {
+    NO_HISTORY: '계산에 사용할 행동 이력이 없습니다.',
+    INVALID_HISTORY: '행동 이력에 오류나 충돌이 있습니다.',
+    MISSING_VECTOR: '필요한 가맹점 벡터가 없습니다.',
+    INVALID_VECTOR: '가맹점 벡터의 형식이 맞지 않습니다.',
+    INVALID_PROFILE: '행동 이력으로 선호를 계산할 수 없습니다.',
+  };
+  return reasons[reason ?? ''] ?? '개인화 입력을 확인해 주세요.';
 }

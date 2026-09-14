@@ -26,13 +26,14 @@ const COUPON: IssuedCoupon = {
  */
 const DECISION: IssueDecision = {
   candidateCount: 25,
-  scores: { random: 0.42 },
+  scores: { random: 0.42, personalFit: 0 },
   total: 0.42,
 };
 
 /** 신호가 늘면 이 표가 컴파일 오류를 내, 테스트도 새 신호를 함께 보게 된다. */
 const EXPECTED_SIGNAL_LINES: Record<keyof SignalWeights, string> = {
   random: '랜덤 신호 점수 0.42',
+  personalFit: '행동 이력 개인화 신호 점수 0',
 };
 
 function renderCard() {
@@ -85,4 +86,9 @@ describe('IssuedCouponCard', () => {
     // 표기를 정하는 것은 거래조건 고지를 지는 쿠폰 카드(`CP-06-02`)의 몫이다.
     expect(card.textContent).not.toMatch(/\d{4}년|\d{1,2}월|오전|오후|AM|PM/);
   });
+});
+
+it('개인화 비활성 사유를 숨기지 않는다', () => {
+  render(<IssuedCouponCard coupon={COUPON} decision={{ ...DECISION, personalFit: { enabled: false, reason: 'NO_HISTORY' } }} />);
+  expect(screen.getByText(/계산에 사용할 행동 이력이 없습니다/)).toBeInTheDocument();
 });

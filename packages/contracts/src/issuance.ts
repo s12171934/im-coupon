@@ -11,11 +11,11 @@ export const OWNER_ID_QUERY = 'ownerId' as const;
 export const CITIZENS_PATH = '/api/citizens' as const;
 
 /**
- * 발급 신호별 가중치. 이번 에픽은 랜덤 신호 하나만 구현하지만 결합 구조는 남겨 두어,
- * 제외된 네 신호를 이후 에픽이 같은 틀로 키만 더해 확장한다.
+ * 발급 신호별 가중치. 랜덤 탐색과 행동 이력 기반 개인화 점수를 결합한다.
  */
 export interface SignalWeights {
   random: number;
+  personalFit: number;
 }
 
 /** 요청 본문은 생략 가능하고, 생략하면 발급 파라미터 기본값으로 발급한다. */
@@ -39,6 +39,8 @@ export interface IssueDecision {
   scores: Record<keyof SignalWeights, number>;
   /** 발급 가중치를 곱해 합산한 총점 */
   total: number;
+  /** 선택된 시민의 개인화 점수 활성 여부와 비활성 사유 */
+  personalFit?: { enabled: boolean; reason: string | null };
 }
 
 export interface IssueCouponResponse {

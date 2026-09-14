@@ -18,7 +18,7 @@ export class IssuanceError extends Error {
   }
 }
 
-export interface SelectCandidateInput {
+export interface SelectCandidateInput<C extends SignalContext = SignalContext> {
   /** 점수를 매길 발급 후보. 비어 있으면 `NO_CANDIDATES` 로 거부한다 */
   candidates: readonly Candidate[];
   /**
@@ -29,13 +29,13 @@ export interface SelectCandidateInput {
    * 엔진은 맵의 키만 신뢰하고 각 신호의 `key` 필드는 읽지 않는다. 키 집합을 강제하는
    * 것이 맵 쪽이고, `key` 필드를 조회에 쓰면 그 강제가 런타임 값에 도로 매달리기 때문이다.
    */
-  signals: Record<keyof SignalWeights, Signal>;
+  signals: Record<keyof SignalWeights, Signal<keyof SignalWeights, C>>;
   /**
    * 요청의 발급 가중치 부분 덮어쓰기. 지정하지 않은 신호는 발급 파라미터 기본값으로
    * 채우며, 값이 `undefined` 인 키도 지정하지 않은 것으로 본다.
    */
   weights?: Partial<SignalWeights>;
-  context: SignalContext;
+  context: C;
 }
 
 export interface CandidateSelection {
@@ -99,7 +99,7 @@ function resolveWeights(requested: Partial<SignalWeights> | undefined): SignalWe
  * 신호를 가중치 키 순서로 한 번씩 태우므로, 고정 수열 RNG 를 주면 소비 순서가 정해져
  * 결과가 결정적이다. 최고점이 여럿이면 발급 후보 목록에서 먼저 온 쪽을 고른다.
  */
-export function selectCandidate(input: SelectCandidateInput): CandidateSelection {
+export function selectCandidate<C extends SignalContext>(input: SelectCandidateInput<C>): CandidateSelection {
   const weights = resolveWeights(input.weights);
   const keys = Object.keys(weights) as (keyof SignalWeights)[];
 

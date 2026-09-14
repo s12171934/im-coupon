@@ -29,7 +29,7 @@ const COUPON: IssuedCoupon = {
 
 const ISSUED: IssueCouponResponse = {
   coupon: COUPON,
-  decision: { candidateCount: 25, scores: { random: 0.42 }, total: 0.42 },
+  decision: { candidateCount: 25, scores: { random: 0.42, personalFit: 0 }, total: 0.42 },
 };
 
 /** 계약의 여섯 코드. 네트워크 실패가 이 중 하나를 빌려 쓰지 않는 것을 이 표로 든다. */
@@ -42,10 +42,10 @@ const CONTRACT_CODES: Record<ApiErrorCode, true> = {
   STORAGE_FAILURE: true,
 };
 
-const EMPTY_DRAFT: WeightsDraft = { random: '' };
+const EMPTY_DRAFT: WeightsDraft = { random: '', personalFit: '' };
 
 function draft(random: string): WeightsDraft {
-  return { random };
+  return { random, personalFit: '' };
 }
 
 /**

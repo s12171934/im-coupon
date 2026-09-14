@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const WEB_PORT = 5173;
-const API_PORT = 3000;
+const WEB_PORT = Number(process.env.E2E_WEB_PORT ?? 5173);
+const API_PORT = Number(process.env.E2E_API_PORT ?? 3000);
 
 export default defineConfig({
   testDir: './tests',
@@ -21,6 +21,7 @@ export default defineConfig({
     {
       // 앱 내부 함수를 부르지 않고 실제 API 프로세스를 띄운다.
       command: 'pnpm --filter @im-coupon/api start',
+      env: { PORT: String(API_PORT) },
       cwd: '..',
       port: API_PORT,
       reuseExistingServer: false,
@@ -28,7 +29,8 @@ export default defineConfig({
       stderr: 'pipe',
     },
     {
-      command: 'pnpm --filter @im-coupon/web preview --port 5173 --strictPort',
+      command: `pnpm --filter @im-coupon/web preview --port ${WEB_PORT} --strictPort`,
+      env: { API_PORT: String(API_PORT) },
       cwd: '..',
       port: WEB_PORT,
       reuseExistingServer: false,
