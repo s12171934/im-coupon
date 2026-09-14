@@ -51,8 +51,11 @@ interface BootOptions {
 }
 
 /** 기본 준비 — 커밋된 시드를 임시 디렉터리로 부트스트랩한다. */
-function bootstrapSeed(dir: string): Promise<void> {
-  return new JsonFileDb(dir).bootstrapFromSeed(resolveSeedDir());
+async function bootstrapSeed(dir: string): Promise<void> {
+  const db = new JsonFileDb(dir);
+  await db.bootstrapFromSeed(resolveSeedDir());
+  // 기존 HTTP 계약 테스트는 이력 없는 시민의 랜덤 선택을 고정한다.
+  await db.writeCollection('personal-fit-events', []);
 }
 
 /**
@@ -165,7 +168,8 @@ describe(`POST ${ISSUE_COUPON_PATH}`, () => {
     // 응답에 실려 나가도 통과하지 않게, 자리만 보지 말고 값을 못 박는다.
     expect(decision).toEqual({
       candidateCount: merchants.length * citizens.length,
-      scores: { random: SCORE },
+      scores: { random: SCORE, personalFit: 0 },
+      personalFit: { enabled: false, reason: 'NO_HISTORY' },
       total: SCORE * DEFAULT_ISSUANCE_PARAMS.weights.random,
     });
     expect(await storedCoupons()).toEqual([coupon]);
@@ -417,5 +421,44 @@ describe('동시 발급', () => {
     expect(stored.map((coupon) => coupon.id).sort()).toEqual(
       responses.map((response) => (response.body as IssueCouponResponse).coupon.id).sort(),
     );
+  });
+});
+
+describe('행동 이력 개인화 점수의 실제 발급 연결', () => {
+  it('개인화 선호가 랜덤 최고점 후보를 바꾸고 가중치를 0으로 바꾸면 랜덤 선택으로 돌아간다', async () => {
+    await boot({
+      random: fixedRng([0.9, 0.1, 0.9, 0.1]),
+      prepare: async (dir) => {
+        await bootstrapSeed(dir);
+        const db = new JsonFileDb(dir);
+        await db.writeCollection('citizens', [{ id: 'cit-fit', name: '개인화 시민' }]);
+        await db.writeCollection('merchants', [
+          { id: 'mer-a', name: '랜덤 가맹점', category: '식당' },
+          { id: 'mer-b', name: '선호 가맹점', category: '서점' },
+        ]);
+        await db.writeCollection('personal-fit-events', [{
+          transactionId: 'history-1', revision: 0, actualUserId: 'cit-fit', merchantId: 'mer-b',
+          usedAt: ISSUED_AT.getTime() - DAY_MS, recordedAt: ISSUED_AT.getTime() - DAY_MS,
+          status: 'confirmed', netAmount: 12000, contentVersion: 'test-v1',
+        }]);
+        await db.writeCollection('personal-fit-vectors', ['mer-a', 'mer-b'].map((merchantId, index) => ({
+          merchantId, contentVersion: 'test-v1', specId: 'test-2d',
+          knownAt: ISSUED_AT.getTime() - 2 * DAY_MS, verifiedAt: ISSUED_AT.getTime() - 2 * DAY_MS,
+          values: index === 0 ? [1, 0] : [0, 1],
+        })));
+      },
+    });
+    const personalized = await issue();
+    expect(personalized.status).toBe(201);
+    expect(personalized.body.coupon.merchantId).toBe('mer-b');
+    expect(personalized.body.decision.scores).toEqual({ random: 0.1, personalFit: 1 });
+    expect(personalized.body.decision.personalFit).toEqual({ enabled: true, reason: null });
+    expect(personalized.body.decision.total).toBeCloseTo(
+      0.1 * DEFAULT_ISSUANCE_PARAMS.weights.random + DEFAULT_ISSUANCE_PARAMS.weights.personalFit,
+    );
+    const exploratory = await issue().send({ weights: { random: 1, personalFit: 0 } });
+    expect(exploratory.status).toBe(201);
+    expect(exploratory.body.coupon.merchantId).toBe('mer-a');
+    expect(exploratory.body.decision.total).toBeCloseTo(0.9);
   });
 });

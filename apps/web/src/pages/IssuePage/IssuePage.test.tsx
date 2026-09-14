@@ -31,7 +31,7 @@ const COUPON: IssuedCoupon = {
 
 const ISSUED: IssueCouponResponse = {
   coupon: COUPON,
-  decision: { candidateCount: 25, scores: { random: 0.42 }, total: 0.42 },
+  decision: { candidateCount: 25, scores: { random: 0.42, personalFit: 0 }, total: 0.42 },
 };
 
 const HEALTH: HealthResponse = {
