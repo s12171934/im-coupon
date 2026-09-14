@@ -1,0 +1,173 @@
+.demo-shell {
+  font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+  color: #22342f;
+}
+
+.demo-shell .control-panel select {
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  background-color: #fff;
+  color: #263d35;
+  font: inherit;
+  font-weight: 500;
+  padding-right: 30px;
+}
+
+.demo-shell .public-coupon {
+  margin-top: 16px;
+  padding: 22px;
+  border: 1px solid #dce7e1;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 4px 16px #23453706;
+}
+
+.public-coupon-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.public-coupon-header > div { min-width: 0; }
+
+.public-coupon-header h3 {
+  margin: 0 0 6px;
+  font-size: 19px;
+  line-height: 1.4;
+  letter-spacing: -.5px;
+  overflow-wrap: anywhere;
+}
+
+.public-coupon-owner {
+  color: #6e7b75;
+  font-size: 12px;
+}
+
+.public-coupon-badge {
+  flex-shrink: 0;
+  padding: 5px 9px;
+  border-radius: 7px;
+  background: #eaf6ef;
+  color: #24704b;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.public-coupon-badge.is-reserved {
+  background: #eef0f4;
+  color: #58647b;
+}
+
+.public-coupon-benefit {
+  display: grid;
+  gap: 8px;
+  padding: 24px 0;
+}
+
+.public-coupon-benefit > span {
+  color: #687b71;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.public-coupon-benefit strong {
+  color: #15704b;
+  font-size: 34px;
+  font-weight: 750;
+  line-height: 1.2;
+  letter-spacing: -1.2px;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.public-coupon-benefit small {
+  display: inline-block;
+  margin-left: 5px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -.4px;
+}
+
+.demo-shell .coupon-terms {
+  margin: 16px 0;
+  padding: 16px;
+  border-radius: 12px;
+  background: #f6f8f7;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.demo-shell .public-coupon .coupon-terms {
+  margin: 0 0 18px;
+}
+
+.coupon-terms dl { margin: 0; }
+
+.coupon-terms dl > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 3px 12px;
+  margin-top: 8px;
+}
+
+.coupon-terms dl > div:first-child { margin-top: 0; }
+.coupon-terms dt { color: #6c7b73; }
+.coupon-terms dd { margin: 0 0 0 auto; color: #354b40; font-weight: 500; }
+.coupon-terms-total dd { font-size: 14px; font-weight: 700; }
+
+.coupon-terms .coupon-terms-dates {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #e2e9e5;
+  font-variant-numeric: tabular-nums;
+}
+
+.demo-shell .coupon-terms-note {
+  margin: 12px 0 0;
+  color: #738278;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.demo-shell .public-coupon-action {
+  margin: 0;
+  min-height: 48px;
+  border-radius: 11px;
+  background: #16734f;
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 650;
+  transition: background-color .15s;
+}
+
+.demo-shell .public-coupon-action:hover:not(:disabled) { background: #105b3e; }
+.demo-shell .public-coupon-action:disabled { background: #e8eeea; color: #6e7d74; opacity: 1; cursor: not-allowed; }
+.demo-shell :is(button, select):focus-visible { outline: 3px solid #68a78b; outline-offset: 3px; }
+
+.demo-shell .public-coupon-status {
+  margin: 0;
+  padding: 13px 10px;
+  border-radius: 11px;
+  background: #eef2ef;
+  color: #52695b;
+  font-size: 13px;
+  text-align: center;
+}
+
+.demo-shell .public-coupon-hint {
+  margin: 10px 0 0;
+  font-size: 11px;
+  color: #738278;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .demo-shell .public-coupon { padding: 18px; }
+  .public-coupon-benefit strong { font-size: 32px; }
+}

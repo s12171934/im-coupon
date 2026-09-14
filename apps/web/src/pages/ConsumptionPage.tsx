@@ -5,6 +5,7 @@ import {
   type Coupon, type IssueCouponResponse, type ListCitizensResponse, type PointEntry,
 } from '@im-coupon/contracts';
 import '../app.css';
+import './ConsumptionPage.css';
 import { IssuedCouponCard } from '../features/issuance/components/IssuedCouponCard/IssuedCouponCard';
 
 const EMPTY: ConsumptionSnapshot = { coupons: [], paybackAmount: 0, ownerRewardAmount: 0, pointEntries: [] };
@@ -158,14 +159,25 @@ export function ConsumptionPage() {
             <p>소유자 기한이 지난 쿠폰을 한 번에 한 장 점유해 사용할 수 있습니다.</p>
             <CitizenSelect label="쿠폰 소비자" citizens={citizens} value={consumerId} onChange={setConsumerId} />
             {publicCoupons.length === 0 ? <p className="muted">공개된 쿠폰이 없습니다.</p> : publicCoupons.map((coupon) => (
-              <article className="pool-item" key={coupon.id}>
-                <b>{coupon.merchantName}</b>
-                <span>원소유자: {coupon.ownerName}</span>
-                <strong>결제 후 {couponBenefits(coupon, consumerId).consumerAmount.toLocaleString()}원 페이백</strong>
+              <article className="public-coupon" key={coupon.id}>
+                <header className="public-coupon-header">
+                  <div>
+                    <h3>{coupon.merchantName}</h3>
+                    <span className="public-coupon-owner">원소유자: {coupon.ownerName}</span>
+                  </div>
+                  <span className={`public-coupon-badge${coupon.status === 'reserved' ? ' is-reserved' : ''}`}>
+                    {coupon.status === 'public' ? '사용 가능' : '점유 중'}
+                  </span>
+                </header>
+                <div className="public-coupon-benefit">
+                  <span>결제 후 돌려받는 혜택</span>
+                  <strong>{couponBenefits(coupon, consumerId).consumerAmount.toLocaleString()}<small>원 페이백</small></strong>
+                </div>
                 <CouponTerms coupon={coupon} />
-                {coupon.status === 'public' ? <button disabled={!consumerId || !!consumerCoupon}
+                {coupon.status === 'public' ? <button className="public-coupon-action" disabled={!consumerId || !!consumerCoupon}
                   onClick={() => act(`/coupons/${coupon.id}/reserve`, { consumerId })}>쿠폰 점유하기</button>
-                  : <p>{coupon.reservedById === consumerId ? '내가 점유한 쿠폰입니다.' : '다른 시민이 점유한 쿠폰입니다.'}</p>}
+                  : <p className="public-coupon-status">{coupon.reservedById === consumerId ? '내가 점유한 쿠폰입니다.' : '다른 시민이 점유한 쿠폰입니다.'}</p>}
+                {coupon.status === 'public' && consumerCoupon && <p className="public-coupon-hint">점유한 쿠폰을 사용한 뒤 선택할 수 있어요.</p>}
               </article>
             ))}
           </section>
@@ -187,14 +199,18 @@ function CitizenSelect({ label, citizens, value, onChange }: {
 }
 
 function CouponTerms({ coupon }: { coupon: Coupon }) {
-  return <div className="coupon-summary">
-    <strong>총 혜택 {coupon.faceValue.toLocaleString()}원</strong>
-    <div>직접 사용: 혜택 전액</div>
-    <div>타인 사용: 소유자 {Number((coupon.benefitSplit.ownerRatio * 100).toFixed(10))}% · 소비자 {Number((coupon.benefitSplit.consumerRatio * 100).toFixed(10))}%</div>
-    <div>소유자 전용 기한: {formatTime(coupon.heldUntil)}</div>
-    <div>사용 기한: {formatTime(coupon.expiresAt)}</div>
-    {coupon.ownerReleasedAt && <div>소유자 기한 경과 시연이 적용됐습니다.</div>}
-    {coupon.reservationExpiresAt && <div>점유 기한: {formatTime(coupon.reservationExpiresAt)}</div>}
+  return <div className="coupon-terms">
+    <dl>
+      <div className="coupon-terms-total"><dt>총 혜택</dt><dd>{coupon.faceValue.toLocaleString()}원</dd></div>
+      <div><dt>직접 사용</dt><dd>혜택 전액</dd></div>
+      <div><dt>타인 사용</dt><dd>소유자 {Number((coupon.benefitSplit.ownerRatio * 100).toFixed(10))}% · 소비자 {Number((coupon.benefitSplit.consumerRatio * 100).toFixed(10))}%</dd></div>
+    </dl>
+    <dl className="coupon-terms-dates">
+      <div><dt>소유자 전용 기한</dt><dd><time dateTime={coupon.heldUntil}>{formatTime(coupon.heldUntil)}</time></dd></div>
+      <div><dt>사용 기한</dt><dd><time dateTime={coupon.expiresAt}>{formatTime(coupon.expiresAt)}</time></dd></div>
+      {coupon.reservationExpiresAt && <div><dt>점유 기한</dt><dd><time dateTime={coupon.reservationExpiresAt}>{formatTime(coupon.reservationExpiresAt)}</time></dd></div>}
+    </dl>
+    {coupon.ownerReleasedAt && <p className="coupon-terms-note">소유자 기한 경과 시연이 적용됐습니다.</p>}
   </div>;
 }
 
