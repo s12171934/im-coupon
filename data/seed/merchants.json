@@ -26,37 +26,52 @@
   },
   {
     "id": "mer-006",
-    "name": "해뜰분식",
-    "category": "분식"
+    "name": "다정한밥상",
+    "category": "한식"
   },
   {
     "id": "mer-007",
-    "name": "달구벌한식",
-    "category": "일반한식"
+    "name": "구름빵공방",
+    "category": "베이커리"
   },
   {
     "id": "mer-008",
-    "name": "낙동강갈비",
-    "category": "갈비전문점"
+    "name": "초록바구니",
+    "category": "식료품"
   },
   {
     "id": "mer-009",
-    "name": "성내제과",
-    "category": "제과점"
+    "name": "온기국수",
+    "category": "면요리"
   },
   {
     "id": "mer-010",
-    "name": "동성로반점",
-    "category": "중국음식"
+    "name": "달빛사진관",
+    "category": "사진관"
   },
   {
     "id": "mer-011",
-    "name": "범어편의점",
-    "category": "편의점"
+    "name": "봄날문구",
+    "category": "문구점"
   },
   {
     "id": "mer-012",
-    "name": "이곡마트",
-    "category": "슈퍼마켓"
+    "name": "느티나무공방",
+    "category": "공예"
+  },
+  {
+    "id": "mer-013",
+    "name": "고운결미용실",
+    "category": "미용실"
+  },
+  {
+    "id": "mer-014",
+    "name": "햇살반찬",
+    "category": "반찬가게"
+  },
+  {
+    "id": "mer-015",
+    "name": "바른걸음수선",
+    "category": "수선점"
   }
 ]
