@@ -23,5 +23,40 @@
     "id": "mer-005",
     "name": "한걸음세탁소",
     "category": "세탁소"
+  },
+  {
+    "id": "mer-006",
+    "name": "해뜰분식",
+    "category": "분식"
+  },
+  {
+    "id": "mer-007",
+    "name": "달구벌한식",
+    "category": "일반한식"
+  },
+  {
+    "id": "mer-008",
+    "name": "낙동강갈비",
+    "category": "갈비전문점"
+  },
+  {
+    "id": "mer-009",
+    "name": "성내제과",
+    "category": "제과점"
+  },
+  {
+    "id": "mer-010",
+    "name": "동성로반점",
+    "category": "중국음식"
+  },
+  {
+    "id": "mer-011",
+    "name": "범어편의점",
+    "category": "편의점"
+  },
+  {
+    "id": "mer-012",
+    "name": "이곡마트",
+    "category": "슈퍼마켓"
   }
 ]
