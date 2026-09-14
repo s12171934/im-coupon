@@ -11,7 +11,7 @@ afterEach(() => {
 function stubConsumption(body: unknown): void {
   vi.stubGlobal(
     'fetch',
-    vi.fn(async () => new Response(JSON.stringify(body), { status: 200 })),
+    vi.fn(async (path) => new Response(JSON.stringify(path === '/api/citizens' ? { citizens: [] } : body), { status: 200 })),
   );
 }
 
@@ -21,7 +21,7 @@ describe('App', () => {
 
     render(<MemoryRouter initialEntries={['/consumption']}><App /></MemoryRouter>);
 
-    expect(await screen.findByRole('heading', { name: '내 리워드 미션' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '내 쿠폰 사용' })).toBeInTheDocument();
     expect((await screen.findAllByText('지역화폐')).length).toBeGreaterThan(0);
   });
 
