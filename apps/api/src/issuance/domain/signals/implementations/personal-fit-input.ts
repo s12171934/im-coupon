@@ -1,4 +1,5 @@
 import type { SignalContext } from '../signal';
+import type { UserConsumptionEvent } from '@im-coupon/contracts';
 
 /**
  * 개인화 신호의 메모리 입력 계약.
@@ -41,7 +42,7 @@ export type PersonalFitUsageStatus = 'confirmed' | 'cancelled';
  * 시각은 전부 UTC epoch 밀리초다. 문자열 시각의 해석은 입력을 만드는 쪽의 몫으로 두어,
  * 이 신호가 시간대·형식 해석 책임을 지지 않게 한다.
  */
-export interface PersonalFitUsageEvent {
+export interface PersonalFitUsageEvent extends UserConsumptionEvent {
   readonly transactionId: string;
   /** 같은 거래의 정정 차수. 0 이상의 안전한 정수 */
   readonly revision: number;

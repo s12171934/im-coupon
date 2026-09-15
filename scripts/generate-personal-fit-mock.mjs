@@ -1,6 +1,7 @@
 import { readFile, writeFile, mkdir, rename } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
+import { publicConsumptionContext } from './public-consumption-context.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const asOf = process.argv[2] ? Date.parse(process.argv[2]) : Date.now();
@@ -11,6 +12,7 @@ const citizens = await read(resolve(root, 'data/seed/citizens.json'));
 const merchants = await read(resolve(root, 'data/seed/merchants.json'));
 const contents = await read(resolve(root, 'data/seed/merchant-contents.json'));
 const vectors = await read(resolve(root, 'data/seed/merchant-vectors.json'));
+const catalog = await read(resolve(root, 'data/reference/store-codes.json'));
 if (!citizens.length || !merchants.length) throw new Error('시민과 가맹점 시드가 필요합니다.');
 
 // 실제 모델 산출물은 생성하거나 시각을 고치지 않는다. 이용 가능한 버전을 참조하는 목 이력만 만든다.
@@ -38,7 +40,7 @@ const events = citizens.flatMap((citizen, index) => offsets.map((daysAgo, visit)
   return { transactionId: `mock-personal-fit:${citizen.id}:${visit}`, revision: 0,
     actualUserId: citizen.id, merchantId: merchant.id, usedAt, recordedAt: usedAt + 1000,
     status: 'confirmed', netAmount: 6000 + ((index + visit) % 7) * 2000,
-    contentVersion: version.contentVersion };
+    contentVersion: version.contentVersion, ...publicConsumptionContext(merchant, catalog) };
 }));
 const runtimeDir = process.env.IM_COUPON_DATA_DIR
   ? resolve(process.env.IM_COUPON_DATA_DIR) : resolve(root, 'data/runtime');
