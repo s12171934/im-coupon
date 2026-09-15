@@ -9,9 +9,6 @@ import { SIGNAL_KEYS, SIGNAL_LABELS } from '../../model/signal-labels';
  */
 export type WeightsDraft = Record<keyof SignalWeights, string>;
 
-/** 가중치 결합 구조에 자리만 남아 있는 신호들. 이번 에픽은 구현하지 않는다 (설계문서 1장 범위 — 제외). */
-const OUT_OF_SCOPE_SIGNALS = '가맹점 매출 · 가맹점 마케팅 수요';
-
 export interface WeightsEditorProps {
   /** 신호별 입력 원문 */
   value: WeightsDraft;
@@ -25,7 +22,7 @@ export function WeightsEditor({ value, onChange, disabled = false }: WeightsEdit
   return (
     <section aria-label="발급 가중치">
       <h2>발급 가중치</h2>
-      <p>요청 본문으로 덮어쓸 수 있습니다. 비워 두면 발급 파라미터 기본값으로 발급합니다. 랜덤 탐색과 행동 이력 개인화 점수를 가중 합산합니다.</p>
+      <p>비워 두면 기본 가중치를 사용합니다. 상권회복과 개인화 점수를 가중평균으로 결합합니다.</p>
       {SIGNAL_KEYS.map((key) => (
         <p key={key}>
           <label htmlFor={inputId(key)}>{SIGNAL_LABELS[key]}</label>{' '}
@@ -40,7 +37,6 @@ export function WeightsEditor({ value, onChange, disabled = false }: WeightsEdit
           />
         </p>
       ))}
-      <p>{OUT_OF_SCOPE_SIGNALS} — 이번 에픽 범위 밖입니다. 가중치 결합 구조에 자리만 남겨 둡니다.</p>
     </section>
   );
 }
