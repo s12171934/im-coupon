@@ -1,0 +1,46 @@
+[
+  {
+    "generatorId": "d1-comparison-seed.v1",
+    "sourceKind": "mock",
+    "version": 1,
+    "categorySystem": "D1",
+    "evaluatedAt": 1789485845264,
+    "referenceMonth": "202606",
+    "months": [
+      {
+        "month": "202604",
+        "days": 30
+      },
+      {
+        "month": "202605",
+        "days": 31
+      },
+      {
+        "month": "202606",
+        "days": 30
+      }
+    ],
+    "catalogFetchedAt": "2026-09-15T14:36:53.201Z",
+    "quality": {
+      "stores": 60,
+      "publicSeedStores": 12,
+      "syntheticStores": 48,
+      "categories": 12,
+      "districts": 5,
+      "events": 24780,
+      "monthlyRows": 180,
+      "expectedMonthlyRows": 180,
+      "cityRows": 36,
+      "comparisonRows": 60,
+      "duplicateEventIds": 0,
+      "eventAmount": 309890000,
+      "monthlyAmount": 309890000,
+      "cityAmount": 309890000,
+      "missingComparisons": 0
+    },
+    "eligibleCandidates": 12,
+    "excludedCandidates": 0,
+    "scope": "Existing issuance merchants only; synthetic merchants are comparison population only.",
+    "disclaimer": "All consumption is synthetic. Historical merchant presence, population shares and region boundaries are not verified."
+  }
+]
