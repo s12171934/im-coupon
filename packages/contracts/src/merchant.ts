@@ -26,6 +26,9 @@ export interface PublicDataMerchant extends Merchant {
 
 /** 가게 설명과 벡터 입력의 버전. API가 제공하지 않는 메뉴는 빈 배열이다. */
 export interface MerchantContent {
+  /** 과거 소비 시연용 복제본은 실측 내용 버전과 구분한다. */
+  sourceKind?: 'mock' | 'observed';
+  derivedFromContentVersion?: string;
   merchantId: string;
   contentVersion: string;
   regionLabel: string;

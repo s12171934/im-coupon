@@ -202,5 +202,233 @@
     "textHash": "b4140685869720c50902700d3a909131bade6758adecf162bb2367a33ef28f8a",
     "embeddedText": "query: 지역: 대덕구 송촌동. 업종: 토스트/샌드위치/샐러드.",
     "note": "D1 실제 상가 조회. 대표메뉴는 미제공이며 추정하지 않음."
+  },
+  {
+    "merchantId": "mer-001",
+    "contentVersion": "mock-history:20712:d1-d4537627c9ac",
+    "regionLabel": "유성구 노은3동",
+    "categoryLabel": "김밥/만두/분식",
+    "representativeMenus": [],
+    "lat": 36.3923952908249,
+    "lon": 127.311698022807,
+    "sourceIds": [
+      "data.go.kr:15012005:MA010120220800051363:202606"
+    ],
+    "knownAt": 1779159600000,
+    "verifiedAt": 1779159600000,
+    "textHash": "d4537627c9acb85a90d588e8e57793baf44571523f1c2831b309862099f36768",
+    "embeddedText": "query: 지역: 유성구 노은3동. 업종: 김밥/만두/분식.",
+    "note": "시연용 과거 버전. 현재 공공 설명을 복제한 가정이며 과거 영업·메뉴의 관측 사실이 아님.",
+    "sourceKind": "mock",
+    "derivedFromContentVersion": "d1-d4537627c9ac"
+  },
+  {
+    "merchantId": "mer-002",
+    "contentVersion": "mock-history:20712:d1-7ebce56b2594",
+    "regionLabel": "서구 탄방동",
+    "categoryLabel": "카페",
+    "representativeMenus": [],
+    "lat": 36.3432578365492,
+    "lon": 127.3930087098,
+    "sourceIds": [
+      "data.go.kr:15012005:MA010120220800047978:202606"
+    ],
+    "knownAt": 1779159600000,
+    "verifiedAt": 1779159600000,
+    "textHash": "7ebce56b25948ecef0c06c6dae1279f63920e13a810647711dd803d5be41ad78",
+    "embeddedText": "query: 지역: 서구 탄방동. 업종: 카페.",
+    "note": "시연용 과거 버전. 현재 공공 설명을 복제한 가정이며 과거 영업·메뉴의 관측 사실이 아님.",
+    "sourceKind": "mock",
+    "derivedFromContentVersion": "d1-7ebce56b2594"
+  },
+  {
+    "merchantId": "mer-003",
+    "contentVersion": "mock-history:20712:d1-ff42ff7e4e94",
+    "regionLabel": "유성구 온천2동",
+    "categoryLabel": "중국집",
+    "representativeMenus": [],
+    "lat": 36.3623305196213,
+    "lon": 127.348190943335,
+    "sourceIds": [
+      "data.go.kr:15012005:MA010120220800013198:202606"
+    ],
+    "knownAt": 1779159600000,
+    "verifiedAt": 1779159600000,
+    "textHash": "ff42ff7e4e948a3e7ccd6da7f7d22f271aeb752ee2e4331ed69e78c14fd15f7b",
+    "embeddedText": "query: 지역: 유성구 온천2동. 업종: 중국집.",
+    "note": "시연용 과거 버전. 현재 공공 설명을 복제한 가정이며 과거 영업·메뉴의 관측 사실이 아님.",
+    "sourceKind": "mock",
+    "derivedFromContentVersion": "d1-ff42ff7e4e94"
+  },
+  {
+    "merchantId": "mer-004",
+    "contentVersion": "mock-history:20712:d1-f1631b31ccfa",
+    "regionLabel": "유성구 관평동",
+    "categoryLabel": "백반/한정식",
+    "representativeMenus": [],
+    "lat": 36.4234346537198,
+    "lon": 127.398519432415,
+    "sourceIds": [
+      "data.go.kr:15012005:MA010120220800069459:202606"
+    ],
+    "knownAt": 1779159600000,
+    "verifiedAt": 1779159600000,
+    "textHash": "f1631b31ccfa962ab7f5981a2a66c89c564bf5aef894fcc34c0d8ea90157a636",
+    "embeddedText": "query: 지역: 유성구 관평동. 업종: 백반/한정식.",
+    "note": "시연용 과거 버전. 현재 공공 설명을 복제한 가정이며 과거 영업·메뉴의 관측 사실이 아님.",
+    "sourceKind": "mock",
+    "derivedFromContentVersion": "d1-f1631b31ccfa"
+  },
+  {
+    "merchantId": "mer-005",
+    "contentVersion": "mock-history:20712:d1-60b987d35c9d",
+    "regionLabel": "유성구 신성동",
+    "categoryLabel": "돼지고기 구이/찜",
+    "representativeMenus": [],
+    "lat": 36.3761518418241,
+    "lon": 127.395380644655,
+    "sourceIds": [
+      "data.go.kr:15012005:MA010120220800081405:202606"
+    ],
+    "knownAt": 1779159600000,
+    "verifiedAt": 1779159600000,
+    "textHash": "60b987d35c9d47729cc5a19a42881869cc194ff79a38b0848e599b5f81d40f8e",
+    "embeddedText": "query: 지역: 유성구 신성동. 업종: 돼지고기 구이/찜.",
+    "note": "시연용 과거 버전. 현재 공공 설명을 복제한 가정이며 과거 영업·메뉴의 관측 사실이 아님.",
+    "sourceKind": "mock",
+    "derivedFromContentVersion": "d1-60b987d35c9d"
+  },
+  {
+    "merchantId": "mer-006",
+    "contentVersion": "mock-history:20712:d1-8c42f2963fb0",
+    "regionLabel": "유성구 신성동",
+    "categoryLabel": "횟집",
+    "representativeMenus": [],
+    "lat": 36.3920517334815,
+    "lon": 127.351076581916,
+    "sourceIds": [
+      "data.go.kr:15012005:MA010120220800044537:202606"
+    ],
+    "knownAt": 1779159600000,
+    "verifiedAt": 1779159600000,
+    "textHash": "8c42f2963fb080db2f41249d6d224a7026de7da98317ff2328bc68b384eec36c",
+    "embeddedText": "query: 지역: 유성구 신성동. 업종: 횟집.",
+    "note": "시연용 과거 버전. 현재 공공 설명을 복제한 가정이며 과거 영업·메뉴의 관측 사실이 아님.",
+    "sourceKind": "mock",
+    "derivedFromContentVersion": "d1-8c42f2963fb0"
+  },
+  {
+    "merchantId": "mer-007",
+    "contentVersion": "mock-history:20712:d1-1e4829a793f6",
+    "regionLabel": "동구 가양2동",
+    "categoryLabel": "치킨",
+    "representativeMenus": [],
+    "lat": 36.3482750194385,
+    "lon": 127.445080181478,
+    "sourceIds": [
+      "data.go.kr:15012005:MA010120220800081412:202606"
+    ],
+    "knownAt": 1779159600000,
+    "verifiedAt": 1779159600000,
+    "textHash": "1e4829a793f6cac2800d9a8a6dff8d0fa8879d072c8aa77075df935a68330b8e",
+    "embeddedText": "query: 지역: 동구 가양2동. 업종: 치킨.",
+    "note": "시연용 과거 버전. 현재 공공 설명을 복제한 가정이며 과거 영업·메뉴의 관측 사실이 아님.",
+    "sourceKind": "mock",
+    "derivedFromContentVersion": "d1-1e4829a793f6"
+  },
+  {
+    "merchantId": "mer-008",
+    "contentVersion": "mock-history:20712:d1-f02e74119ecf",
+    "regionLabel": "유성구 학하동",
+    "categoryLabel": "피자",
+    "representativeMenus": [],
+    "lat": 36.3460834210527,
+    "lon": 127.290448038622,
+    "sourceIds": [
+      "data.go.kr:15012005:MA010120220800062359:202606"
+    ],
+    "knownAt": 1779159600000,
+    "verifiedAt": 1779159600000,
+    "textHash": "f02e74119ecff106f29ad37fe10d2f0f486225aeadce819fcdf82150d9e9b0d9",
+    "embeddedText": "query: 지역: 유성구 학하동. 업종: 피자.",
+    "note": "시연용 과거 버전. 현재 공공 설명을 복제한 가정이며 과거 영업·메뉴의 관측 사실이 아님.",
+    "sourceKind": "mock",
+    "derivedFromContentVersion": "d1-f02e74119ecf"
+  },
+  {
+    "merchantId": "mer-009",
+    "contentVersion": "mock-history:20712:d1-97fe6edeed59",
+    "regionLabel": "대덕구 신탄진동",
+    "categoryLabel": "편의점",
+    "representativeMenus": [],
+    "lat": 36.4485651372031,
+    "lon": 127.435468483668,
+    "sourceIds": [
+      "data.go.kr:15012005:MA010120220800079956:202606"
+    ],
+    "knownAt": 1779159600000,
+    "verifiedAt": 1779159600000,
+    "textHash": "97fe6edeed59c2745c47a456465dca31c1ee2993e0e22faa7cc0cc252fa09e5a",
+    "embeddedText": "query: 지역: 대덕구 신탄진동. 업종: 편의점.",
+    "note": "시연용 과거 버전. 현재 공공 설명을 복제한 가정이며 과거 영업·메뉴의 관측 사실이 아님.",
+    "sourceKind": "mock",
+    "derivedFromContentVersion": "d1-97fe6edeed59"
+  },
+  {
+    "merchantId": "mer-010",
+    "contentVersion": "mock-history:20712:d1-17b175a0f283",
+    "regionLabel": "서구 탄방동",
+    "categoryLabel": "세탁소",
+    "representativeMenus": [],
+    "lat": 36.3469807634337,
+    "lon": 127.400825322464,
+    "sourceIds": [
+      "data.go.kr:15012005:MA010120220800052824:202606"
+    ],
+    "knownAt": 1779159600000,
+    "verifiedAt": 1779159600000,
+    "textHash": "17b175a0f2833a2f65532e6b33ddc67abae4c6da749edd6f37e705ed847deb81",
+    "embeddedText": "query: 지역: 서구 탄방동. 업종: 세탁소.",
+    "note": "시연용 과거 버전. 현재 공공 설명을 복제한 가정이며 과거 영업·메뉴의 관측 사실이 아님.",
+    "sourceKind": "mock",
+    "derivedFromContentVersion": "d1-17b175a0f283"
+  },
+  {
+    "merchantId": "mer-011",
+    "contentVersion": "mock-history:20712:d1-e62c15cce3f0",
+    "regionLabel": "서구 복수동",
+    "categoryLabel": "떡/한과",
+    "representativeMenus": [],
+    "lat": 36.2984023456341,
+    "lon": 127.377408960145,
+    "sourceIds": [
+      "data.go.kr:15012005:MA010120220800042908:202606"
+    ],
+    "knownAt": 1779159600000,
+    "verifiedAt": 1779159600000,
+    "textHash": "e62c15cce3f01885bc4b413a380578409e426fa730e56854233a0c7cc4f0086f",
+    "embeddedText": "query: 지역: 서구 복수동. 업종: 떡/한과.",
+    "note": "시연용 과거 버전. 현재 공공 설명을 복제한 가정이며 과거 영업·메뉴의 관측 사실이 아님.",
+    "sourceKind": "mock",
+    "derivedFromContentVersion": "d1-e62c15cce3f0"
+  },
+  {
+    "merchantId": "mer-012",
+    "contentVersion": "mock-history:20712:d1-b41406858697",
+    "regionLabel": "대덕구 송촌동",
+    "categoryLabel": "토스트/샌드위치/샐러드",
+    "representativeMenus": [],
+    "lat": 36.3658183955601,
+    "lon": 127.43842770163,
+    "sourceIds": [
+      "data.go.kr:15012005:MA010120220800079386:202606"
+    ],
+    "knownAt": 1779159600000,
+    "verifiedAt": 1779159600000,
+    "textHash": "b4140685869720c50902700d3a909131bade6758adecf162bb2367a33ef28f8a",
+    "embeddedText": "query: 지역: 대덕구 송촌동. 업종: 토스트/샌드위치/샐러드.",
+    "note": "시연용 과거 버전. 현재 공공 설명을 복제한 가정이며 과거 영업·메뉴의 관측 사실이 아님.",
+    "sourceKind": "mock",
+    "derivedFromContentVersion": "d1-b41406858697"
   }
 ]

@@ -7,56 +7,83 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const asOf = process.argv[2] ? Date.parse(process.argv[2]) : Date.now();
 if (!Number.isFinite(asOf)) throw new Error('기준 시각은 ISO 8601로 입력하세요.');
 const day = 86400000;
-const read = async (path) => JSON.parse(await readFile(path, 'utf8'));
-const citizens = await read(resolve(root, 'data/seed/citizens.json'));
-const merchants = await read(resolve(root, 'data/seed/merchants.json'));
-const contents = await read(resolve(root, 'data/seed/merchant-contents.json'));
-const vectors = await read(resolve(root, 'data/seed/merchant-vectors.json'));
-const catalog = await read(resolve(root, 'data/reference/store-codes.json'));
-if (!citizens.length || !merchants.length) throw new Error('시민과 가맹점 시드가 필요합니다.');
-
-// 실제 모델 산출물은 생성하거나 시각을 고치지 않는다. 이용 가능한 버전을 참조하는 목 이력만 만든다.
-const versions = merchants.map((merchant) => contents
-  .filter((content) => content.merchantId === merchant.id)
-  .flatMap((content) => vectors.filter((vector) => vector.merchantId === merchant.id
-    && vector.contentVersion === content.contentVersion).map((vector) => ({
-      contentVersion: content.contentVersion,
-      availableAt: Math.max(content.knownAt, content.verifiedAt, vector.knownAt, vector.verifiedAt),
-    })))
-  .filter((version) => Number.isFinite(version.availableAt) && version.availableAt < asOf - 60000)
-  .sort((a, b) => a.availableAt - b.availableAt || a.contentVersion.localeCompare(b.contentVersion)));
-if (versions.some((rows) => !rows.length)) {
-  throw new Error('모든 가맹점의 검증된 내용·벡터가 준비된 시각보다 1분 이상 뒤를 기준으로 지정하세요.');
-}
-const offsets = [1, 4, 10, 18, 35, 60];
-const events = citizens.flatMap((citizen, index) => offsets.map((daysAgo, visit) => {
-  const merchantIndex = (index + (visit % 3 === 2 ? 5 : 0)) % merchants.length;
-  const merchant = merchants[merchantIndex];
-  const available = versions[merchantIndex];
-  // 모델 확인 이전으로 거래를 소급하지 않는다. 최근 확인된 가맹점은 같은 날의 이력이 된다.
-  const usedAt = Math.max(asOf - daysAgo * day - index * 60000,
-    Math.floor(available[0].availableAt + (asOf - available[0].availableAt) * (visit + 1) / 7));
-  const version = available.filter((row) => row.availableAt <= usedAt).at(-1);
-  return { transactionId: `mock-personal-fit:${citizen.id}:${visit}`, revision: 0,
-    actualUserId: citizen.id, merchantId: merchant.id, usedAt, recordedAt: usedAt + 1000,
-    status: 'confirmed', netAmount: 6000 + ((index + visit) % 7) * 2000,
-    contentVersion: version.contentVersion, ...publicConsumptionContext(merchant, catalog) };
+const kstDay = Math.floor((asOf + 9 * 3600000) / day);
+// All generated historical visits occur at noon KST, on completed calendar days.
+const noon = daysAgo => (kstDay-daysAgo)*day + 3*3600000;
+const prefix = 'mock-history:';
+const read = async path => JSON.parse(await readFile(path,'utf8'));
+const catalog = await read(resolve(root,'data/reference/store-codes.json'));
+const directories = [...new Set([resolve(root,'data/seed'),resolve(process.env.IM_COUPON_DATA_DIR ?? resolve(root,'data/runtime'))])];
+const outputs = await Promise.all(directories.map(async directory => {
+  const [citizens,merchants,allContents,allVectors,previousEvents] = await Promise.all(
+    ['citizens','merchants','merchant-contents','merchant-vectors','personal-fit-events'].map(name=>read(resolve(directory,`${name}.json`))));
+  if (![citizens,merchants,allContents,allVectors,previousEvents].every(Array.isArray) || !citizens.length || !merchants.length) throw new Error('시민·가게·모델·이력 배열이 필요합니다.');
+  const retained = previousEvents.filter(e=>!e.transactionId?.startsWith('mock-personal-fit:'));
+  // Keep scenario versions referenced by non-generator records; never strand their history.
+  const referenced = new Set(retained.map(e=>`${e.merchantId}/${e.contentVersion}`));
+  const contents = allContents.filter(c=>!c.contentVersion.startsWith(prefix) || referenced.has(`${c.merchantId}/${c.contentVersion}`));
+  const vectors = allVectors.filter(v=>!v.contentVersion.startsWith(prefix) || referenced.has(`${v.merchantId}/${v.contentVersion}`));
+  const historical = new Map();
+  for (const merchant of merchants) {
+    const content = contents.filter(c=>c.merchantId===merchant.id && !c.contentVersion.startsWith(prefix)
+      && c.knownAt<=asOf && c.verifiedAt<=asOf).sort((a,b)=>b.knownAt-a.knownAt || b.verifiedAt-a.verifiedAt || b.contentVersion.localeCompare(a.contentVersion))[0];
+    const available = vectors.filter(v=>v.merchantId===merchant.id && v.contentVersion===content?.contentVersion && v.knownAt<=asOf && v.verifiedAt<=asOf);
+    if (!content || available.length!==1) throw new Error(`${merchant.id}: 확인된 현재 내용·벡터가 필요합니다.`);
+    // Synthetic backdated versions make the scenario explicit; source timestamps stay intact.
+    const contentVersion = `${prefix}${kstDay}:${content.contentVersion}`;
+    const knownAt = noon(120);
+    if(!contents.some(c=>c.merchantId===merchant.id && c.contentVersion===contentVersion))contents.push({...content,contentVersion,knownAt,verifiedAt:knownAt,
+      sourceKind:'mock',derivedFromContentVersion:content.contentVersion,
+      note:'시연용 과거 버전. 현재 공공 설명을 복제한 가정이며 과거 영업·메뉴의 관측 사실이 아님.'});
+    if(!vectors.some(v=>v.merchantId===merchant.id && v.contentVersion===contentVersion))vectors.push({...available[0],contentVersion,knownAt,verifiedAt:knownAt,
+      sourceKind:'mock',derivedFromContentVersion:content.contentVersion});
+    historical.set(merchant.id,contentVersion);
+  }
+  const snack=merchants.find(m=>m.publicData?.categoryCode==='I21007');
+  const fish=merchants.find(m=>m.publicData?.categoryCode==='I20111');
+  if(!snack || !fish)throw new Error('빈도 비교용 분식·횟집 가게가 필요합니다.');
+  const events=[];const scenarios=[];
+  const kinds=['frequency_snack','frequency_fish','balanced','same_day_duplicates','recency','no_history','cancelled','zero_amount','outside_window','revision_cancelled'];
+  for(const [index,citizen] of citizens.entries()) {
+    const kind=kinds[index] ?? 'mixed_visits';
+    const primary=index<10?snack:merchants[index%merchants.length];
+    const secondary=index<10?fish:merchants[(index+5)%merchants.length];
+    let visits=[];
+    if(kind==='frequency_snack')visits=[[primary,1],[primary,3],[primary,5],[primary,7],[secondary,4],[secondary,6]];
+    else if(kind==='frequency_fish')visits=[[secondary,1],[secondary,3],[secondary,5],[secondary,7],[primary,4],[primary,6]];
+    else if(kind==='balanced')visits=[1,4,7].flatMap(d=>[[primary,d],[secondary,d]]);
+    else if(kind==='same_day_duplicates')visits=[[primary,2],[primary,2],[primary,2],[primary,2],[secondary,2],[secondary,2]];
+    else if(kind==='recency')visits=[[primary,40],[primary,45],[primary,50],[primary,55],[secondary,1],[secondary,3]];
+    else if(kind==='no_history')visits=[];
+    else if(kind==='outside_window')visits=[[primary,100],[secondary,101]];
+    else if(kind==='cancelled'||kind==='zero_amount'||kind==='revision_cancelled')visits=[[primary,1],[secondary,3]];
+    else visits=[1,4,10,18,35,60].map((d,i)=>[i%3===2?secondary:primary,d]);
+    const own=[];
+    for(const [i,[merchant,daysAgo]] of visits.entries()) {
+      const usedAt=noon(daysAgo)+i*60000;
+      const event={transactionId:`mock-personal-fit:${citizen.id}:${i}`,revision:0,actualUserId:citizen.id,merchantId:merchant.id,
+        usedAt,recordedAt:usedAt+1000,status:kind==='cancelled'?'cancelled':'confirmed',netAmount:kind==='zero_amount'?0:6000+((index+i)%7)*2000,
+        contentVersion:historical.get(merchant.id),...publicConsumptionContext(merchant,catalog)};
+      own.push(event);
+      if(kind==='revision_cancelled')own.push({...event,revision:1,status:'cancelled',netAmount:0,recordedAt:usedAt+2000});
+    }
+    events.push(...own);
+    const latest=new Map();for(const e of own)if(!latest.has(e.transactionId)||latest.get(e.transactionId).revision<e.revision)latest.set(e.transactionId,e);
+    const eligible=[...latest.values()].filter(e=>e.status==='confirmed'&&e.netAmount>0&&e.usedAt>=asOf-90*day&&e.usedAt<asOf);
+    const counts=merchants.map(m=>({merchantId:m.id,name:m.name,transactions:own.filter(e=>e.merchantId===m.id).length,
+      effectiveVisitDays:new Set(eligible.filter(e=>e.merchantId===m.id).map(e=>Math.floor((e.usedAt+9*3600000)/day))).size})).filter(r=>r.transactions);
+    scenarios.push({citizenId:citizen.id,name:citizen.name,scenario:kind,sourceKind:'mock',asOf,historyRows:own.length,visits:counts,
+      note:'유효 방문일 수는 중복·취소·0원·90일 창을 반영한 값. 실제 개인화 점수는 최근성·가게 영향력 상한·벡터 유사도도 적용한다.'});
+  }
+  return {directory,collections:{'merchant-contents':contents,'merchant-vectors':vectors,'personal-fit-events':[...retained,...events],
+    'personal-fit-scenarios':scenarios},summary:{generatedEvents:events.length,citizens:citizens.length,firstCitizen:scenarios[0]}};
 }));
-const runtimeDir = process.env.IM_COUPON_DATA_DIR
-  ? resolve(process.env.IM_COUPON_DATA_DIR) : resolve(root, 'data/runtime');
-// 두 파일을 먼저 읽어 오류가 있는 런타임을 일부만 덮어쓰지 않는다.
-const outputs = await Promise.all([resolve(root, 'data/seed'), runtimeDir].map(async (directory) => {
-  const path = resolve(directory, 'personal-fit-events.json');
-  let existing = [];
-  try { existing = await read(path); } catch (error) { if (error.code !== 'ENOENT') throw error; }
-  if (!Array.isArray(existing)) throw new Error(`${path}는 레코드 배열이어야 합니다.`);
-  const retained = existing.filter((row) => !row.transactionId?.startsWith('mock-personal-fit:'));
-  return { directory, path, rows: [...retained, ...events] };
-}));
-for (const { directory, path, rows } of outputs) {
-  await mkdir(directory, { recursive: true });
-  const temporary = `${path}.${process.pid}.tmp`;
-  await writeFile(temporary, `${JSON.stringify(rows, null, 2)}\n`);
-  await rename(temporary, path);
+for(const {directory,collections,summary} of outputs) {
+  await mkdir(directory,{recursive:true});
+  // Install referenced model versions before the events that use them.
+  for(const [name,rows] of Object.entries(collections)) {
+    const path=resolve(directory,`${name}.json`),temp=`${path}.${process.pid}.tmp`;
+    await writeFile(temp,JSON.stringify(rows,null,2)+'\n');await rename(temp,path);
+  }
+  console.log(JSON.stringify({directory,...summary},null,2));
 }
-console.log(`기준 ${new Date(asOf).toISOString()}: 모델 내용 버전을 참조하는 목 행동 이력 ${events.length}건`);

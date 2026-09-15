@@ -68,6 +68,9 @@ export interface PersonalFitUsageEvent extends UserConsumptionEvent {
  * 섞인다.
  */
 export interface PersonalFitMerchantVector {
+  /** mock 과거 버전은 원본 모델 값의 복제이며 과거 관측을 뜻하지 않는다. */
+  readonly sourceKind?: 'mock' | 'observed';
+  readonly derivedFromContentVersion?: string;
   readonly merchantId: string;
   readonly contentVersion: string;
   /**
