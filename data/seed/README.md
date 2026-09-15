@@ -23,6 +23,8 @@ E5 유사도는 좁은 구간에 모이므로 기본 가중치에서도 랜덤�
 
 ## 목 소비 이력 갱신
 
+유저별 이력에는 `sourceKind: mock`, `currency: KRW`, `publicStoreContext`를 함께 보관한다. 공공 상가 ID·대중소 업종·시도/구/행정동의 코드와 이름을 기록하지만 소비 금액은 가상이다. 상세는 [유저별 소비 계약](../../documents/유저별-소비-공공코드.md)을 따른다. 기존 시각·금액을 유지하면서 분류만 갱신하려면 `node scripts/enrich-personal-fit-context.mjs`를 사용한다.
+
 ```sh
 node scripts/generate-personal-fit-mock.mjs
 # 고정 시각으로 재현
@@ -46,3 +48,9 @@ node scripts/generate-personal-fit-mock.mjs 2026-09-14T15:00:00Z
 사용하지 않는 과거 `personal-fit-vectors.json`은 백업 후 제거했다. 실제 거래가 들어온 환경에 이 목 데이터 교체 방식을 적용하지 않는다.
 
 모델과 데이터 생성 조건은 [가게 벡터 모델](../../documents/가게-벡터-모델.md)을 참고한다.
+
+## 상권회복 비교 데이터
+
+기존 발급 가게 12곳은 유지하고, 비교용 60곳(기존 12곳 + 가상 48곳)은 `comparison-merchants`에 둔다. `comparison-consumption-events`의 3개월 합성 거래를 `district-consumption-monthly`와 `city-consumption-monthly`로 집계한다. `sales-recovery-comparisons`는 감소율 비교, `sales-recovery-candidates`는 발급 후보 12곳의 준비 여부, `sales-recovery-dataset`은 생성 출처·품질 기록이다.
+
+`node scripts/generate-d1-consumption.mjs`로 해당 7개 컬렉션을 seed와 runtime에 갱신한다. 비교 거래는 기존 개인화 이력에 중복 입력하지 않는다. 상세는 [시연 후보](../../documents/상권회복-시연-후보.md)에 있다. 실제 발급 서비스의 회복 신호 연결은 아직 구현하지 않았다.
