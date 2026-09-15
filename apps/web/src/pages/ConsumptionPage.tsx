@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import {
   CITIZENS_PATH, CONSUMPTION_PATH, ISSUE_COUPON_PATH, couponBenefits,
   type Citizen, type ConsumptionActionResponse, type ConsumptionSnapshot,
-  type Coupon, type IssueCouponResponse, type ListCitizensResponse, type PointEntry,
+  type Coupon, type IssuanceRequest, type IssueCouponResponse, type ListCitizensResponse, type PointEntry,
 } from '@im-coupon/contracts';
 import '../app.css';
 import './ConsumptionPage.css';
@@ -86,6 +86,11 @@ export function ConsumptionPage() {
 
   async function issue(): Promise<void> {
     if (pending.current) return;
+    if (!citizens.some(citizen => citizen.id === ownerId)) {
+      setNotice('발급받을 쿠폰 소유자를 선택해 주세요.');
+      return;
+    }
+    const request: IssuanceRequest = { citizenId: ownerId };
     pending.current = true;
     version.current += 1;
     setBusy(true);
@@ -94,7 +99,7 @@ export function ConsumptionPage() {
     let issued = false;
     try {
       const response = await fetch(ISSUE_COUPON_PATH, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}),
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(request),
       });
       issued = response.ok;
       const result = await readResponse<IssueCouponResponse>(response);
@@ -130,7 +135,7 @@ export function ConsumptionPage() {
             <span className="panel-label">A · 쿠폰 소유자</span>
             <h2>내 쿠폰 사용</h2>
             <p>소유자가 직접 사용하면 발급된 혜택 전액을 받습니다.</p>
-            <button className="primary" onClick={issue}>{issuing ? '발급 중…' : '쿠폰 발급'}</button>
+            <button className="primary" disabled={!citizens.some(citizen => citizen.id === ownerId)} onClick={issue}>{issuing ? '발급 중…' : '쿠폰 발급'}</button>
             <CitizenSelect label="쿠폰 소유자" citizens={citizens} value={ownerId} onChange={setOwnerId} />
             {ownerCoupons.length > 0 ? <>
               <label>사용할 쿠폰
