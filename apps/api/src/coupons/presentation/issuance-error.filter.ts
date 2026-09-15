@@ -13,6 +13,8 @@ import { IssuanceError } from '../../issuance/domain/services/engine';
  * 정한 것이 아니라, 총합을 강제한 대가로 미리 적히는 자리다.
  */
 const STATUS: Record<ApiErrorCode, HttpStatus> = {
+  MISSING_CITIZEN_ID: HttpStatus.BAD_REQUEST,
+  UNKNOWN_CITIZEN: HttpStatus.NOT_FOUND,
   INVALID_BODY: HttpStatus.BAD_REQUEST,
   INVALID_WEIGHTS: HttpStatus.BAD_REQUEST,
   NO_CANDIDATES: HttpStatus.UNPROCESSABLE_ENTITY,

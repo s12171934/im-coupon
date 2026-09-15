@@ -9,6 +9,7 @@ import type { SignalWeights, TriggerType } from '@im-coupon/contracts';
 export interface IssueCommand<T extends TriggerType = TriggerType> {
   /** 이 발급을 일으킨 트리거의 유형. 그대로 쿠폰 레코드의 `trigger` 가 된다 */
   trigger: T;
+  citizenId: string;
   /**
    * 요청이 지정한 발급 가중치 부분 덮어쓰기. 생략하면 발급 파라미터 기본값으로 발급한다.
    *
