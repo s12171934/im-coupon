@@ -17,9 +17,9 @@
 소비 이력의 벡터는 소비 당시 알려지고 검증된 정확한 내용 버전이어야 한다.
 이력이 없으면 `NO_HISTORY`, 필요한 벡터가 없으면 `MISSING_VECTOR`로 개인화를 비활성화한다. 기존 5차원 `personal-fit-vectors`는 더 이상 읽지 않는다.
 
-기본 합산은 `랜덤 점수 × 0.3 + 개인화 점수 × 0.7`이고 발급 화면에서 조절할 수 있다.
-E5 유사도는 좁은 구간에 모이므로 기본 가중치에서도 랜덤이 후보 순위에 큰 영향을 줄 수 있다.
-모델 점수만으로 선택되는 결과를 시연하려면 랜덤 0·개인화 1로 설정한다. 점수는 확률이나 만족도가 아니다.
+기본 가중평균은 `(상권회복 점수 × 0.3 + 개인화 점수 × 0.7) / 가중치 합`이며 발급 화면에서 조절할 수 있다.
+E5 유사도는 좁은 구간에 모이므로 회복 신호와의 가중치에 따라 후보 순위가 달라질 수 있다.
+모델 점수만으로 선택되는 결과를 시연하려면 상권회복 0·개인화 1로 설정한다. 점수는 확률이나 만족도가 아니다.
 
 ## 목 소비 이력 갱신
 
@@ -53,4 +53,4 @@ node scripts/generate-personal-fit-mock.mjs 2026-09-14T15:00:00Z
 
 기존 발급 가게 12곳은 유지하고, 비교용 60곳(기존 12곳 + 가상 48곳)은 `comparison-merchants`에 둔다. `comparison-consumption-events`의 3개월 합성 거래를 `district-consumption-monthly`와 `city-consumption-monthly`로 집계한다. `sales-recovery-comparisons`는 감소율 비교, `sales-recovery-candidates`는 발급 후보 12곳의 준비 여부, `sales-recovery-dataset`은 생성 출처·품질 기록이다.
 
-`node scripts/generate-d1-consumption.mjs`로 해당 7개 컬렉션을 seed와 runtime에 갱신한다. 비교 거래는 기존 개인화 이력에 중복 입력하지 않는다. 상세는 [시연 후보](../../documents/상권회복-시연-후보.md)에 있다. 실제 발급 서비스의 회복 신호 연결은 아직 구현하지 않았다.
+`node scripts/generate-d1-consumption.mjs`로 해당 7개 컬렉션을 seed와 runtime에 갱신한다. 비교 거래는 기존 개인화 이력에 중복 입력하지 않는다. 상세는 [시연 후보](../../documents/상권회복-시연-후보.md)에 있다. 실제 발급은 시민을 먼저 지정하며 이 월별 통계로 회복 신호를 계산한다. 세부 계약은 [발급 연결](../../documents/KAN-27/발급-연결.md)에 있다.
