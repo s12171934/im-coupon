@@ -4,3 +4,6 @@ export * from './coupon';
 export * from './health';
 export * from './issuance';
 export * from './merchant';
+export * from './store-api';
+export * from './store-codes';
+export * from './store-code-data';
