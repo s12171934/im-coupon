@@ -1,260 +1,206 @@
 [
   {
     "merchantId": "mer-001",
-    "contentVersion": "c1-0b0e35f64b32",
-    "regionLabel": "중구 성내2동",
-    "categoryLabel": "분식",
-    "representativeMenus": [
-      "김밥",
-      "떡볶이",
-      "순대",
-      "어묵"
-    ],
-    "lat": 35.869,
-    "lon": 128.595,
+    "contentVersion": "d1-d4537627c9ac",
+    "regionLabel": "유성구 노은3동",
+    "categoryLabel": "김밥/만두/분식",
+    "representativeMenus": [],
+    "lat": 36.3923952908249,
+    "lon": 127.311698022807,
     "sourceIds": [
-      "mock:demo-2026-09-14"
+      "data.go.kr:15012005:MA010120220800051363:202606"
     ],
-    "knownAt": 1780272000000,
-    "verifiedAt": 1780272000000,
-    "textHash": "0b0e35f64b3262ff31f3dd7c491421b29f72e1c8f345d08c8cb402245ab00730",
-    "embeddedText": "query: 지역: 중구 성내2동. 업종: 분식. 대표메뉴: 김밥; 떡볶이; 순대; 어묵.",
-    "note": "이전 메뉴 구성"
-  },
-  {
-    "merchantId": "mer-001",
-    "contentVersion": "c1-998750e13ae4",
-    "regionLabel": "중구 성내2동",
-    "categoryLabel": "분식",
-    "representativeMenus": [
-      "김밥",
-      "돈가스",
-      "라면",
-      "쫄면"
-    ],
-    "lat": 35.869,
-    "lon": 128.595,
-    "sourceIds": [
-      "mock:demo-2026-09-14"
-    ],
-    "knownAt": 1789344000000,
-    "verifiedAt": 1789344000000,
-    "textHash": "998750e13ae49057e7a80f305966f245452bd8bc50f7c994b41b728ac1facf9b",
-    "embeddedText": "query: 지역: 중구 성내2동. 업종: 분식. 대표메뉴: 김밥; 돈가스; 라면; 쫄면.",
-    "note": "현재 메뉴 구성"
-  },
-  {
-    "merchantId": "mer-006",
-    "contentVersion": "c1-3614024b3a52",
-    "regionLabel": "중구 성내2동",
-    "categoryLabel": "분식",
-    "representativeMenus": [
-      "라면",
-      "우동",
-      "쫄면",
-      "튀김"
-    ],
-    "lat": 35.8692,
-    "lon": 128.5961,
-    "sourceIds": [
-      "mock:demo-2026-09-14"
-    ],
-    "knownAt": 1789344000000,
-    "verifiedAt": 1789344000000,
-    "textHash": "3614024b3a52e1421a2fce8834ba52d2b2b0b992e6d0a935f5dfdba54c70b5ac",
-    "embeddedText": "query: 지역: 중구 성내2동. 업종: 분식. 대표메뉴: 라면; 우동; 쫄면; 튀김.",
-    "note": "같은 동·같은 업종, 다른 메뉴"
+    "knownAt": 1789480706866,
+    "verifiedAt": 1789480823125,
+    "textHash": "d4537627c9acb85a90d588e8e57793baf44571523f1c2831b309862099f36768",
+    "embeddedText": "query: 지역: 유성구 노은3동. 업종: 김밥/만두/분식.",
+    "note": "D1 실제 상가 조회. 대표메뉴는 미제공이며 추정하지 않음."
   },
   {
     "merchantId": "mer-002",
-    "contentVersion": "c1-8bb2cd8142d0",
-    "regionLabel": "중구 삼덕동",
-    "categoryLabel": "서점",
+    "contentVersion": "d1-7ebce56b2594",
+    "regionLabel": "서구 탄방동",
+    "categoryLabel": "카페",
     "representativeMenus": [],
-    "lat": 35.866,
-    "lon": 128.602,
+    "lat": 36.3432578365492,
+    "lon": 127.3930087098,
     "sourceIds": [
-      "mock:demo-2026-09-14"
+      "data.go.kr:15012005:MA010120220800047978:202606"
     ],
-    "knownAt": 1789344000000,
-    "verifiedAt": 1789344000000,
-    "textHash": "8bb2cd8142d024de050708b52ddc720d22f0dfaee0e23a40fa0e167d5751a616",
-    "embeddedText": "query: 지역: 중구 삼덕동. 업종: 서점.",
-    "note": "메뉴 없음"
+    "knownAt": 1789480706866,
+    "verifiedAt": 1789480823130,
+    "textHash": "7ebce56b25948ecef0c06c6dae1279f63920e13a810647711dd803d5be41ad78",
+    "embeddedText": "query: 지역: 서구 탄방동. 업종: 카페.",
+    "note": "D1 실제 상가 조회. 대표메뉴는 미제공이며 추정하지 않음."
   },
   {
     "merchantId": "mer-003",
-    "contentVersion": "c1-bc419ad65d90",
-    "regionLabel": "중구 삼덕동",
-    "categoryLabel": "카페",
-    "representativeMenus": [
-      "아메리카노",
-      "치즈케이크",
-      "카페라떼"
-    ],
-    "lat": 35.8664,
-    "lon": 128.6031,
+    "contentVersion": "d1-ff42ff7e4e94",
+    "regionLabel": "유성구 온천2동",
+    "categoryLabel": "중국집",
+    "representativeMenus": [],
+    "lat": 36.3623305196213,
+    "lon": 127.348190943335,
     "sourceIds": [
-      "mock:demo-2026-09-14"
+      "data.go.kr:15012005:MA010120220800013198:202606"
     ],
-    "knownAt": 1789344000000,
-    "verifiedAt": 1789344000000,
-    "textHash": "bc419ad65d90d20fb54d6d3d79928b982eb2a9a5c2581693c4eec39d0a0055d0",
-    "embeddedText": "query: 지역: 중구 삼덕동. 업종: 카페. 대표메뉴: 아메리카노; 치즈케이크; 카페라떼.",
-    "note": "제과점과 메뉴 일부 겹침"
-  },
-  {
-    "merchantId": "mer-009",
-    "contentVersion": "c1-e6317d44ab7c",
-    "regionLabel": "중구 성내2동",
-    "categoryLabel": "제과점",
-    "representativeMenus": [
-      "단팥빵",
-      "식빵",
-      "치즈케이크",
-      "크루아상"
-    ],
-    "lat": 35.8685,
-    "lon": 128.5944,
-    "sourceIds": [
-      "mock:demo-2026-09-14"
-    ],
-    "knownAt": 1789344000000,
-    "verifiedAt": 1789344000000,
-    "textHash": "e6317d44ab7c60a8c7672d5ab473569299f6b14a029a9a97f090ae94553ab27e",
-    "embeddedText": "query: 지역: 중구 성내2동. 업종: 제과점. 대표메뉴: 단팥빵; 식빵; 치즈케이크; 크루아상.",
-    "note": "업종 라벨 공백 정규화 대상. 카페와 메뉴 일부 겹침"
+    "knownAt": 1789480706866,
+    "verifiedAt": 1789480823135,
+    "textHash": "ff42ff7e4e948a3e7ccd6da7f7d22f271aeb752ee2e4331ed69e78c14fd15f7b",
+    "embeddedText": "query: 지역: 유성구 온천2동. 업종: 중국집.",
+    "note": "D1 실제 상가 조회. 대표메뉴는 미제공이며 추정하지 않음."
   },
   {
     "merchantId": "mer-004",
-    "contentVersion": "c1-739d07c52686",
-    "regionLabel": "수성구 범어1동",
-    "categoryLabel": "꽃집",
+    "contentVersion": "d1-f1631b31ccfa",
+    "regionLabel": "유성구 관평동",
+    "categoryLabel": "백반/한정식",
     "representativeMenus": [],
-    "lat": 35.858,
-    "lon": 128.625,
+    "lat": 36.4234346537198,
+    "lon": 127.398519432415,
     "sourceIds": [
-      "mock:demo-2026-09-14"
+      "data.go.kr:15012005:MA010120220800069459:202606"
     ],
-    "knownAt": 1789344000000,
-    "verifiedAt": 1789344000000,
-    "textHash": "739d07c52686705b462471244356bc28901523cfe38543c703088d0aef5095ef",
-    "embeddedText": "query: 지역: 수성구 범어1동. 업종: 꽃집.",
-    "note": "메뉴 없음"
+    "knownAt": 1789480706866,
+    "verifiedAt": 1789480823144,
+    "textHash": "f1631b31ccfa962ab7f5981a2a66c89c564bf5aef894fcc34c0d8ea90157a636",
+    "embeddedText": "query: 지역: 유성구 관평동. 업종: 백반/한정식.",
+    "note": "D1 실제 상가 조회. 대표메뉴는 미제공이며 추정하지 않음."
   },
   {
     "merchantId": "mer-005",
-    "contentVersion": "c1-68af6f706712",
-    "regionLabel": "수성구 범어1동",
-    "categoryLabel": "세탁소",
+    "contentVersion": "d1-60b987d35c9d",
+    "regionLabel": "유성구 신성동",
+    "categoryLabel": "돼지고기 구이/찜",
     "representativeMenus": [],
-    "lat": 35.8583,
-    "lon": 128.6244,
+    "lat": 36.3761518418241,
+    "lon": 127.395380644655,
     "sourceIds": [
-      "mock:demo-2026-09-14"
+      "data.go.kr:15012005:MA010120220800081405:202606"
     ],
-    "knownAt": 1789344000000,
-    "verifiedAt": 1789344000000,
-    "textHash": "68af6f706712a8318d82a20a55d6ff4ec2846fcaf94e7fa8004c4950cfaf65be",
-    "embeddedText": "query: 지역: 수성구 범어1동. 업종: 세탁소.",
-    "note": "메뉴 없음"
+    "knownAt": 1789480706866,
+    "verifiedAt": 1789480823151,
+    "textHash": "60b987d35c9d47729cc5a19a42881869cc194ff79a38b0848e599b5f81d40f8e",
+    "embeddedText": "query: 지역: 유성구 신성동. 업종: 돼지고기 구이/찜.",
+    "note": "D1 실제 상가 조회. 대표메뉴는 미제공이며 추정하지 않음."
+  },
+  {
+    "merchantId": "mer-006",
+    "contentVersion": "d1-8c42f2963fb0",
+    "regionLabel": "유성구 신성동",
+    "categoryLabel": "횟집",
+    "representativeMenus": [],
+    "lat": 36.3920517334815,
+    "lon": 127.351076581916,
+    "sourceIds": [
+      "data.go.kr:15012005:MA010120220800044537:202606"
+    ],
+    "knownAt": 1789480706866,
+    "verifiedAt": 1789480823155,
+    "textHash": "8c42f2963fb080db2f41249d6d224a7026de7da98317ff2328bc68b384eec36c",
+    "embeddedText": "query: 지역: 유성구 신성동. 업종: 횟집.",
+    "note": "D1 실제 상가 조회. 대표메뉴는 미제공이며 추정하지 않음."
   },
   {
     "merchantId": "mer-007",
-    "contentVersion": "c1-833c52ba887b",
-    "regionLabel": "수성구 범어1동",
-    "categoryLabel": "일반한식",
-    "representativeMenus": [
-      "김치찌개",
-      "된장찌개",
-      "비빔밥",
-      "제육볶음"
-    ],
-    "lat": 35.8576,
-    "lon": 128.6262,
+    "contentVersion": "d1-1e4829a793f6",
+    "regionLabel": "동구 가양2동",
+    "categoryLabel": "치킨",
+    "representativeMenus": [],
+    "lat": 36.3482750194385,
+    "lon": 127.445080181478,
     "sourceIds": [
-      "mock:demo-2026-09-14"
+      "data.go.kr:15012005:MA010120220800081412:202606"
     ],
-    "knownAt": 1789344000000,
-    "verifiedAt": 1789344000000,
-    "textHash": "833c52ba887b535eeeefe52d0608670bb40dd9fd57d71269726382f9fc9cfd9a",
-    "embeddedText": "query: 지역: 수성구 범어1동. 업종: 일반한식. 대표메뉴: 김치찌개; 된장찌개; 비빔밥; 제육볶음.",
-    "note": ""
+    "knownAt": 1789480706866,
+    "verifiedAt": 1789480823160,
+    "textHash": "1e4829a793f6cac2800d9a8a6dff8d0fa8879d072c8aa77075df935a68330b8e",
+    "embeddedText": "query: 지역: 동구 가양2동. 업종: 치킨.",
+    "note": "D1 실제 상가 조회. 대표메뉴는 미제공이며 추정하지 않음."
   },
   {
     "merchantId": "mer-008",
-    "contentVersion": "c1-895e5d26231a",
-    "regionLabel": "수성구 두산동",
-    "categoryLabel": "갈비전문점",
-    "representativeMenus": [
-      "냉면",
-      "돼지갈비",
-      "소갈비살"
-    ],
-    "lat": 35.832,
-    "lon": 128.618,
+    "contentVersion": "d1-f02e74119ecf",
+    "regionLabel": "유성구 학하동",
+    "categoryLabel": "피자",
+    "representativeMenus": [],
+    "lat": 36.3460834210527,
+    "lon": 127.290448038622,
     "sourceIds": [
-      "mock:demo-2026-09-14"
+      "data.go.kr:15012005:MA010120220800062359:202606"
     ],
-    "knownAt": 1789344000000,
-    "verifiedAt": 1789344000000,
-    "textHash": "895e5d26231aaa5c284bcc270063774788aab4c092c35423375ca3305493513f",
-    "embeddedText": "query: 지역: 수성구 두산동. 업종: 갈비전문점. 대표메뉴: 냉면; 돼지갈비; 소갈비살.",
-    "note": "한식과 업종이 다르나 메뉴 계열이 가깝다"
+    "knownAt": 1789480706866,
+    "verifiedAt": 1789480823165,
+    "textHash": "f02e74119ecff106f29ad37fe10d2f0f486225aeadce819fcdf82150d9e9b0d9",
+    "embeddedText": "query: 지역: 유성구 학하동. 업종: 피자.",
+    "note": "D1 실제 상가 조회. 대표메뉴는 미제공이며 추정하지 않음."
+  },
+  {
+    "merchantId": "mer-009",
+    "contentVersion": "d1-97fe6edeed59",
+    "regionLabel": "대덕구 신탄진동",
+    "categoryLabel": "편의점",
+    "representativeMenus": [],
+    "lat": 36.4485651372031,
+    "lon": 127.435468483668,
+    "sourceIds": [
+      "data.go.kr:15012005:MA010120220800079956:202606"
+    ],
+    "knownAt": 1789480706866,
+    "verifiedAt": 1789480823170,
+    "textHash": "97fe6edeed59c2745c47a456465dca31c1ee2993e0e22faa7cc0cc252fa09e5a",
+    "embeddedText": "query: 지역: 대덕구 신탄진동. 업종: 편의점.",
+    "note": "D1 실제 상가 조회. 대표메뉴는 미제공이며 추정하지 않음."
   },
   {
     "merchantId": "mer-010",
-    "contentVersion": "c1-899aaf80a0c3",
-    "regionLabel": "북구 복현1동",
-    "categoryLabel": "중국음식",
-    "representativeMenus": [
-      "짜장면",
-      "짬뽕",
-      "탕수육"
-    ],
-    "lat": 35.896,
-    "lon": 128.603,
+    "contentVersion": "d1-17b175a0f283",
+    "regionLabel": "서구 탄방동",
+    "categoryLabel": "세탁소",
+    "representativeMenus": [],
+    "lat": 36.3469807634337,
+    "lon": 127.400825322464,
     "sourceIds": [
-      "mock:demo-2026-09-14"
+      "data.go.kr:15012005:MA010120220800052824:202606"
     ],
-    "knownAt": 1789344000000,
-    "verifiedAt": 1789344000000,
-    "textHash": "899aaf80a0c36cbf34f9c16a201205e52e029d3dd45f9bbaf9fa25a6380ef7ae",
-    "embeddedText": "query: 지역: 북구 복현1동. 업종: 중국음식. 대표메뉴: 짜장면; 짬뽕; 탕수육.",
-    "note": ""
+    "knownAt": 1789480706866,
+    "verifiedAt": 1789480823175,
+    "textHash": "17b175a0f2833a2f65532e6b33ddc67abae4c6da749edd6f37e705ed847deb81",
+    "embeddedText": "query: 지역: 서구 탄방동. 업종: 세탁소.",
+    "note": "D1 실제 상가 조회. 대표메뉴는 미제공이며 추정하지 않음."
   },
   {
     "merchantId": "mer-011",
-    "contentVersion": "c1-a187d778068f",
-    "regionLabel": "수성구 범어1동",
-    "categoryLabel": "편의점",
+    "contentVersion": "d1-e62c15cce3f0",
+    "regionLabel": "서구 복수동",
+    "categoryLabel": "떡/한과",
     "representativeMenus": [],
-    "lat": 35.8588,
-    "lon": 128.6238,
+    "lat": 36.2984023456341,
+    "lon": 127.377408960145,
     "sourceIds": [
-      "mock:demo-2026-09-14"
+      "data.go.kr:15012005:MA010120220800042908:202606"
     ],
-    "knownAt": 1789344000000,
-    "verifiedAt": 1789344000000,
-    "textHash": "a187d778068f90e013c3bf17586b1030cfa88e5c3e5e0ba9619a942a21e3efe4",
-    "embeddedText": "query: 지역: 수성구 범어1동. 업종: 편의점.",
-    "note": "업종 라벨 공백 정규화 대상"
+    "knownAt": 1789480706866,
+    "verifiedAt": 1789480823180,
+    "textHash": "e62c15cce3f01885bc4b413a380578409e426fa730e56854233a0c7cc4f0086f",
+    "embeddedText": "query: 지역: 서구 복수동. 업종: 떡/한과.",
+    "note": "D1 실제 상가 조회. 대표메뉴는 미제공이며 추정하지 않음."
   },
   {
     "merchantId": "mer-012",
-    "contentVersion": "c1-de2c50cfa15e",
-    "regionLabel": "달서구 이곡1동",
-    "categoryLabel": "슈퍼마켓",
+    "contentVersion": "d1-b41406858697",
+    "regionLabel": "대덕구 송촌동",
+    "categoryLabel": "토스트/샌드위치/샐러드",
     "representativeMenus": [],
-    "lat": 35.853,
-    "lon": 128.515,
+    "lat": 36.3658183955601,
+    "lon": 127.43842770163,
     "sourceIds": [
-      "mock:demo-2026-09-14"
+      "data.go.kr:15012005:MA010120220800079386:202606"
     ],
-    "knownAt": 1789344000000,
-    "verifiedAt": 1789344000000,
-    "textHash": "de2c50cfa15eb63ea6733cf63665e41d0623e832b160d3731b915850776d7849",
-    "embeddedText": "query: 지역: 달서구 이곡1동. 업종: 슈퍼마켓.",
-    "note": "업종 라벨 공백 정규화 대상. 편의점과 의미가 가깝다"
+    "knownAt": 1789480706866,
+    "verifiedAt": 1789480823186,
+    "textHash": "b4140685869720c50902700d3a909131bade6758adecf162bb2367a33ef28f8a",
+    "embeddedText": "query: 지역: 대덕구 송촌동. 업종: 토스트/샌드위치/샐러드.",
+    "note": "D1 실제 상가 조회. 대표메뉴는 미제공이며 추정하지 않음."
   }
 ]
