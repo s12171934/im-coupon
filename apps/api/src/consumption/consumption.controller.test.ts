@@ -23,7 +23,7 @@ beforeEach(async () => {
 afterEach(async () => { await app?.close(); await rm(directory, { recursive: true, force: true }); });
 function api() { return request(app.getHttpServer()); }
 async function issue() {
-  const response = await api().post('/api/coupons/issue').send({});
+  const response = await api().post('/api/coupons/issue').send({citizenId:'cit-001'});
   expect(response.status).toBe(201);
   return response.body.coupon;
 }

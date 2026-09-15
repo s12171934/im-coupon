@@ -3,4 +3,5 @@ export const APP_PATHS = {
   issue: '/issue',
   consumption: '/consumption',
   myCoupons: '/my-coupons',
+  storeApi: '/store-api',
 } as const;

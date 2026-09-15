@@ -10,6 +10,8 @@ import { ErrorNotice } from './ErrorNotice';
  * 컴파일 오류로 그 사실을 안다 (설계문서 8장).
  */
 const EXPECTED_HINT_KEYWORDS: Record<ApiErrorCode, string> = {
+  MISSING_CITIZEN_ID: '시민',
+  UNKNOWN_CITIZEN: '시민',
   INVALID_BODY: '요청 본문',
   INVALID_WEIGHTS: '가중치',
   NO_CANDIDATES: '발급 후보',

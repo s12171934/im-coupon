@@ -12,21 +12,14 @@ export interface Candidate {
   citizen: Citizen;
 }
 
-/**
- * 신호가 점수를 매길 때 쓰는 주변값. 전역 `Math.random` 을 신호가 직접 읽지 않고
- * 여기로 받아, 테스트가 고정 값으로 결정적으로 판정한다. 시계처럼 다른 주변값이
- * 필요한 신호가 생기면 그때 이 인터페이스에 필드를 더한다.
- */
-export interface SignalContext {
-  /** `0` 이상 `1` 미만의 난수. 테스트는 고정 수열 스텁을 준다 */
-  random: () => number;
-}
+/** 신호별 준비 결과를 확장하는 공통 요청 context. */
+export interface SignalContext {}
 
 /**
  * 발급 후보 하나에 `0` 이상 점수를 주는 단위. 신호가 늘면 이 인터페이스의 구현이 는다.
  *
  * 타입 인자 둘 다 기본값을 들어, 인자 없는 `Signal` 이 이전과 같은 타입으로 남는다 —
- * 이미 `Signal` 로 적혀 있는 자리(`randomSignal`, 엔진의 `SelectCandidateInput.signals`,
+ * 이미 `Signal` 로 적혀 있는 자리(`personalFitSignal`, 엔진의 `SelectCandidateInput.signals`,
  * 발급 유스케이스의 신호 맵)를 한 글자도 고치지 않고 확장하기 위한 형태다.
  *
  * `C` 는 그 신호가 점수를 내는 데 필요한 주변값이다. 기본 `SignalContext` 로는 모자란

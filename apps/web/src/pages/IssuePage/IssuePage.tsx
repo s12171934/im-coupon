@@ -1,3 +1,4 @@
+import { useCitizens } from '../../features/my-coupons/hooks/use-citizens';
 import { useState } from 'react';
 import type { SignalWeights } from '@im-coupon/contracts';
 
@@ -36,12 +37,26 @@ export function IssuePage({ storage }: IssuePageProps) {
   */
   const [draft, setDraft] = useState<WeightsDraft>(EMPTY_DRAFT);
   const { state, issue } = useIssueCoupon();
+  const { state: citizensState } = useCitizens();
+  const [citizenId, setCitizenId] = useState('');
+  const validCitizen = citizensState.status === 'loaded' && citizensState.citizens.some(c => c.id === citizenId);
   const issuing = state.status === 'issuing';
 
   return (
     <>
       <h2>쿠폰 발급 실행 — 시연·관리 시점</h2>
       <StorageStatus state={storage} />
+      <p>시민을 먼저 선택하면 해당 시민에게 추천할 가게를 비교합니다. 기본 가중치는 개인화 0.7·상권회복 0.3입니다.</p>
+      <p>상권회복 시연은 가상 소비 데이터 기반입니다.</p>
+      {citizensState.status === 'loading' && <p role="status">시민 목록을 불러오는 중…</p>}
+      {citizensState.status === 'failed' && <ErrorNotice code={citizensState.error.code} message={citizensState.error.message} />}
+      {citizensState.status === 'loaded' && <p>
+        <label htmlFor="issuance-citizen">발급받을 시민</label>{' '}
+        <select id="issuance-citizen" value={citizenId} disabled={issuing} onChange={e=>setCitizenId(e.target.value)}>
+          <option value="">{citizensState.citizens.length ? '시민을 선택하세요' : '고를 시민이 없습니다'}</option>
+          {citizensState.citizens.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}
+        </select>
+      </p>}
       <WeightsEditor
         value={draft}
         onChange={(key: keyof SignalWeights, text: string) =>
@@ -50,7 +65,7 @@ export function IssuePage({ storage }: IssuePageProps) {
         disabled={issuing}
       />
       <p>
-        <button type="button" disabled={issuing} onClick={() => void issue(draft)}>
+        <button type="button" disabled={issuing || !validCitizen} onClick={() => void issue(draft, citizenId)}>
           발급 1건 실행
         </button>
       </p>

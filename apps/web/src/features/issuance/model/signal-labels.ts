@@ -8,7 +8,7 @@ import type { SignalWeights } from '@im-coupon/contracts';
  * 한쪽만 새 신호를 알게 되어 위 강제가 반쪽이 된다.
  */
 export const SIGNAL_LABELS: Record<keyof SignalWeights, string> = {
-  random: '랜덤 신호',
+  salesRecovery: '상권회복 신호',
   personalFit: '행동 이력 개인화 신호',
 };
 

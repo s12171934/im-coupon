@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import './bootstrap/local-env';
 import * as contracts from '@im-coupon/contracts';
 import { assertRuntimeContracts } from './bootstrap/runtime-contracts';
 import { NestFactory } from '@nestjs/core';

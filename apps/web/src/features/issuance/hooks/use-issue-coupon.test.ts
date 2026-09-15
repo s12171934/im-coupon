@@ -29,11 +29,13 @@ const COUPON: IssuedCoupon = {
 
 const ISSUED: IssueCouponResponse = {
   coupon: COUPON,
-  decision: { candidateCount: 25, scores: { random: 0.42, personalFit: 0 }, total: 0.42 },
+  decision: { candidateCount: 25, scores: { salesRecovery: 0.42, personalFit: 0 }, total: 0.42 },
 };
 
 /** 계약의 여섯 코드. 네트워크 실패가 이 중 하나를 빌려 쓰지 않는 것을 이 표로 든다. */
 const CONTRACT_CODES: Record<ApiErrorCode, true> = {
+  MISSING_CITIZEN_ID: true,
+  UNKNOWN_CITIZEN: true,
   INVALID_BODY: true,
   INVALID_WEIGHTS: true,
   NO_CANDIDATES: true,
@@ -42,10 +44,10 @@ const CONTRACT_CODES: Record<ApiErrorCode, true> = {
   STORAGE_FAILURE: true,
 };
 
-const EMPTY_DRAFT: WeightsDraft = { random: '', personalFit: '' };
+const EMPTY_DRAFT: WeightsDraft = { salesRecovery: '', personalFit: '' };
 
-function draft(random: string): WeightsDraft {
-  return { random, personalFit: '' };
+function draft(salesRecovery: string): WeightsDraft {
+  return { salesRecovery, personalFit: '' };
 }
 
 /**
@@ -109,42 +111,42 @@ describe('useIssueCoupon', () => {
     const fetchMock = stubFetch(jsonResponse(201, ISSUED));
     const { result } = renderHook(() => useIssueCoupon());
 
-    await act(() => result.current.issue(draft('2')));
+    await act(() => result.current.issue(draft('2'), 'cit-001'));
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const { path, init } = lastRequest(fetchMock);
     expect(path).toBe(ISSUE_COUPON_PATH);
     expect(init.method).toBe('POST');
     expect(headerOf(init, 'Content-Type')).toBe('application/json');
-    expect(init.body).toBe(JSON.stringify({ weights: { random: 2 } }));
+    expect(init.body).toBe(JSON.stringify({ citizenId: 'cit-001', weights: { salesRecovery: 2 } }));
   });
 
   it('빈 문자열인 신호는 본문에서 뺀다 — 서버가 기본값으로 채운다', async () => {
     const fetchMock = stubFetch(jsonResponse(201, ISSUED));
     const { result } = renderHook(() => useIssueCoupon());
 
-    await act(() => result.current.issue(EMPTY_DRAFT));
+    await act(() => result.current.issue(EMPTY_DRAFT, 'cit-001'));
 
     const { init } = lastRequest(fetchMock);
-    expect(JSON.parse(String(init.body))).not.toHaveProperty('weights.random');
+    expect(JSON.parse(String(init.body))).not.toHaveProperty('weights.salesRecovery');
     /* `0` 으로 보내면 합이 0 이 되어 서버가 `INVALID_WEIGHTS` 로 거부한다. 빈 칸의 뜻이 아니다. */
-    expect(String(init.body)).not.toContain('0');
+    expect(JSON.parse(String(init.body)).weights).toEqual({});
   });
 
   it('음수·문자·아주 큰 수를 화면이 막지 않고 그대로 싣는다', async () => {
     const cases: [string, string][] = [
-      ['-1', '{"weights":{"random":-1}}'],
-      ['abc', '{"weights":{"random":null}}'],
-      ['1e999', '{"weights":{"random":null}}'],
-      ['0', '{"weights":{"random":0}}'],
-      ['1', '{"weights":{"random":1}}'],
+      ['-1', '{"citizenId":"cit-001","weights":{"salesRecovery":-1}}'],
+      ['abc', '{"citizenId":"cit-001","weights":{"salesRecovery":null}}'],
+      ['1e999', '{"citizenId":"cit-001","weights":{"salesRecovery":null}}'],
+      ['0', '{"citizenId":"cit-001","weights":{"salesRecovery":0}}'],
+      ['1', '{"citizenId":"cit-001","weights":{"salesRecovery":1}}'],
     ];
 
     for (const [text, expected] of cases) {
       const fetchMock = stubFetch(jsonResponse(201, ISSUED));
       const { result } = renderHook(() => useIssueCoupon());
 
-      await act(() => result.current.issue(draft(text)));
+      await act(() => result.current.issue(draft(text), 'cit-001'));
 
       expect(String(lastRequest(fetchMock).init.body)).toBe(expected);
       vi.unstubAllGlobals();
@@ -155,17 +157,17 @@ describe('useIssueCoupon', () => {
     const fetchMock = stubFetch(jsonResponse(201, ISSUED));
     const { result } = renderHook(() => useIssueCoupon());
 
-    await act(() => result.current.issue(draft('  ')));
+    await act(() => result.current.issue(draft('  '), 'cit-001'));
 
     /* 트림해 빈 문자열로 만들면 키가 빠져 기본값 발급이 된다. `Number('  ')` 는 `0` 이다. */
-    expect(String(lastRequest(fetchMock).init.body)).toBe('{"weights":{"random":0}}');
+    expect(String(lastRequest(fetchMock).init.body)).toBe('{"citizenId":"cit-001","weights":{"salesRecovery":0}}');
   });
 
   it('성공하면 발급 응답을 그대로 든 성공 상태가 된다', async () => {
     stubFetch(jsonResponse(201, ISSUED));
     const { result } = renderHook(() => useIssueCoupon());
 
-    await act(() => result.current.issue(EMPTY_DRAFT));
+    await act(() => result.current.issue(EMPTY_DRAFT, 'cit-001'));
 
     expect(result.current.state).toEqual({ status: 'succeeded', result: ISSUED });
   });
@@ -183,7 +185,7 @@ describe('useIssueCoupon', () => {
 
     let pending!: Promise<void>;
     act(() => {
-      pending = result.current.issue(EMPTY_DRAFT);
+      pending = result.current.issue(EMPTY_DRAFT, 'cit-001');
     });
 
     expect(result.current.state).toEqual({ status: 'issuing' });
@@ -210,8 +212,8 @@ describe('useIssueCoupon', () => {
     let first!: Promise<void>;
     let second!: Promise<void>;
     act(() => {
-      first = result.current.issue(EMPTY_DRAFT);
-      second = result.current.issue(EMPTY_DRAFT);
+      first = result.current.issue(EMPTY_DRAFT, 'cit-001');
+      second = result.current.issue(EMPTY_DRAFT, 'cit-001');
     });
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -229,8 +231,8 @@ describe('useIssueCoupon', () => {
     const fetchMock = stubFetch(jsonResponse(201, ISSUED), jsonResponse(201, ISSUED));
     const { result } = renderHook(() => useIssueCoupon());
 
-    await act(() => result.current.issue(EMPTY_DRAFT));
-    await act(() => result.current.issue(EMPTY_DRAFT));
+    await act(() => result.current.issue(EMPTY_DRAFT, 'cit-001'));
+    await act(() => result.current.issue(EMPTY_DRAFT, 'cit-001'));
 
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
@@ -239,7 +241,7 @@ describe('useIssueCoupon', () => {
     stubFetch(errorResponse(422, 'NO_CANDIDATES', '발급 후보가 없어 발급하지 못했다'));
     const { result } = renderHook(() => useIssueCoupon());
 
-    await act(() => result.current.issue(EMPTY_DRAFT));
+    await act(() => result.current.issue(EMPTY_DRAFT, 'cit-001'));
 
     expect(result.current.state).toEqual({
       status: 'failed',
@@ -252,7 +254,7 @@ describe('useIssueCoupon', () => {
     stubFetch(errorResponse(500, 'STORAGE_FAILURE', masked));
     const { result } = renderHook(() => useIssueCoupon());
 
-    await act(() => result.current.issue(EMPTY_DRAFT));
+    await act(() => result.current.issue(EMPTY_DRAFT, 'cit-001'));
 
     expect(result.current.state).toEqual({
       status: 'failed',
@@ -264,7 +266,7 @@ describe('useIssueCoupon', () => {
     stubFetch(unparsableResponse(502));
     const { result } = renderHook(() => useIssueCoupon());
 
-    await act(() => result.current.issue(EMPTY_DRAFT));
+    await act(() => result.current.issue(EMPTY_DRAFT, 'cit-001'));
 
     expect(result.current.state.status).toBe('failed');
     const error = failureOf(result.current.state);
@@ -276,7 +278,7 @@ describe('useIssueCoupon', () => {
     stubFetch(jsonResponse(500, { message: '내부 서버 오류' }));
     const { result } = renderHook(() => useIssueCoupon());
 
-    await act(() => result.current.issue(EMPTY_DRAFT));
+    await act(() => result.current.issue(EMPTY_DRAFT, 'cit-001'));
 
     const error = failureOf(result.current.state);
     expect(error.code).not.toBe('');
@@ -287,7 +289,7 @@ describe('useIssueCoupon', () => {
     stubFetch(unparsableResponse(201));
     const { result } = renderHook(() => useIssueCoupon());
 
-    await act(() => result.current.issue(EMPTY_DRAFT));
+    await act(() => result.current.issue(EMPTY_DRAFT, 'cit-001'));
 
     const error = failureOf(result.current.state);
     expect(error.code).not.toBe('');
@@ -299,7 +301,7 @@ describe('useIssueCoupon', () => {
     vi.stubGlobal('fetch', fetchMock);
     const { result } = renderHook(() => useIssueCoupon());
 
-    await act(() => result.current.issue(EMPTY_DRAFT));
+    await act(() => result.current.issue(EMPTY_DRAFT, 'cit-001'));
 
     const error = failureOf(result.current.state);
     expect(error.code).not.toBe('');
@@ -314,8 +316,8 @@ describe('useIssueCoupon', () => {
     );
     const { result } = renderHook(() => useIssueCoupon());
 
-    await act(() => result.current.issue(draft('0')));
-    await act(() => result.current.issue(draft('1')));
+    await act(() => result.current.issue(draft('0'), 'cit-001'));
+    await act(() => result.current.issue(draft('1'), 'cit-001'));
 
     expect(result.current.state).toEqual({ status: 'succeeded', result: ISSUED });
   });
@@ -327,8 +329,8 @@ describe('useIssueCoupon', () => {
     );
     const { result } = renderHook(() => useIssueCoupon());
 
-    await act(() => result.current.issue(draft('1')));
-    await act(() => result.current.issue(draft('0')));
+    await act(() => result.current.issue(draft('1'), 'cit-001'));
+    await act(() => result.current.issue(draft('0'), 'cit-001'));
 
     expect(result.current.state).toEqual({
       status: 'failed',
@@ -349,12 +351,12 @@ describe('useIssueCoupon', () => {
     vi.stubGlobal('fetch', fetchMock);
     const { result } = renderHook(() => useIssueCoupon());
 
-    await act(() => result.current.issue(EMPTY_DRAFT));
+    await act(() => result.current.issue(EMPTY_DRAFT, 'cit-001'));
     await waitFor(() => expect(result.current.state.status).toBe('succeeded'));
 
     let pending!: Promise<void>;
     act(() => {
-      pending = result.current.issue(EMPTY_DRAFT);
+      pending = result.current.issue(EMPTY_DRAFT, 'cit-001');
     });
 
     expect(result.current.state).toEqual({ status: 'issuing' });

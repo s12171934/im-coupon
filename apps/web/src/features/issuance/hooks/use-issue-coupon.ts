@@ -31,7 +31,7 @@ export type IssueCouponState =
 export interface UseIssueCoupon {
   state: IssueCouponState;
   /** 발급을 한 번 실행한다. 발급 중이면 아무 일도 하지 않는다. */
-  issue: (draft: WeightsDraft) => Promise<void>;
+  issue: (draft: WeightsDraft, citizenId: string) => Promise<void>;
 }
 
 /** 계약 밖 응답. 계약의 여섯 코드와 겹치지 않게 두어 오류 영역의 안내가 거짓말하지 않는다. */
@@ -52,14 +52,14 @@ export function useIssueCoupon(): UseIssueCoupon {
   */
   const issuing = useRef(false);
 
-  const issue = useCallback(async (draft: WeightsDraft): Promise<void> => {
+  const issue = useCallback(async (draft: WeightsDraft, citizenId: string): Promise<void> => {
     if (issuing.current) return;
     issuing.current = true;
     /* 시작하면서 직전 결과를 걷는다 — 성공 뒤에 실패가, 실패 뒤에 성공이 남지 않는다. */
     setState({ status: 'issuing' });
 
     try {
-      setState(await requestIssue(draft));
+      setState(await requestIssue(draft, citizenId));
     } finally {
       issuing.current = false;
     }
@@ -68,7 +68,7 @@ export function useIssueCoupon(): UseIssueCoupon {
   return { state, issue };
 }
 
-async function requestIssue(draft: WeightsDraft): Promise<IssueCouponState> {
+async function requestIssue(draft: WeightsDraft, citizenId: string): Promise<IssueCouponState> {
   let response: Response;
   try {
     response = await fetch(ISSUE_COUPON_PATH, {
@@ -79,7 +79,7 @@ async function requestIssue(draft: WeightsDraft): Promise<IssueCouponState> {
         `201` 이 돌아온다 — 호출자는 자기가 지정한 값이 사라진 것을 모른다.
       */
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(toRequest(draft)),
+      body: JSON.stringify(toRequest(draft, citizenId)),
     });
   } catch {
     return {
@@ -143,7 +143,7 @@ function contractErrorOf(body: unknown): IssueFailure | undefined {
  * 키가 전부 빠져도 `weights` 를 생략하지 않고 `{}` 로 보낸다. 8장이 둘을 같게 다루므로
  * 어느 쪽이든 맞고, 한 모양으로 굳혀 두면 본문을 만드는 경로가 하나로 남는다.
  */
-function toRequest(draft: WeightsDraft): IssuanceRequest {
+function toRequest(draft: WeightsDraft, citizenId: string): IssuanceRequest {
   const weights: Partial<Record<keyof SignalWeights, number>> = {};
 
   for (const key of Object.keys(draft) as (keyof SignalWeights)[]) {
@@ -152,5 +152,5 @@ function toRequest(draft: WeightsDraft): IssuanceRequest {
     weights[key] = Number(text);
   }
 
-  return { weights };
+  return { citizenId, weights };
 }

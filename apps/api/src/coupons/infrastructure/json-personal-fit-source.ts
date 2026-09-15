@@ -1,19 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { JsonFileDb } from '@im-coupon/db';
+import type { MerchantContent } from '@im-coupon/contracts';
 import type { Candidate } from '../../issuance/domain/signals/signal';
 import type { PersonalFitMerchantVector, PersonalFitUsageEvent, PreparedPersonalFit } from '../../issuance/domain/signals/implementations/personal-fit-input';
 import { preparePersonalFit } from '../../issuance/domain/signals/implementations/prepare-personal-fit';
 import { DATA_DIR } from '../../shared/infrastructure/data-dir.token';
 import { readCollection } from '../../shared/infrastructure/read-collection';
 import type { PersonalFitSource } from '../application/ports/personal-fit-source';
-
-/** 후보의 내용 버전은 벡터 존재 여부와 독립적으로 결정한다. */
-interface MerchantContent {
-  merchantId: string;
-  contentVersion: string;
-  knownAt: number;
-  verifiedAt: number;
-}
 
 /** JSON은 입력 어댑터에서만 읽는다. main의 개인화 계산은 메모리 입력 그대로 사용한다. */
 @Injectable()

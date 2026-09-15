@@ -11,15 +11,16 @@ export const OWNER_ID_QUERY = 'ownerId' as const;
 export const CITIZENS_PATH = '/api/citizens' as const;
 
 /**
- * 발급 신호별 가중치. 랜덤 탐색과 행동 이력 기반 개인화 점수를 결합한다.
+ * 발급 신호별 가중치. 상권회복과 행동 이력 기반 개인화 점수를 결합한다.
  */
 export interface SignalWeights {
-  random: number;
+  salesRecovery: number;
   personalFit: number;
 }
 
-/** 요청 본문은 생략 가능하고, 생략하면 발급 파라미터 기본값으로 발급한다. */
+/** 시민을 지정하고, 가중치를 생략하면 기본 가중치로 발급한다. */
 export interface IssuanceRequest {
+  citizenId: string;
   /**
    * 발급 가중치 부분 덮어쓰기. 지정한 신호만 덮어쓰고, 지정하지 않은 신호는
    * 발급 파라미터 기본값으로 채운다. 생략하거나 `{}` 로 보내면 전부 기본값이다.
@@ -36,11 +37,20 @@ export interface IssueDecision {
    * 선택된 발급 후보의 신호별 점수. 키 집합을 `SignalWeights` 에서 끌어와,
    * 신호가 늘 때 가중치에만 키를 더하고 점수에 빠뜨리면 컴파일 오류가 나게 한다.
    */
-  scores: Record<keyof SignalWeights, number>;
+  scores: Record<keyof SignalWeights, number | null>;
   /** 발급 가중치를 곱해 합산한 총점 */
   total: number;
   /** 선택된 시민의 개인화 점수 활성 여부와 비활성 사유 */
   personalFit?: { enabled: boolean; reason: string | null };
+  requestedWeights?: SignalWeights;
+  appliedWeights?: SignalWeights;
+  tieBreak?: string;
+  salesRecovery?: {
+    enabled: boolean; reason: string | null; referenceMonth: string | null;
+    sourceKind: 'mock' | 'observed' | null;
+    unavailableMerchants: { merchantId: string; reason: string }[];
+    localDeclineRate: number | null; cityDeclineRate: number | null;
+  };
 }
 
 export interface IssueCouponResponse {
@@ -59,6 +69,8 @@ export interface ListCitizensResponse {
 }
 
 export type ApiErrorCode =
+  | 'MISSING_CITIZEN_ID'
+  | 'UNKNOWN_CITIZEN'
   /** 요청 본문이 JSON 으로 파싱되지 않거나 `weights` 가 객체가 아님 */
   | 'INVALID_BODY'
   /**

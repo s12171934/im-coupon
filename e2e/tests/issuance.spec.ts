@@ -48,6 +48,7 @@ test('TC-07-01 발급한 쿠폰이 그 소유자의 내 쿠폰 화면에 거래�
   await expect(page).toHaveURL(/\/issue$/);
 
   // 2. 발급 실행 화면에서 발급 1건 실행을 클릭한다.
+  await page.getByLabel('발급받을 시민').selectOption({ index: 1 });
   await page.getByRole('button', { name: '발급 1건 실행' }).click();
 
   // 3. 발급 결과 카드에 가맹점명·소유자명·액면이 나타난다.
