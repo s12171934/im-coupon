@@ -1,3 +1,6 @@
+import { PERSONAL_FIT_SOURCE, type PersonalFitSource } from './ports/personal-fit-source';
+import { personalFitSignal } from '../../issuance/domain/signals/implementations/personal-fit-signal';
+import type { PersonalFitContext } from '../../issuance/domain/signals/implementations/personal-fit-input';
 import { OWNER_DIRECTORY, type OwnerDirectory } from './ports/owner-directory';
 import { Inject, Injectable } from '@nestjs/common';
 import type {
@@ -29,10 +32,12 @@ export const ISSUE_RANDOM = 'ISSUE_RANDOM';
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 /**
- * 신호 키마다 점수를 낼 신호. 이번 에픽의 신호가 랜덤 하나뿐이라 상수로 둔다 —
+ * 발급에 등록한 랜덤·개인화 신호. 개인화 준비 결과는 요청마다 context로 전달한다 —
  * 신호가 늘면 `Record<keyof SignalWeights, Signal>` 이 구현 누락을 컴파일에서 잡는다.
  */
-const SIGNALS: Record<keyof SignalWeights, Signal> = { random: randomSignal };
+const SIGNALS: Record<keyof SignalWeights, Signal<keyof SignalWeights, PersonalFitContext>> = {
+  random: randomSignal, personalFit: personalFitSignal,
+};
 
 /**
  * 발급 유스케이스 — 발급 후보 적재 → 발급 가중치 검증·결합 → 쿠폰 생성 → 저장.
@@ -57,18 +62,25 @@ export class CouponsService {
     @Inject(OWNER_DIRECTORY) private readonly owners: OwnerDirectory,
     @Inject(ISSUE_CLOCK) private readonly now: () => Date,
     @Inject(ISSUE_RANDOM) private readonly random: () => number,
+    @Inject(PERSONAL_FIT_SOURCE) private readonly personalFit: PersonalFitSource,
   ) {}
 
   async issue(command: IssueCommand): Promise<IssueCouponResponse> {
     const candidates = await this.candidates.load();
+    const issuedAt = this.now();
+    const personalFitByCitizenId = await this.personalFit.prepare(candidates, issuedAt.getTime());
     const { candidate, decision } = selectCandidate({
       candidates,
       signals: SIGNALS,
       weights: command.weights,
-      context: { random: this.random },
+      context: { random: this.random, personalFitByCitizenId },
     });
 
-    const coupon = this.mint(candidate, command.trigger);
+    const coupon = this.mint(candidate, command.trigger, issuedAt);
+    const prepared = personalFitByCitizenId.get(candidate.citizen.id);
+    decision.personalFit = prepared
+      ? { enabled: prepared.enabled, reason: prepared.reason }
+      : { enabled: false, reason: 'NO_HISTORY' };
     await this.coupons.append(coupon);
 
     return { coupon, decision };
@@ -99,9 +111,8 @@ export class CouponsService {
    * 두 기한은 일수가 아니라 절대 시각으로 저장한다. 화면과 테스트가 계산 없이 판정하고,
    * 파라미터를 고쳐도 이미 발급된 쿠폰의 기한이 소급해 움직이지 않게 하는 것이다.
    */
-  private mint(candidate: Candidate, trigger: TriggerType): IssuedCoupon {
+  private mint(candidate: Candidate, trigger: TriggerType, issuedAt: Date): IssuedCoupon {
     const { faceValue, benefitSplit, ownerHoldDays, openValidDays } = DEFAULT_ISSUANCE_PARAMS;
-    const issuedAt = this.now();
     const heldUntil = new Date(issuedAt.getTime() + ownerHoldDays * DAY_MS);
     const expiresAt = new Date(heldUntil.getTime() + openValidDays * DAY_MS);
 

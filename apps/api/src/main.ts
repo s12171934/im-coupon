@@ -1,4 +1,6 @@
 import 'reflect-metadata';
+import * as contracts from '@im-coupon/contracts';
+import { assertRuntimeContracts } from './bootstrap/runtime-contracts';
 import { NestFactory } from '@nestjs/core';
 import { JsonFileDb } from '@im-coupon/db';
 
@@ -22,6 +24,7 @@ function guardAgainstOrphan(): void {
 }
 
 async function bootstrap(): Promise<void> {
+  assertRuntimeContracts(contracts);
   guardAgainstOrphan();
 
   await new JsonFileDb(resolveDataDir()).bootstrapFromSeed(resolveSeedDir());
