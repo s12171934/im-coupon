@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
 import type {
   ConsumptionActionResponse,
   ConsumptionSnapshot,
+  IssueCouponRequest,
   ReserveCouponRequest,
   ConsumeCouponRequest,
 } from "@im-coupon/contracts";
@@ -17,6 +18,13 @@ export class ConsumptionController {
     return this.consumption.snapshot();
   }
 
+  @Post("coupons")
+  issue(
+    @Body() request: IssueCouponRequest,
+  ): Promise<ConsumptionActionResponse> {
+    return this.consumption.issue(request);
+  }
+
   @Delete()
   reset(): Promise<ConsumptionActionResponse> {
     return this.consumption.reset();
@@ -27,7 +35,7 @@ export class ConsumptionController {
     @Param("couponId") couponId: string,
     @Body() request: ReserveCouponRequest,
   ): Promise<ConsumptionActionResponse> {
-    return this.consumption.reserve(couponId, request?.consumerId);
+    return this.consumption.reserve(couponId, request.consumerName);
   }
 
   @Post("coupons/:couponId/simulate-owner-expiry")
@@ -42,6 +50,6 @@ export class ConsumptionController {
     @Param("couponId") couponId: string,
     @Body() request: ConsumeCouponRequest,
   ): Promise<ConsumptionActionResponse> {
-    return this.consumption.consume(couponId, request?.consumerId);
+    return this.consumption.consume(couponId, request.consumerName);
   }
 }

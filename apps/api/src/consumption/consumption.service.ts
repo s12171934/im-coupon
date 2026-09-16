@@ -1,212 +1,227 @@
-import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { couponBenefits, type Citizen, type ConsumptionActionResponse, type ConsumptionSnapshot,
-  type Coupon, type IssuedCoupon, type PointEntry } from '@im-coupon/contracts';
-import { JsonFileDb } from '@im-coupon/db';
-import { DATA_DIR } from '../shared/infrastructure/data-dir.token';
-import { readCollection } from '../shared/infrastructure/read-collection';
-import { IssuanceError } from '../issuance/domain/services/engine';
+import { Inject, Injectable, NotFoundException } from "@nestjs/common";
+import type {
+  ConsumptionActionResponse,
+  ConsumptionSnapshot,
+  Coupon,
+  IssueCouponRequest,
+  PointEntry,
+} from "@im-coupon/contracts";
+import { JsonFileDb } from "@im-coupon/db";
+import { DATA_DIR } from "../shared/infrastructure/data-dir.token";
 
-const RESERVATION_HOURS = 3;
-
-/** 발급 조건을 복사해 저장하지 않고, 발급 ID에 대한 소비 상태만 기록한다. */
-interface CouponUse {
-  couponId: string;
-  reservedById: string | null;
-  reservationExpiresAt: string | null;
-  usedAt: string | null;
-  ownerReleasedAt: string | null;
-}
-interface ConsumptionState {
-  uses: CouponUse[];
-  pointEntries: PointEntry[];
-  excludedCouponIds: string[];
-}
-interface Context {
-  state: ConsumptionState;
-  coupons: Coupon[];
-}
+/** 문서의 후보값을 시연 기본값으로 둔 정책. 값은 도메인 흐름과 분리한다. */
+const POLICY = {
+  ownerHoldHours: 72,
+  validHours: 120,
+  reservationHours: 3,
+  ownerRewardRate: 0.2,
+  consumerRewardRate: 0.8,
+} as const;
 
 @Injectable()
 export class ConsumptionService {
   private readonly db: JsonFileDb;
-  private tail: Promise<unknown> = Promise.resolve();
-
   constructor(@Inject(DATA_DIR) dataDir: string) {
     this.db = new JsonFileDb(dataDir);
   }
 
-  snapshot(): Promise<ConsumptionSnapshot> {
-    return this.serialize(async () => this.snapshotOf(await this.load()));
+  async snapshot(): Promise<ConsumptionSnapshot> {
+    return this.current();
   }
 
-  reset(): Promise<ConsumptionActionResponse> {
-    return this.serialize(async () => {
-      const issued = await readCollection<IssuedCoupon>(this.db, 'issued-coupons');
-      const state: ConsumptionState = { uses: [], pointEntries: [], excludedCouponIds: issued.map((coupon) => coupon.id) };
-      await this.save(state);
-      return { coupons: [], pointEntries: [], paybackAmount: 0, ownerRewardAmount: 0,
-        message: '소비 시연을 초기화했습니다. 기존 발급 기록은 보존됩니다.' };
-    });
+  /** 시연 상태만 초기화한다. 시드 메타데이터와 파일 DB 자체는 지우지 않는다. */
+  async reset(): Promise<ConsumptionActionResponse> {
+    await Promise.all([
+      this.db.writeCollection<Coupon>("coupons", []),
+      this.db.writeCollection<PointEntry>("points", []),
+    ]);
+    return this.withMessage("쿠폰과 페이백·리워드 내역을 모두 초기화했습니다.");
   }
 
-  reserve(couponId: string, consumerId: string): Promise<ConsumptionActionResponse> {
-    return this.serialize(async () => {
-      const citizen = await this.citizen(consumerId);
-      const context = await this.load();
-      const coupon = this.coupon(context, couponId);
-      if (coupon.status !== 'public') throw new ConflictException('공개된 쿠폰만 점유할 수 있습니다.');
-      if (context.coupons.some((item) => item.status === 'reserved' && item.reservedById === consumerId)) {
-        throw new ConflictException('한 사람은 공개 쿠폰을 한 장만 점유할 수 있습니다.');
-      }
-      const use = this.use(context.state, couponId);
-      use.reservedById = consumerId;
-      use.reservationExpiresAt = new Date(Math.min(
-        Date.now() + RESERVATION_HOURS * 3600000, Date.parse(coupon.expiresAt),
-      )).toISOString();
-      return this.finish(context, `${citizen.name}님이 쿠폰을 점유했습니다. 표시된 점유 기한 안에 사용해 주세요.`);
-    });
+  async issue(request: IssueCouponRequest): Promise<ConsumptionActionResponse> {
+    const coupons = await this.db.readCollection<Coupon>("coupons");
+    const now = new Date();
+    const coupon: Coupon = {
+      id: `coupon-${Date.now()}`,
+      issuerName: "iM 상생 쿠폰",
+      ownerName: request.ownerName,
+      reservedBy: null,
+      merchantName: request.merchantName,
+      title: "소유자 전용 상생 쿠폰",
+      requiredSpendAmount: request.requiredSpendAmount,
+      rewardAmount: request.rewardAmount,
+      status: "owner_hold",
+      issuedAt: now.toISOString(),
+      usedAt: null,
+      ownerExclusiveUntil: new Date(
+        now.getTime() + POLICY.ownerHoldHours * 3600000,
+      ).toISOString(),
+      expiresAt: new Date(
+        now.getTime() + POLICY.validHours * 3600000,
+      ).toISOString(),
+      reservationExpiresAt: null,
+    };
+    await this.db.writeCollection("coupons", [coupon, ...coupons]);
+    return this.withMessage(
+      `${coupon.ownerName}님에게 쿠폰이 발급됐습니다. 소유자 전용 기한 뒤에는 자동으로 공용 풀에 공개됩니다.`,
+    );
   }
 
-  simulateOwnerExpiry(couponId: string): Promise<ConsumptionActionResponse> {
-    return this.serialize(async () => {
-      const context = await this.load();
-      if (this.coupon(context, couponId).status !== 'held') {
-        throw new ConflictException('소유자 전용 상태의 쿠폰만 시간을 경과시킬 수 있습니다.');
-      }
-      this.use(context.state, couponId).ownerReleasedAt = new Date().toISOString();
-      return this.finish(context, '소유자 전용 기한 경과를 시연했습니다. 쿠폰이 공개됐습니다.');
-    });
+  async reserve(
+    couponId: string,
+    consumerName: string,
+  ): Promise<ConsumptionActionResponse> {
+    const coupons = await this.refreshLifecycle();
+    const coupon = coupons.find(
+      (item) => item.id === couponId && item.status === "public",
+    );
+    if (!coupon) throw new NotFoundException("공개된 쿠폰을 찾지 못했습니다.");
+    if (
+      coupons.some(
+        (item) =>
+          item.status === "reserved" && item.reservedBy === consumerName,
+      )
+    )
+      throw new NotFoundException(
+        "한 사람은 공개 쿠폰을 한 장만 점유할 수 있습니다.",
+      );
+    coupon.status = "reserved";
+    coupon.reservedBy = consumerName;
+    coupon.reservationExpiresAt = new Date(
+      Date.now() + POLICY.reservationHours * 3600000,
+    ).toISOString();
+    await this.db.writeCollection("coupons", coupons);
+    return this.withMessage(
+      `${consumerName}님이 3시간 동안 이 쿠폰을 단독 점유했습니다.`,
+    );
   }
 
-  consume(couponId: string, consumerId: string): Promise<ConsumptionActionResponse> {
-    return this.serialize(async () => {
-      const citizen = await this.citizen(consumerId);
-      const context = await this.load();
-      const coupon = this.coupon(context, couponId);
-      const allowed = (coupon.status === 'held' && coupon.ownerId === consumerId)
-        || (coupon.status === 'reserved' && coupon.reservedById === consumerId);
-      if (!allowed) throw new ConflictException('사용 권한이 없거나 이미 사용·만료된 쿠폰입니다. 공개 쿠폰은 먼저 점유해 주세요.');
-      const use = this.use(context.state, couponId);
-      use.usedAt = new Date().toISOString();
-      use.reservedById = null;
-      use.reservationExpiresAt = null;
-      const { consumerAmount, ownerAmount } = couponBenefits(coupon, consumerId);
-      const entries: PointEntry[] = [{
-        id: `${couponId}:consumer-payback`, couponId, recipientId: citizen.id,
-        recipientName: citizen.name, amount: consumerAmount, kind: 'consumer-payback', earnedAt: use.usedAt,
-      }];
-      if (coupon.ownerId !== consumerId && ownerAmount > 0) entries.push({
-        id: `${couponId}:owner-reward`, couponId, recipientId: coupon.ownerId,
-        recipientName: coupon.ownerName, amount: ownerAmount, kind: 'owner-reward', earnedAt: use.usedAt,
+  /** 시연용 시간 경과 조작이다. 실제 전이는 기한을 기준으로 자동 처리된다. */
+  async simulateOwnerExpiry(
+    couponId: string,
+  ): Promise<ConsumptionActionResponse> {
+    const coupons = await this.db.readCollection<Coupon>("coupons");
+    const coupon = coupons.find(
+      (item) => item.id === couponId && item.status === "owner_hold",
+    );
+    if (!coupon)
+      throw new NotFoundException("소유자 전용 상태의 쿠폰을 찾지 못했습니다.");
+    coupon.ownerExclusiveUntil = new Date(0).toISOString();
+    await this.db.writeCollection("coupons", coupons);
+    await this.refreshLifecycle();
+    return this.withMessage(
+      "소유자 전용 기한이 끝났습니다. 쿠폰이 자동으로 공용 풀에 공개됐습니다.",
+    );
+  }
+
+  async consume(
+    couponId: string,
+    consumerName: string,
+  ): Promise<ConsumptionActionResponse> {
+    const coupons = await this.refreshLifecycle();
+    const coupon = coupons.find(
+      (item) =>
+        item.id === couponId &&
+        item.status !== "used" &&
+        item.status !== "expired",
+    );
+    if (
+      !coupon ||
+      (coupon.status === "reserved" && coupon.reservedBy !== consumerName) ||
+      coupon.status === "public"
+    )
+      throw new NotFoundException("사용 권한이 없는 쿠폰입니다.");
+    if (coupon.status === "owner_hold" && coupon.ownerName !== consumerName)
+      throw new NotFoundException(
+        "소유자 전용 기간에는 소유자만 사용할 수 있습니다.",
+      );
+    coupon.status = "used";
+    coupon.usedAt = new Date().toISOString();
+    const entries = await this.db.readCollection<PointEntry>("points");
+    const ownUse = coupon.ownerName === consumerName;
+    const additions: PointEntry[] = [
+      {
+        id: `payback-${Date.now()}`,
+        couponId,
+        recipientName: consumerName,
+        amount: Math.round(
+          coupon.rewardAmount * (ownUse ? 1 : POLICY.consumerRewardRate),
+        ),
+        kind: "consumer-payback",
+        earnedAt: coupon.usedAt,
+      },
+    ];
+    if (!ownUse && coupon.ownerName)
+      additions.push({
+        id: `owner-reward-${Date.now()}`,
+        couponId,
+        recipientName: coupon.ownerName,
+        amount: Math.round(coupon.rewardAmount * POLICY.ownerRewardRate),
+        kind: "owner-reward",
+        earnedAt: coupon.usedAt,
       });
-      context.state.pointEntries.unshift(...entries);
-      // 사용 기록과 혜택을 같은 파일에 원자적으로 저장해 중복 지급과 부분 지급을 막는다.
-      return this.finish(context, `${citizen.name}님의 결제를 시연했습니다. ${consumerAmount.toLocaleString()}원 페이백이 반영됐습니다.`);
-    });
+    await Promise.all([
+      this.db.writeCollection("coupons", coupons),
+      this.db.writeCollection("points", [...additions, ...entries]),
+    ]);
+    return this.withMessage(
+      ownUse
+        ? "결제가 완료됐습니다. 혜택 전액이 지역화폐 페이백으로 지급됩니다."
+        : "결제가 완료됐습니다. 지역화폐 페이백이 지급됩니다.",
+    );
   }
 
-  private async citizen(id: string): Promise<Citizen> {
-    if (typeof id !== 'string' || !id.trim()) throw new IssuanceError('INVALID_BODY', '소비자 ID가 필요합니다.');
-    const citizens = await readCollection<Citizen>(this.db, 'citizens');
-    const citizen = citizens.find((item) => item.id === id);
-    if (!citizen) throw new NotFoundException('등록된 시민을 찾지 못했습니다.');
-    return citizen;
+  private async current(): Promise<ConsumptionSnapshot> {
+    const coupons = await this.refreshLifecycle();
+    const entries = await this.db.readCollection<PointEntry>("points");
+    return {
+      coupons,
+      pointEntries: entries,
+      paybackAmount: entries
+        .filter((entry) => entry.kind === "consumer-payback")
+        .reduce((total, entry) => total + entry.amount, 0),
+      ownerRewardAmount: entries
+        .filter((entry) => entry.kind === "owner-reward")
+        .reduce((total, entry) => total + entry.amount, 0),
+    };
   }
-
-  private coupon(context: Context, id: string): Coupon {
-    const coupon = context.coupons.find((item) => item.id === id);
-    if (!coupon) throw new NotFoundException('발급된 쿠폰을 찾지 못했습니다.');
-    return coupon;
+  private async withMessage(
+    message: string,
+  ): Promise<ConsumptionActionResponse> {
+    return { ...(await this.current()), message };
   }
-
-  private use(state: ConsumptionState, couponId: string): CouponUse {
-    let use = state.uses.find((item) => item.couponId === couponId);
-    if (!use) {
-      use = { couponId, reservedById: null, reservationExpiresAt: null, usedAt: null, ownerReleasedAt: null };
-      state.uses.push(use);
-    }
-    return use;
-  }
-
-  private async load(): Promise<Context> {
-    const issued = await readCollection<IssuedCoupon>(this.db, 'issued-coupons');
-    const states = await readCollection<ConsumptionState>(this.db, 'consumption-state');
-    const state = states[0] ?? await this.migrate(issued);
-    const excluded = new Set(state.excludedCouponIds);
-    const uses = new Map(state.uses.map((use) => [use.couponId, use]));
+  private async refreshLifecycle(): Promise<Coupon[]> {
+    const coupons = await this.db.readCollection<Coupon>("coupons");
     const now = Date.now();
-    const coupons = issued.filter((coupon) => !excluded.has(coupon.id)).map((coupon): Coupon => {
-      const use = uses.get(coupon.id);
-      const reservationActive = !!use?.reservedById && !!use.reservationExpiresAt
-        && Date.parse(use.reservationExpiresAt) > now;
-      const status = use?.usedAt ? 'used'
-        : Date.parse(coupon.expiresAt) <= now ? 'expired'
-        : !use?.ownerReleasedAt && Date.parse(coupon.heldUntil) > now ? 'held'
-        : reservationActive ? 'reserved' : 'public';
-      return { ...coupon, status,
-        reservedById: status === 'reserved' ? use!.reservedById : null,
-        reservationExpiresAt: status === 'reserved' ? use!.reservationExpiresAt : null,
-        usedAt: use?.usedAt ?? null, ownerReleasedAt: use?.ownerReleasedAt ?? null,
-      };
-    }).sort((left, right) => Date.parse(right.issuedAt) - Date.parse(left.issuedAt));
-    return { state, coupons };
-  }
-
-  private snapshotOf({ state, coupons }: Context): ConsumptionSnapshot {
-    return { coupons, pointEntries: state.pointEntries,
-      paybackAmount: state.pointEntries.filter((entry) => entry.kind === 'consumer-payback').reduce((sum, entry) => sum + entry.amount, 0),
-      ownerRewardAmount: state.pointEntries.filter((entry) => entry.kind === 'owner-reward').reduce((sum, entry) => sum + entry.amount, 0),
-    };
-  }
-
-  private async finish(context: Context, message: string): Promise<ConsumptionActionResponse> {
-    await this.save(context.state);
-    return { ...this.snapshotOf(await this.load()), message };
-  }
-
-  private save(state: ConsumptionState): Promise<void> {
-    return this.db.writeCollection('consumption-state', [state]);
-  }
-
-  /** 기존 시연 파일을 삭제하지 않고 발급 ID가 일치하는 사용 기록만 옮긴다. */
-  private async migrate(issued: IssuedCoupon[]): Promise<ConsumptionState> {
-    const legacy = await readCollection<{
-      id: string; status: string; reservedBy: string | null; reservationExpiresAt: string | null;
-      usedAt: string | null; ownerExclusiveUntil: string;
-    }>(this.db, 'coupons');
-    const points = await readCollection<PointEntry>(this.db, 'points');
-    const citizens = await readCollection<Citizen>(this.db, 'citizens');
-    const citizenId = (name: string): string | null => {
-      const matches = citizens.filter((citizen) => citizen.name === name);
-      return matches.length === 1 ? matches[0]!.id : null;
-    };
-    const byId = new Map(issued.map((coupon) => [coupon.id, coupon]));
-    const state: ConsumptionState = {
-      excludedCouponIds: await readCollection<string>(this.db, 'consumption-excluded-coupons'),
-      uses: legacy.filter((coupon) => byId.has(coupon.id)).map((coupon) => ({
-        couponId: coupon.id,
-        reservedById: coupon.reservedBy ? citizenId(coupon.reservedBy) : null,
-        reservationExpiresAt: coupon.reservationExpiresAt,
-        usedAt: coupon.status === 'used' ? coupon.usedAt ?? byId.get(coupon.id)!.issuedAt : null,
-        ownerReleasedAt: Date.parse(coupon.ownerExclusiveUntil) < Date.parse(byId.get(coupon.id)!.heldUntil)
-          ? coupon.ownerExclusiveUntil : null,
-      })),
-      pointEntries: points.filter((point) => byId.has(point.couponId)).map((point) => ({ ...point,
-        recipientId: point.recipientId ?? (point.kind === 'owner-reward'
-          ? byId.get(point.couponId)!.ownerId : citizenId(point.recipientName) ?? `legacy:${point.recipientName}`),
-      })),
-    };
-    // 기존 두 파일 저장이 중간에 실패해도 이미 지급한 혜택을 다시 지급하지 않는다.
-    for (const point of state.pointEntries) {
-      this.use(state, point.couponId).usedAt ??= point.earnedAt;
+    let changed = false;
+    for (const coupon of coupons) {
+      if (
+        coupon.status === "owner_hold" &&
+        new Date(coupon.ownerExclusiveUntil).getTime() <= now
+      ) {
+        coupon.status = "public";
+        coupon.ownerName = coupon.ownerName;
+        changed = true;
+      }
+      if (
+        coupon.status === "reserved" &&
+        coupon.reservationExpiresAt &&
+        new Date(coupon.reservationExpiresAt).getTime() <= now
+      ) {
+        coupon.status = "public";
+        coupon.reservedBy = null;
+        coupon.reservationExpiresAt = null;
+        changed = true;
+      }
+      if (
+        coupon.status !== "used" &&
+        new Date(coupon.expiresAt).getTime() <= now
+      ) {
+        coupon.status = "expired";
+        changed = true;
+      }
     }
-    await this.save(state);
-    return state;
-  }
-
-  private serialize<T>(work: () => Promise<T>): Promise<T> {
-    const done = this.tail.then(work);
-    this.tail = done.then(() => undefined, () => undefined);
-    return done;
+    if (changed) await this.db.writeCollection("coupons", coupons);
+    return coupons;
   }
 }

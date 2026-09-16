@@ -35,7 +35,7 @@ const sequence = [0.25, 0.9, 0.5];
 function select(rngSequence: readonly number[], weights?: Partial<SignalWeights>) {
   return selectCandidate({
     candidates,
-    signals: { random: randomSignal, personalFit: { key: 'personalFit', score: () => 0 } },
+    signals: { random: randomSignal },
     weights,
     context: { random: fixedRng(rngSequence) },
   });
@@ -52,7 +52,7 @@ describe('selectCandidate', () => {
     expect(second.candidate).toBe(first.candidate);
     expect(first.decision).toEqual({
       candidateCount: candidates.length,
-      scores: { random: 0.9, personalFit: 0 },
+      scores: { random: 0.9 },
       total: 0.9 * DEFAULT_ISSUANCE_PARAMS.weights.random,
     });
     expect(second.decision).toEqual(first.decision);
@@ -104,7 +104,7 @@ function rejectionCode(weights: Partial<SignalWeights>): string | null {
 describe('selectCandidate 의 거부', () => {
   it('TC-02-02 음수·전부 0·모르는 신호 키의 발급 가중치를 각각 거부한다', () => {
     expect(rejectionCode({ random: -1 })).toBe('INVALID_WEIGHTS');
-    expect(rejectionCode({ random: 0, personalFit: 0 })).toBe('INVALID_WEIGHTS');
+    expect(rejectionCode({ random: 0 })).toBe('INVALID_WEIGHTS');
     expect(rejectionCode({ 미지의신호: 1 } as Partial<SignalWeights>)).toBe('INVALID_WEIGHTS');
   });
 
@@ -112,7 +112,7 @@ describe('selectCandidate 의 거부', () => {
     const call = () =>
       selectCandidate({
         candidates: [],
-        signals: { random: randomSignal, personalFit: { key: 'personalFit', score: () => 0 } },
+        signals: { random: randomSignal },
         context: { random: fixedRng([]) },
       });
 
