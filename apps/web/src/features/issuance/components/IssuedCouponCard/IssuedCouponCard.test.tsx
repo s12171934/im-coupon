@@ -26,13 +26,13 @@ const COUPON: IssuedCoupon = {
  */
 const DECISION: IssueDecision = {
   candidateCount: 25,
-  scores: { random: 0.42, personalFit: 0 },
+  scores: { salesRecovery: 0.42, personalFit: 0 },
   total: 0.42,
 };
 
 /** 신호가 늘면 이 표가 컴파일 오류를 내, 테스트도 새 신호를 함께 보게 된다. */
 const EXPECTED_SIGNAL_LINES: Record<keyof SignalWeights, string> = {
-  random: '랜덤 신호 점수 0.42',
+  salesRecovery: '상권회복 신호 점수 0.42',
   personalFit: '행동 이력 개인화 신호 점수 0',
 };
 
@@ -91,4 +91,11 @@ describe('IssuedCouponCard', () => {
 it('개인화 비활성 사유를 숨기지 않는다', () => {
   render(<IssuedCouponCard coupon={COUPON} decision={{ ...DECISION, personalFit: { enabled: false, reason: 'NO_HISTORY' } }} />);
   expect(screen.getByText(/계산에 사용할 행동 이력이 없습니다/)).toBeInTheDocument();
+});
+
+it('회복 결측을 0점과 구분하고 개인화 적용 사유를 보여준다', () => {
+  render(<IssuedCouponCard coupon={COUPON} decision={{candidateCount:12,scores:{personalFit:0.7,salesRecovery:null},total:0.7,
+    appliedWeights:{personalFit:1,salesRecovery:0},salesRecovery:{enabled:false,reason:'전체 후보에 개인화만 적용했습니다.',referenceMonth:'202606',sourceKind:'mock',unavailableMerchants:[{merchantId:'m',reason:'월 통계가 없습니다.'}],localDeclineRate:null,cityDeclineRate:null}}} />);
+  expect(screen.getByText(/상권회복 신호 점수 계산 불가/)).toBeInTheDocument();
+  expect(screen.getByText('전체 후보에 개인화만 적용했습니다.')).toBeInTheDocument();
 });

@@ -14,7 +14,7 @@ export type IssuedCouponCardProps = IssueCouponResponse;
  */
 export function IssuedCouponCard({ coupon, decision }: IssuedCouponCardProps) {
   const scoreText = SIGNAL_KEYS.map(
-    (key) => `${SIGNAL_LABELS[key]} 점수 ${decision.scores[key]}`,
+    (key) => `${SIGNAL_LABELS[key]} 점수 ${decision.scores[key] === null ? '계산 불가' : decision.scores[key]}`,
   ).join(' · ');
 
   return (
@@ -25,7 +25,15 @@ export function IssuedCouponCard({ coupon, decision }: IssuedCouponCardProps) {
         <strong data-testid="issued-owner-name">{coupon.ownerName}</strong>
       </p>
       <p>{`액면 ${coupon.faceValue}원 · ${scoreText} · 발급 후보 ${decision.candidateCount}건`}</p>
-      <p>가중 합산 점수: {decision.total}</p>
+      <p>가중평균 점수: {decision.total}</p>
+      {decision.appliedWeights && <p>적용 가중치: 개인화 {decision.appliedWeights.personalFit} · 상권회복 {decision.appliedWeights.salesRecovery}</p>}
+      {decision.salesRecovery && <section aria-label="상권회복 적용 결과">
+        <p>{decision.salesRecovery.sourceKind === 'mock' ? '가상 소비 데이터 기반 회복 점수' : decision.salesRecovery.sourceKind === 'observed' ? '소비 통계 기반 회복 점수' : '소비 통계 출처 확인 불가'} · 기준월 {decision.salesRecovery.referenceMonth ?? '확인 불가'}</p>
+        <p>{decision.salesRecovery.enabled ? '상권회복 점수를 반영했습니다.' : decision.salesRecovery.reason}</p>
+        {decision.salesRecovery.localDeclineRate !== null && <p>해당 구 감소율 {(decision.salesRecovery.localDeclineRate*100).toFixed(1)}% · 대전 전체 감소율 {((decision.salesRecovery.cityDeclineRate ?? 0)*100).toFixed(1)}%</p>}
+        {decision.salesRecovery.unavailableMerchants.length > 0 && <ul>{decision.salesRecovery.unavailableMerchants.map(m=><li key={m.merchantId}>{m.merchantId}: {m.reason}</li>)}</ul>}
+      </section>}
+      {decision.tieBreak && <p>동점 처리: {decision.tieBreak}</p>}
       {decision.personalFit && <p>{decision.personalFit.enabled
         ? '행동 이력 개인화 점수가 계산됐습니다.'
         : `개인화 점수는 0으로 처리됐습니다: ${personalFitReason(decision.personalFit.reason)}`}</p>}

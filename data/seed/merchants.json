@@ -1,62 +1,254 @@
 [
   {
     "id": "mer-001",
-    "name": "별빛분식",
-    "category": "분식"
+    "name": "선비꼬마김밥 반석점",
+    "category": "김밥/만두/분식",
+    "publicData": {
+      "id": "MA010120220800051363",
+      "name": "선비꼬마김밥",
+      "branchName": "반석점",
+      "district": "유성구",
+      "neighborhood": "노은3동",
+      "categoryCode": "I21007",
+      "category": "김밥/만두/분식",
+      "address": "대전광역시 유성구 반석동로 56",
+      "longitude": 127.311698022807,
+      "latitude": 36.3923952908249,
+      "datasetId": "15012005",
+      "regionCode": "30",
+      "referenceMonth": "202606",
+      "fetchedAt": "2026-09-15T13:58:26.866Z"
+    }
   },
   {
     "id": "mer-002",
-    "name": "미리내책방",
-    "category": "서점"
+    "name": "미드타운커피",
+    "category": "카페",
+    "publicData": {
+      "id": "MA010120220800047978",
+      "name": "미드타운커피",
+      "branchName": "",
+      "district": "서구",
+      "neighborhood": "탄방동",
+      "categoryCode": "I21201",
+      "category": "카페",
+      "address": "대전광역시 서구 도솔로 434-19",
+      "longitude": 127.3930087098,
+      "latitude": 36.3432578365492,
+      "datasetId": "15012005",
+      "regionCode": "30",
+      "referenceMonth": "202606",
+      "fetchedAt": "2026-09-15T13:58:26.866Z"
+    }
   },
   {
     "id": "mer-003",
-    "name": "오후네시커피",
-    "category": "카페"
+    "name": "동해원",
+    "category": "중국집",
+    "publicData": {
+      "id": "MA010120220800013198",
+      "name": "동해원",
+      "branchName": "",
+      "district": "유성구",
+      "neighborhood": "온천2동",
+      "categoryCode": "I20201",
+      "category": "중국집",
+      "address": "대전광역시 유성구 궁동로14번길 14",
+      "longitude": 127.348190943335,
+      "latitude": 36.3623305196213,
+      "datasetId": "15012005",
+      "regionCode": "30",
+      "referenceMonth": "202606",
+      "fetchedAt": "2026-09-15T13:58:26.866Z"
+    }
   },
   {
     "id": "mer-004",
-    "name": "푸른숲꽃집",
-    "category": "꽃집"
+    "name": "가가솥밥현대프리미엄아울렛 대전점",
+    "category": "백반/한정식",
+    "publicData": {
+      "id": "MA010120220800069459",
+      "name": "가가솥밥현대프리미엄아울렛",
+      "branchName": "대전점",
+      "district": "유성구",
+      "neighborhood": "관평동",
+      "categoryCode": "I20101",
+      "category": "백반/한정식",
+      "address": "대전광역시 유성구 테크노중앙로 123",
+      "longitude": 127.398519432415,
+      "latitude": 36.4234346537198,
+      "datasetId": "15012005",
+      "regionCode": "30",
+      "referenceMonth": "202606",
+      "fetchedAt": "2026-09-15T13:58:26.866Z"
+    }
   },
   {
     "id": "mer-005",
-    "name": "한걸음세탁소",
-    "category": "세탁소"
+    "name": "고기명작 엑스포점",
+    "category": "돼지고기 구이/찜",
+    "publicData": {
+      "id": "MA010120220800081405",
+      "name": "고기명작",
+      "branchName": "엑스포점",
+      "district": "유성구",
+      "neighborhood": "신성동",
+      "categoryCode": "I20107",
+      "category": "돼지고기 구이/찜",
+      "address": "대전광역시 유성구 엑스포로151번길 19",
+      "longitude": 127.395380644655,
+      "latitude": 36.3761518418241,
+      "datasetId": "15012005",
+      "regionCode": "30",
+      "referenceMonth": "202606",
+      "fetchedAt": "2026-09-15T13:58:26.866Z"
+    }
   },
   {
     "id": "mer-006",
-    "name": "해뜰분식",
-    "category": "분식"
+    "name": "달광",
+    "category": "횟집",
+    "publicData": {
+      "id": "MA010120220800044537",
+      "name": "달광",
+      "branchName": "",
+      "district": "유성구",
+      "neighborhood": "신성동",
+      "categoryCode": "I20111",
+      "category": "횟집",
+      "address": "대전광역시 유성구 신성로 106",
+      "longitude": 127.351076581916,
+      "latitude": 36.3920517334815,
+      "datasetId": "15012005",
+      "regionCode": "30",
+      "referenceMonth": "202606",
+      "fetchedAt": "2026-09-15T13:58:26.866Z"
+    }
   },
   {
     "id": "mer-007",
-    "name": "달구벌한식",
-    "category": "일반한식"
+    "name": "땡초불닭발",
+    "category": "치킨",
+    "publicData": {
+      "id": "MA010120220800081412",
+      "name": "땡초불닭발",
+      "branchName": "",
+      "district": "동구",
+      "neighborhood": "가양2동",
+      "categoryCode": "I21006",
+      "category": "치킨",
+      "address": "대전광역시 동구 비래서로42번길 149",
+      "longitude": 127.445080181478,
+      "latitude": 36.3482750194385,
+      "datasetId": "15012005",
+      "regionCode": "30",
+      "referenceMonth": "202606",
+      "fetchedAt": "2026-09-15T13:58:26.866Z"
+    }
   },
   {
     "id": "mer-008",
-    "name": "낙동강갈비",
-    "category": "갈비전문점"
+    "name": "수통55",
+    "category": "피자",
+    "publicData": {
+      "id": "MA010120220800062359",
+      "name": "수통55",
+      "branchName": "",
+      "district": "유성구",
+      "neighborhood": "학하동",
+      "categoryCode": "I21003",
+      "category": "피자",
+      "address": "대전광역시 유성구 수통골로 55",
+      "longitude": 127.290448038622,
+      "latitude": 36.3460834210527,
+      "datasetId": "15012005",
+      "regionCode": "30",
+      "referenceMonth": "202606",
+      "fetchedAt": "2026-09-15T13:58:26.866Z"
+    }
   },
   {
     "id": "mer-009",
-    "name": "성내제과",
-    "category": "제과점"
+    "name": "씨유대전 신탄진점",
+    "category": "편의점",
+    "publicData": {
+      "id": "MA010120220800079956",
+      "name": "씨유대전",
+      "branchName": "신탄진점",
+      "district": "대덕구",
+      "neighborhood": "신탄진동",
+      "categoryCode": "G20405",
+      "category": "편의점",
+      "address": "대전광역시 대덕구 신탄진동로 55",
+      "longitude": 127.435468483668,
+      "latitude": 36.4485651372031,
+      "datasetId": "15012005",
+      "regionCode": "30",
+      "referenceMonth": "202606",
+      "fetchedAt": "2026-09-15T13:58:26.866Z"
+    }
   },
   {
     "id": "mer-010",
-    "name": "동성로반점",
-    "category": "중국음식"
+    "name": "워시앤케어",
+    "category": "세탁소",
+    "publicData": {
+      "id": "MA010120220800052824",
+      "name": "워시앤케어",
+      "branchName": "",
+      "district": "서구",
+      "neighborhood": "탄방동",
+      "categoryCode": "S20901",
+      "category": "세탁소",
+      "address": "대전광역시 서구 유등로669번길 15",
+      "longitude": 127.400825322464,
+      "latitude": 36.3469807634337,
+      "datasetId": "15012005",
+      "regionCode": "30",
+      "referenceMonth": "202606",
+      "fetchedAt": "2026-09-15T13:58:26.866Z"
+    }
   },
   {
     "id": "mer-011",
-    "name": "범어편의점",
-    "category": "편의점"
+    "name": "동방떡집",
+    "category": "떡/한과",
+    "publicData": {
+      "id": "MA010120220800042908",
+      "name": "동방떡집",
+      "branchName": "",
+      "district": "서구",
+      "neighborhood": "복수동",
+      "categoryCode": "I21002",
+      "category": "떡/한과",
+      "address": "대전광역시 서구 복수남로 36",
+      "longitude": 127.377408960145,
+      "latitude": 36.2984023456341,
+      "datasetId": "15012005",
+      "regionCode": "30",
+      "referenceMonth": "202606",
+      "fetchedAt": "2026-09-15T13:58:26.866Z"
+    }
   },
   {
     "id": "mer-012",
-    "name": "이곡마트",
-    "category": "슈퍼마켓"
+    "name": "써브웨이대전 송촌점",
+    "category": "토스트/샌드위치/샐러드",
+    "publicData": {
+      "id": "MA010120220800079386",
+      "name": "써브웨이대전",
+      "branchName": "송촌점",
+      "district": "대덕구",
+      "neighborhood": "송촌동",
+      "categoryCode": "I21005",
+      "category": "토스트/샌드위치/샐러드",
+      "address": "대전광역시 대덕구 계족산로81번길 70",
+      "longitude": 127.43842770163,
+      "latitude": 36.3658183955601,
+      "datasetId": "15012005",
+      "regionCode": "30",
+      "referenceMonth": "202606",
+      "fetchedAt": "2026-09-15T13:58:26.866Z"
+    }
   }
 ]

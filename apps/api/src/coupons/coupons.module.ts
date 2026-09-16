@@ -1,3 +1,5 @@
+import { SALES_RECOVERY_SOURCE } from './application/ports/sales-recovery-source';
+import { JsonSalesRecoverySource } from './infrastructure/json-sales-recovery-source';
 import { PERSONAL_FIT_SOURCE } from './application/ports/personal-fit-source';
 import { JsonPersonalFitSource } from './infrastructure/json-personal-fit-source';
 import { OWNER_DIRECTORY } from './application/ports/owner-directory';
@@ -11,7 +13,7 @@ import { DATA_DIR } from '../shared/infrastructure/data-dir.token';
 import { JsonCandidateSource } from './infrastructure/json-candidate-source';
 import { JsonCouponRepository } from './infrastructure/json-coupon.repository';
 import { CouponsController } from './presentation/coupons.controller';
-import { CouponsService, ISSUE_CLOCK, ISSUE_RANDOM } from './application/coupons.service';
+import { CouponsService, ISSUE_CLOCK } from './application/coupons.service';
 
 @Module({
   controllers: [CouponsController],
@@ -23,7 +25,7 @@ import { CouponsService, ISSUE_CLOCK, ISSUE_RANDOM } from './application/coupons
     { provide: CANDIDATE_SOURCE, useClass: JsonCandidateSource },
     { provide: DATA_DIR, useFactory: resolveDataDir },
     { provide: ISSUE_CLOCK, useValue: () => new Date() },
-    { provide: ISSUE_RANDOM, useValue: () => Math.random() },
+    { provide: SALES_RECOVERY_SOURCE, useClass: JsonSalesRecoverySource },
   ],
 })
 export class CouponsModule {}

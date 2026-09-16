@@ -1,0 +1,449 @@
+[
+  {
+    "citizenId": "cit-001",
+    "name": "김하람",
+    "scenario": "frequency_snack",
+    "sourceKind": "mock",
+    "asOf": 1789487584168,
+    "historyRows": 6,
+    "visits": [
+      {
+        "merchantId": "mer-001",
+        "name": "선비꼬마김밥 반석점",
+        "transactions": 4,
+        "effectiveVisitDays": 4
+      },
+      {
+        "merchantId": "mer-006",
+        "name": "달광",
+        "transactions": 2,
+        "effectiveVisitDays": 2
+      }
+    ],
+    "note": "유효 방문일 수는 중복·취소·0원·90일 창을 반영한 값. 실제 개인화 점수는 최근성·가게 영향력 상한·벡터 유사도도 적용한다."
+  },
+  {
+    "citizenId": "cit-002",
+    "name": "이도담",
+    "scenario": "frequency_fish",
+    "sourceKind": "mock",
+    "asOf": 1789487584168,
+    "historyRows": 6,
+    "visits": [
+      {
+        "merchantId": "mer-001",
+        "name": "선비꼬마김밥 반석점",
+        "transactions": 2,
+        "effectiveVisitDays": 2
+      },
+      {
+        "merchantId": "mer-006",
+        "name": "달광",
+        "transactions": 4,
+        "effectiveVisitDays": 4
+      }
+    ],
+    "note": "유효 방문일 수는 중복·취소·0원·90일 창을 반영한 값. 실제 개인화 점수는 최근성·가게 영향력 상한·벡터 유사도도 적용한다."
+  },
+  {
+    "citizenId": "cit-003",
+    "name": "박새롬",
+    "scenario": "balanced",
+    "sourceKind": "mock",
+    "asOf": 1789487584168,
+    "historyRows": 6,
+    "visits": [
+      {
+        "merchantId": "mer-001",
+        "name": "선비꼬마김밥 반석점",
+        "transactions": 3,
+        "effectiveVisitDays": 3
+      },
+      {
+        "merchantId": "mer-006",
+        "name": "달광",
+        "transactions": 3,
+        "effectiveVisitDays": 3
+      }
+    ],
+    "note": "유효 방문일 수는 중복·취소·0원·90일 창을 반영한 값. 실제 개인화 점수는 최근성·가게 영향력 상한·벡터 유사도도 적용한다."
+  },
+  {
+    "citizenId": "cit-004",
+    "name": "정한별",
+    "scenario": "same_day_duplicates",
+    "sourceKind": "mock",
+    "asOf": 1789487584168,
+    "historyRows": 6,
+    "visits": [
+      {
+        "merchantId": "mer-001",
+        "name": "선비꼬마김밥 반석점",
+        "transactions": 4,
+        "effectiveVisitDays": 1
+      },
+      {
+        "merchantId": "mer-006",
+        "name": "달광",
+        "transactions": 2,
+        "effectiveVisitDays": 1
+      }
+    ],
+    "note": "유효 방문일 수는 중복·취소·0원·90일 창을 반영한 값. 실제 개인화 점수는 최근성·가게 영향력 상한·벡터 유사도도 적용한다."
+  },
+  {
+    "citizenId": "cit-005",
+    "name": "최여울",
+    "scenario": "recency",
+    "sourceKind": "mock",
+    "asOf": 1789487584168,
+    "historyRows": 6,
+    "visits": [
+      {
+        "merchantId": "mer-001",
+        "name": "선비꼬마김밥 반석점",
+        "transactions": 4,
+        "effectiveVisitDays": 4
+      },
+      {
+        "merchantId": "mer-006",
+        "name": "달광",
+        "transactions": 2,
+        "effectiveVisitDays": 2
+      }
+    ],
+    "note": "유효 방문일 수는 중복·취소·0원·90일 창을 반영한 값. 실제 개인화 점수는 최근성·가게 영향력 상한·벡터 유사도도 적용한다."
+  },
+  {
+    "citizenId": "cit-006",
+    "name": "윤다온",
+    "scenario": "no_history",
+    "sourceKind": "mock",
+    "asOf": 1789487584168,
+    "historyRows": 0,
+    "visits": [],
+    "note": "유효 방문일 수는 중복·취소·0원·90일 창을 반영한 값. 실제 개인화 점수는 최근성·가게 영향력 상한·벡터 유사도도 적용한다."
+  },
+  {
+    "citizenId": "cit-007",
+    "name": "강서우",
+    "scenario": "cancelled",
+    "sourceKind": "mock",
+    "asOf": 1789487584168,
+    "historyRows": 2,
+    "visits": [
+      {
+        "merchantId": "mer-001",
+        "name": "선비꼬마김밥 반석점",
+        "transactions": 1,
+        "effectiveVisitDays": 0
+      },
+      {
+        "merchantId": "mer-006",
+        "name": "달광",
+        "transactions": 1,
+        "effectiveVisitDays": 0
+      }
+    ],
+    "note": "유효 방문일 수는 중복·취소·0원·90일 창을 반영한 값. 실제 개인화 점수는 최근성·가게 영향력 상한·벡터 유사도도 적용한다."
+  },
+  {
+    "citizenId": "cit-008",
+    "name": "임나래",
+    "scenario": "zero_amount",
+    "sourceKind": "mock",
+    "asOf": 1789487584168,
+    "historyRows": 2,
+    "visits": [
+      {
+        "merchantId": "mer-001",
+        "name": "선비꼬마김밥 반석점",
+        "transactions": 1,
+        "effectiveVisitDays": 0
+      },
+      {
+        "merchantId": "mer-006",
+        "name": "달광",
+        "transactions": 1,
+        "effectiveVisitDays": 0
+      }
+    ],
+    "note": "유효 방문일 수는 중복·취소·0원·90일 창을 반영한 값. 실제 개인화 점수는 최근성·가게 영향력 상한·벡터 유사도도 적용한다."
+  },
+  {
+    "citizenId": "cit-009",
+    "name": "오지안",
+    "scenario": "outside_window",
+    "sourceKind": "mock",
+    "asOf": 1789487584168,
+    "historyRows": 2,
+    "visits": [
+      {
+        "merchantId": "mer-001",
+        "name": "선비꼬마김밥 반석점",
+        "transactions": 1,
+        "effectiveVisitDays": 0
+      },
+      {
+        "merchantId": "mer-006",
+        "name": "달광",
+        "transactions": 1,
+        "effectiveVisitDays": 0
+      }
+    ],
+    "note": "유효 방문일 수는 중복·취소·0원·90일 창을 반영한 값. 실제 개인화 점수는 최근성·가게 영향력 상한·벡터 유사도도 적용한다."
+  },
+  {
+    "citizenId": "cit-010",
+    "name": "한도윤",
+    "scenario": "revision_cancelled",
+    "sourceKind": "mock",
+    "asOf": 1789487584168,
+    "historyRows": 4,
+    "visits": [
+      {
+        "merchantId": "mer-001",
+        "name": "선비꼬마김밥 반석점",
+        "transactions": 2,
+        "effectiveVisitDays": 0
+      },
+      {
+        "merchantId": "mer-006",
+        "name": "달광",
+        "transactions": 2,
+        "effectiveVisitDays": 0
+      }
+    ],
+    "note": "유효 방문일 수는 중복·취소·0원·90일 창을 반영한 값. 실제 개인화 점수는 최근성·가게 영향력 상한·벡터 유사도도 적용한다."
+  },
+  {
+    "citizenId": "cit-011",
+    "name": "서유림",
+    "scenario": "mixed_visits",
+    "sourceKind": "mock",
+    "asOf": 1789487584168,
+    "historyRows": 6,
+    "visits": [
+      {
+        "merchantId": "mer-004",
+        "name": "가가솥밥현대프리미엄아울렛 대전점",
+        "transactions": 2,
+        "effectiveVisitDays": 2
+      },
+      {
+        "merchantId": "mer-011",
+        "name": "동방떡집",
+        "transactions": 4,
+        "effectiveVisitDays": 4
+      }
+    ],
+    "note": "유효 방문일 수는 중복·취소·0원·90일 창을 반영한 값. 실제 개인화 점수는 최근성·가게 영향력 상한·벡터 유사도도 적용한다."
+  },
+  {
+    "citizenId": "cit-012",
+    "name": "장하늘",
+    "scenario": "mixed_visits",
+    "sourceKind": "mock",
+    "asOf": 1789487584168,
+    "historyRows": 6,
+    "visits": [
+      {
+        "merchantId": "mer-005",
+        "name": "고기명작 엑스포점",
+        "transactions": 2,
+        "effectiveVisitDays": 2
+      },
+      {
+        "merchantId": "mer-012",
+        "name": "써브웨이대전 송촌점",
+        "transactions": 4,
+        "effectiveVisitDays": 4
+      }
+    ],
+    "note": "유효 방문일 수는 중복·취소·0원·90일 창을 반영한 값. 실제 개인화 점수는 최근성·가게 영향력 상한·벡터 유사도도 적용한다."
+  },
+  {
+    "citizenId": "cit-013",
+    "name": "신온유",
+    "scenario": "mixed_visits",
+    "sourceKind": "mock",
+    "asOf": 1789487584168,
+    "historyRows": 6,
+    "visits": [
+      {
+        "merchantId": "mer-001",
+        "name": "선비꼬마김밥 반석점",
+        "transactions": 4,
+        "effectiveVisitDays": 4
+      },
+      {
+        "merchantId": "mer-006",
+        "name": "달광",
+        "transactions": 2,
+        "effectiveVisitDays": 2
+      }
+    ],
+    "note": "유효 방문일 수는 중복·취소·0원·90일 창을 반영한 값. 실제 개인화 점수는 최근성·가게 영향력 상한·벡터 유사도도 적용한다."
+  },
+  {
+    "citizenId": "cit-014",
+    "name": "조수현",
+    "scenario": "mixed_visits",
+    "sourceKind": "mock",
+    "asOf": 1789487584168,
+    "historyRows": 6,
+    "visits": [
+      {
+        "merchantId": "mer-002",
+        "name": "미드타운커피",
+        "transactions": 4,
+        "effectiveVisitDays": 4
+      },
+      {
+        "merchantId": "mer-007",
+        "name": "땡초불닭발",
+        "transactions": 2,
+        "effectiveVisitDays": 2
+      }
+    ],
+    "note": "유효 방문일 수는 중복·취소·0원·90일 창을 반영한 값. 실제 개인화 점수는 최근성·가게 영향력 상한·벡터 유사도도 적용한다."
+  },
+  {
+    "citizenId": "cit-015",
+    "name": "백가온",
+    "scenario": "mixed_visits",
+    "sourceKind": "mock",
+    "asOf": 1789487584168,
+    "historyRows": 6,
+    "visits": [
+      {
+        "merchantId": "mer-003",
+        "name": "동해원",
+        "transactions": 4,
+        "effectiveVisitDays": 4
+      },
+      {
+        "merchantId": "mer-008",
+        "name": "수통55",
+        "transactions": 2,
+        "effectiveVisitDays": 2
+      }
+    ],
+    "note": "유효 방문일 수는 중복·취소·0원·90일 창을 반영한 값. 실제 개인화 점수는 최근성·가게 영향력 상한·벡터 유사도도 적용한다."
+  },
+  {
+    "citizenId": "cit-016",
+    "name": "문시우",
+    "scenario": "mixed_visits",
+    "sourceKind": "mock",
+    "asOf": 1789487584168,
+    "historyRows": 6,
+    "visits": [
+      {
+        "merchantId": "mer-004",
+        "name": "가가솥밥현대프리미엄아울렛 대전점",
+        "transactions": 4,
+        "effectiveVisitDays": 4
+      },
+      {
+        "merchantId": "mer-009",
+        "name": "씨유대전 신탄진점",
+        "transactions": 2,
+        "effectiveVisitDays": 2
+      }
+    ],
+    "note": "유효 방문일 수는 중복·취소·0원·90일 창을 반영한 값. 실제 개인화 점수는 최근성·가게 영향력 상한·벡터 유사도도 적용한다."
+  },
+  {
+    "citizenId": "cit-017",
+    "name": "안예솔",
+    "scenario": "mixed_visits",
+    "sourceKind": "mock",
+    "asOf": 1789487584168,
+    "historyRows": 6,
+    "visits": [
+      {
+        "merchantId": "mer-005",
+        "name": "고기명작 엑스포점",
+        "transactions": 4,
+        "effectiveVisitDays": 4
+      },
+      {
+        "merchantId": "mer-010",
+        "name": "워시앤케어",
+        "transactions": 2,
+        "effectiveVisitDays": 2
+      }
+    ],
+    "note": "유효 방문일 수는 중복·취소·0원·90일 창을 반영한 값. 실제 개인화 점수는 최근성·가게 영향력 상한·벡터 유사도도 적용한다."
+  },
+  {
+    "citizenId": "cit-018",
+    "name": "송이든",
+    "scenario": "mixed_visits",
+    "sourceKind": "mock",
+    "asOf": 1789487584168,
+    "historyRows": 6,
+    "visits": [
+      {
+        "merchantId": "mer-006",
+        "name": "달광",
+        "transactions": 4,
+        "effectiveVisitDays": 4
+      },
+      {
+        "merchantId": "mer-011",
+        "name": "동방떡집",
+        "transactions": 2,
+        "effectiveVisitDays": 2
+      }
+    ],
+    "note": "유효 방문일 수는 중복·취소·0원·90일 창을 반영한 값. 실제 개인화 점수는 최근성·가게 영향력 상한·벡터 유사도도 적용한다."
+  },
+  {
+    "citizenId": "cit-019",
+    "name": "배로운",
+    "scenario": "mixed_visits",
+    "sourceKind": "mock",
+    "asOf": 1789487584168,
+    "historyRows": 6,
+    "visits": [
+      {
+        "merchantId": "mer-007",
+        "name": "땡초불닭발",
+        "transactions": 4,
+        "effectiveVisitDays": 4
+      },
+      {
+        "merchantId": "mer-012",
+        "name": "써브웨이대전 송촌점",
+        "transactions": 2,
+        "effectiveVisitDays": 2
+      }
+    ],
+    "note": "유효 방문일 수는 중복·취소·0원·90일 창을 반영한 값. 실제 개인화 점수는 최근성·가게 영향력 상한·벡터 유사도도 적용한다."
+  },
+  {
+    "citizenId": "cit-020",
+    "name": "노해린",
+    "scenario": "mixed_visits",
+    "sourceKind": "mock",
+    "asOf": 1789487584168,
+    "historyRows": 6,
+    "visits": [
+      {
+        "merchantId": "mer-001",
+        "name": "선비꼬마김밥 반석점",
+        "transactions": 2,
+        "effectiveVisitDays": 2
+      },
+      {
+        "merchantId": "mer-008",
+        "name": "수통55",
+        "transactions": 4,
+        "effectiveVisitDays": 4
+      }
+    ],
+    "note": "유효 방문일 수는 중복·취소·0원·90일 창을 반영한 값. 실제 개인화 점수는 최근성·가게 영향력 상한·벡터 유사도도 적용한다."
+  }
+]

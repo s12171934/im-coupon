@@ -23,7 +23,7 @@ it('기존 발급 API로 발급하고 고정 결제액 없이 발급 액면을 �
     if (path === '/api/citizens') return json({ citizens });
     if (path === '/api/coupons/issue') {
       coupons = [coupon];
-      return json({ coupon, decision: { candidateCount: 1, scores: { random: 1, personalFit: 0 }, total: 1 } });
+      return json({ coupon, decision: { candidateCount: 1, scores: { salesRecovery: 1, personalFit: 0 }, total: 1 } });
     }
     return json(snapshot(coupons));
   });
@@ -32,7 +32,7 @@ it('기존 발급 API로 발급하고 고정 결제액 없이 발급 액면을 �
   await waitFor(() => expect(screen.getByRole('combobox', { name: '쿠폰 소유자' })).toHaveValue('cit-1'));
   fireEvent.click(screen.getByRole('button', { name: '쿠폰 발급' }));
   expect(await screen.findByText(/김시민님에게 달성책방의 6,000원 쿠폰이 발급됐습니다/)).toBeInTheDocument();
-  expect(fetch).toHaveBeenCalledWith('/api/coupons/issue', expect.objectContaining({ method: 'POST', body: '{}' }));
+  expect(fetch).toHaveBeenCalledWith('/api/coupons/issue', expect.objectContaining({ method: 'POST', body: JSON.stringify({ citizenId: 'cit-1' }) }));
   expect(screen.getByText('결제 후 6,000원 페이백')).toBeInTheDocument();
   expect(screen.queryByText(/8,000/)).not.toBeInTheDocument();
   expect(screen.getByRole('combobox', { name: '쿠폰 소유자' })).toHaveValue('cit-1');
@@ -53,4 +53,28 @@ it('동명이인 소비자를 ID로 점유시키고 실제 배분 금액을 표�
   await screen.findByText('점유 완료');
   expect(fetch).toHaveBeenCalledWith('/api/consumption/coupons/cpn-1/reserve', expect.objectContaining({ body: JSON.stringify({ consumerId: 'cit-2' }) }));
   expect(screen.getByRole('button', { name: '이 쿠폰으로 결제 시연' })).toBeInTheDocument();
+});
+
+it('변경한 소유자의 ID를 발급 요청에 담는다', async () => {
+  const fetch = vi.fn(async (path: string) => {
+    if (path === '/api/citizens') return json({ citizens });
+    if (path === '/api/coupons/issue') return json({ coupon: { ...coupon, ownerId: 'cit-2' }, decision: { candidateCount: 1, scores: { salesRecovery: 0, personalFit: 1 }, total: 1 } });
+    return json(snapshot([]));
+  });
+  vi.stubGlobal('fetch', fetch);
+  render(<ConsumptionPage />);
+  await waitFor(() => expect(screen.getByLabelText('쿠폰 소유자')).toHaveValue('cit-1'));
+  fireEvent.change(screen.getByLabelText('쿠폰 소유자'), { target: { value: 'cit-2' } });
+  fireEvent.click(screen.getByRole('button', { name: '쿠폰 발급' }));
+  await waitFor(() => expect(fetch).toHaveBeenCalledWith('/api/coupons/issue', expect.objectContaining({ body: JSON.stringify({ citizenId: 'cit-2' }) })));
+});
+
+it('선택 가능한 소유자가 없으면 발급 요청을 보내지 않는다', async () => {
+  const fetch = vi.fn(async (path: string) => path === '/api/citizens' ? json({ citizens: [] }) : json(snapshot([])));
+  vi.stubGlobal('fetch', fetch);
+  render(<ConsumptionPage />);
+  await waitFor(() => expect(fetch).toHaveBeenCalledWith('/api/citizens'));
+  expect(screen.getByRole('button', { name: '쿠폰 발급' })).toBeDisabled();
+  fireEvent.click(screen.getByRole('button', { name: '쿠폰 발급' }));
+  expect(fetch.mock.calls.some(([path]) => path === '/api/coupons/issue')).toBe(false);
 });

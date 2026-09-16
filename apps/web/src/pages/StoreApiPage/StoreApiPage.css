@@ -1,0 +1,10 @@
+.store-api-page{max-width:1180px;margin:32px auto;padding:24px;color:#203044;font-family:system-ui,sans-serif}
+.store-api-page header{margin-bottom:24px}.store-api-page h2{font-size:30px;margin:12px 0}.store-api-page p{line-height:1.65}
+.store-api-tag{color:#245c92;background:#eaf3ff;padding:6px 10px;border-radius:8px;font-size:13px}
+.store-api-page fieldset{border:1px solid #d9e2ec;border-radius:14px;padding:22px;background:#f8fafc}
+.store-api-page legend{font-weight:700}.store-api-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:16px}
+.store-api-fields label{display:grid;gap:8px;font-size:14px}.store-api-fields input,.store-api-fields select{box-sizing:border-box;width:100%;padding:11px;border:1px solid #bac8d8;border-radius:8px;background:white;color:#203044;font:inherit}
+.store-api-hint{font-size:13px;color:#52657a}.store-api-page button{padding:12px 24px;background:#245c92;color:white;border:0;border-radius:8px;cursor:pointer;font:inherit}.store-api-page button:disabled{opacity:.6}
+.store-api-error{padding:16px;background:#fff0ef;color:#94251e;border-radius:8px}.store-api-summary{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:24px 0 16px}.store-api-summary span{font-size:13px;color:#52657a}
+.store-api-table{overflow:auto}.store-api-page table{width:100%;border-collapse:collapse;font-size:14px}.store-api-page caption{text-align:left;margin-bottom:10px;font-weight:600}.store-api-page th,.store-api-page td{padding:13px 10px;text-align:left;border-bottom:1px solid #e0e7ee;min-width:100px}.store-api-page th{background:#f1f5f9}.store-api-page td small{display:block;margin-top:5px;color:#617185}.store-api-page details{margin-top:24px}.store-api-page summary{cursor:pointer}.store-api-page pre{max-height:420px;overflow:auto;padding:16px;background:#f1f5f9;border-radius:8px}.store-api-page code{display:block;overflow-wrap:anywhere;margin-top:16px;font-size:12px}
+@media(max-width:600px){.store-api-page{padding:12px;margin-top:20px}.store-api-page fieldset{padding:14px}}

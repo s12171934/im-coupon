@@ -6,6 +6,7 @@
     "node": ">=22"
   },
   "scripts": {
+    "data:sync-store-codes": "node scripts/sync-store-code-catalog.mjs",
     "db:seed": "turbo run build --filter=@im-coupon/db && node packages/db/dist/seed.js",
     "dev": "turbo run dev",
     "build": "turbo run build",

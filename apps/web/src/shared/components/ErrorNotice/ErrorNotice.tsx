@@ -9,6 +9,8 @@ import type { ApiErrorCode } from '@im-coupon/contracts';
  * 조회 화면(`CP-06-05`)도 쓸 자리라 계약의 여섯을 다 든다.
  */
 const ERROR_HINTS: Record<ApiErrorCode, string> = {
+  MISSING_CITIZEN_ID: '발급받을 시민을 선택해 주세요.',
+  UNKNOWN_CITIZEN: '시민 목록에 없는 시민입니다.',
   INVALID_BODY: '요청 본문이 JSON 으로 읽히지 않거나 가중치가 객체가 아닙니다.',
   INVALID_WEIGHTS:
     '가중치 값이 숫자가 아니거나 음수이거나 합이 0 이거나, 모르는 신호 키가 들어 있습니다.',

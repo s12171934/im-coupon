@@ -12,15 +12,15 @@
 
 호출자는 `application/ports`의 인터페이스를 타입으로 사용하고 `@Inject(TOKEN)`으로 주입받는다. 구현체는 `implements Interface`를 선언한다. 모듈 외부의 유스케이스나 컨트롤러에서 JSON 구현체를 직접 생성·참조하지 않는다. 교체할 때는 모듈의 바인딩만 바꾸며, 테스트에서는 같은 토큰을 `overrideProvider`할 수 있다.
 
-예: `HealthService` → `StorageHealth` (`STORAGE_HEALTH`) ← `JsonStorageHealth`. 발급 신호는 순수 함수 경계이므로 `Signal` 인터페이스를 구현하는 `randomSignal` 객체를 사용한다. 발급 트리거도 같은 순수 함수 경계이며 `IssueTrigger` 계약과 `manualTrigger` 구현을 신호와 대칭으로 둔다. HTTP 요청 검증은 컨트롤러가 담당하고 트리거는 입력을 발급 명령으로 옮긴다.
+예: `HealthService` → `StorageHealth` (`STORAGE_HEALTH`) ← `JsonStorageHealth`. 발급 신호는 순수 함수 경계이므로 `Signal` 인터페이스를 구현하는 `personalFitSignal` 객체를 사용한다. 발급 트리거도 같은 순수 함수 경계이며 `IssueTrigger` 계약과 `manualTrigger` 구현을 신호와 대칭으로 둔다. HTTP 요청 검증은 컨트롤러가 담당하고 트리거는 입력을 발급 명령으로 옮긴다.
 
 ```text
 issuance/domain/
   signals/
     signal.ts
     implementations/
-      random-signal.ts
-      random-signal.test.ts
+      sales-recovery.ts
+      sales-recovery.test.ts
   triggers/
     issue-trigger.ts
     implementations/

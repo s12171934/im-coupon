@@ -1,3 +1,4 @@
+import { SALES_RECOVERY_SOURCE, type SalesRecoverySource } from './ports/sales-recovery-source';
 import { PERSONAL_FIT_SOURCE, type PersonalFitSource } from './ports/personal-fit-source';
 import { personalFitSignal } from '../../issuance/domain/signals/implementations/personal-fit-signal';
 import type { PersonalFitContext } from '../../issuance/domain/signals/implementations/personal-fit-input';
@@ -12,10 +13,9 @@ import type {
 } from '@im-coupon/contracts';
 import { randomUUID } from 'node:crypto';
 
-import { IssuanceError, selectCandidate } from '../../issuance/domain/services/engine';
+import { IssuanceError, selectCandidate, resolveWeights } from '../../issuance/domain/services/engine';
 import { DEFAULT_ISSUANCE_PARAMS } from '../../issuance/domain/params';
-import { randomSignal } from '../../issuance/domain/signals/implementations/random-signal';
-import type { Candidate, Signal } from '../../issuance/domain/signals/signal';
+import type { Candidate } from '../../issuance/domain/signals/signal';
 import type { IssueCommand } from '../../issuance/domain/triggers/issue-trigger';
 import { CANDIDATE_SOURCE, type CandidateSource } from './ports/candidate-source';
 import { COUPON_REPOSITORY, type CouponRepository } from './ports/coupon.repository';
@@ -25,35 +25,11 @@ import { COUPON_REPOSITORY, type CouponRepository } from './ports/coupon.reposit
  * 두 기한이 실행 시각에 매달려 테스트가 자릿수까지 판정할 수 없다.
  */
 export const ISSUE_CLOCK = 'ISSUE_CLOCK';
-/** 신호에 넘길 난수의 주입 토큰. `SignalContext.random` 과 같은 모양이다. */
-export const ISSUE_RANDOM = 'ISSUE_RANDOM';
 
 /** 하루의 길이. 두 기한 파라미터가 일 단위라 절대 시각으로 옮길 때 쓴다. */
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-/**
- * 발급에 등록한 랜덤·개인화 신호. 개인화 준비 결과는 요청마다 context로 전달한다 —
- * 신호가 늘면 `Record<keyof SignalWeights, Signal>` 이 구현 누락을 컴파일에서 잡는다.
- */
-const SIGNALS: Record<keyof SignalWeights, Signal<keyof SignalWeights, PersonalFitContext>> = {
-  random: randomSignal, personalFit: personalFitSignal,
-};
-
-/**
- * 발급 유스케이스 — 발급 후보 적재 → 발급 가중치 검증·결합 → 쿠폰 생성 → 저장.
- *
- * 가중치를 여기서 보지 않는다. 병합과 검증은 `selectCandidate` 한 곳이다. 발급 후보가
- * 0건인 것도 보지 않는다 — 빈 목록의 거부도 같은 자리의 몫이다.
- *
- * 이 단계 순서가 오류 우선순위의 앞머리를 진다. 적재를 먼저 부르므로 읽기 실패가 가중치
- * 거부보다 앞선다. 그 뒤 둘의 순서는 이 파일이 지는 것이 아니라 엔진이 진다 —
- * `selectCandidate` 가 병합·검증을 후보 순회보다 먼저 해서 가중치 거부가 발급 후보 없음보다
- * 앞서고, 여기서는 두 거부를 한 호출에 모아 그 순서를 그대로 받을 뿐이다.
- *
- * 설계가 예상하는 실패는 전부 `IssuanceError` 로 올라온다 — 엔진의 거부와, 적재·저장이 감싼
- * 파일 IO 실패다. 여기서 다시 감싸는 자리를 만들지 않는다. 그 밖의 예외는 감싸지 않고
- * 그대로 지나가게 둔다 — 주입된 난수나 신호 구현이 던지는 것이 거기 해당한다.
- */
+/** 시민 지정 → 통계·개인화 준비 → 가중평균 선택 → 쿠폰 저장. */
 @Injectable()
 export class CouponsService {
   constructor(
@@ -61,19 +37,26 @@ export class CouponsService {
     @Inject(COUPON_REPOSITORY) private readonly coupons: CouponRepository,
     @Inject(OWNER_DIRECTORY) private readonly owners: OwnerDirectory,
     @Inject(ISSUE_CLOCK) private readonly now: () => Date,
-    @Inject(ISSUE_RANDOM) private readonly random: () => number,
+    @Inject(SALES_RECOVERY_SOURCE) private readonly recovery: SalesRecoverySource,
     @Inject(PERSONAL_FIT_SOURCE) private readonly personalFit: PersonalFitSource,
   ) {}
 
   async issue(command: IssueCommand): Promise<IssueCouponResponse> {
-    const candidates = await this.candidates.load();
+    if(typeof command.citizenId!=='string' || !command.citizenId.trim())
+      throw new IssuanceError('MISSING_CITIZEN_ID','발급받을 시민을 선택해 주세요.');
+    if(!(await this.owners.has(command.citizenId)))
+      throw new IssuanceError('UNKNOWN_CITIZEN','선택한 시민이 존재하지 않습니다.');
+    const requestedWeights=resolveWeights(command.weights);
+    const candidates = (await this.candidates.load()).filter(c=>c.citizen.id===command.citizenId);
+    const recovery=await this.recovery.prepare(candidates);
+    const appliedWeights=recovery.enabled ? requestedWeights : {personalFit:requestedWeights.personalFit || 1,salesRecovery:0};
     const issuedAt = this.now();
     const personalFitByCitizenId = await this.personalFit.prepare(candidates, issuedAt.getTime());
-    const { candidate, decision } = selectCandidate({
+    const { candidate, decision } = selectCandidate<PersonalFitContext>({
       candidates,
-      signals: SIGNALS,
-      weights: command.weights,
-      context: { random: this.random, personalFitByCitizenId },
+      signals: {personalFit:personalFitSignal,salesRecovery:{key:'salesRecovery',score:(candidate)=>recovery.enabled ? recovery.byMerchantId.get(candidate.merchant.id)?.score ?? 0 : 0}},
+      weights: appliedWeights,
+      context: { personalFitByCitizenId },
     });
 
     const coupon = this.mint(candidate, command.trigger, issuedAt);
@@ -81,6 +64,14 @@ export class CouponsService {
     decision.personalFit = prepared
       ? { enabled: prepared.enabled, reason: prepared.reason }
       : { enabled: false, reason: 'NO_HISTORY' };
+    const selectedRecovery=recovery.byMerchantId.get(candidate.merchant.id);
+    decision.requestedWeights=requestedWeights;
+    decision.appliedWeights=appliedWeights;
+    if(!recovery.enabled) decision.scores.salesRecovery=null;
+    decision.salesRecovery={enabled:recovery.enabled && appliedWeights.salesRecovery>0,
+      reason:!recovery.enabled ? recovery.reason : appliedWeights.salesRecovery===0 ? '회복 가중치가 0으로 설정되어 개인화만 적용했습니다.' : null,
+      referenceMonth:recovery.referenceMonth,sourceKind:recovery.sourceKind,unavailableMerchants:recovery.unavailableMerchants,
+      localDeclineRate:selectedRecovery?.localDeclineRate ?? null,cityDeclineRate:selectedRecovery?.cityDeclineRate ?? null};
     await this.coupons.append(coupon);
 
     return { coupon, decision };

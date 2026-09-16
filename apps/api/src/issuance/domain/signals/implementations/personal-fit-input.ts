@@ -1,4 +1,5 @@
 import type { SignalContext } from '../signal';
+import type { UserConsumptionEvent } from '@im-coupon/contracts';
 
 /**
  * 개인화 신호의 메모리 입력 계약.
@@ -41,7 +42,7 @@ export type PersonalFitUsageStatus = 'confirmed' | 'cancelled';
  * 시각은 전부 UTC epoch 밀리초다. 문자열 시각의 해석은 입력을 만드는 쪽의 몫으로 두어,
  * 이 신호가 시간대·형식 해석 책임을 지지 않게 한다.
  */
-export interface PersonalFitUsageEvent {
+export interface PersonalFitUsageEvent extends UserConsumptionEvent {
   readonly transactionId: string;
   /** 같은 거래의 정정 차수. 0 이상의 안전한 정수 */
   readonly revision: number;
@@ -67,6 +68,9 @@ export interface PersonalFitUsageEvent {
  * 섞인다.
  */
 export interface PersonalFitMerchantVector {
+  /** mock 과거 버전은 원본 모델 값의 복제이며 과거 관측을 뜻하지 않는다. */
+  readonly sourceKind?: 'mock' | 'observed';
+  readonly derivedFromContentVersion?: string;
   readonly merchantId: string;
   readonly contentVersion: string;
   /**
@@ -223,9 +227,7 @@ export interface DisabledPersonalFit extends PreparedPersonalFitBase {
 export type PreparedPersonalFit = EnabledPersonalFit | DisabledPersonalFit;
 
 /**
- * 개인화 신호가 요구하는 주변값. 기존 `random` 을 그대로 물려받되 이 신호는 쓰지 않는다 —
- * 결합 엔진이 한 발급에서 모든 신호에 같은 context 하나를 넘기므로, 난수를 쓰는 신호와
- * 함께 등록되려면 난수 자리가 있어야 한다.
+ * 개인화 신호가 요구하는 주변값. 시민별 준비 결과를 요청 범위 안에서 전달한다.
  *
  * 시민별 준비 결과를 요청·테스트 단위로 주입한다. 모듈 전역에 사용자별 상태를 두면
  * 한 요청의 준비 결과가 다음 요청에 남는다.

@@ -58,6 +58,8 @@ const UNSORTED: IssuedCoupon[] = [
 
 /** 계약의 여섯 코드. 계약 밖 실패가 이 중 하나를 빌려 쓰지 않는 것을 이 표로 든다. */
 const CONTRACT_CODES: Record<ApiErrorCode, true> = {
+  MISSING_CITIZEN_ID: true,
+  UNKNOWN_CITIZEN: true,
   INVALID_BODY: true,
   INVALID_WEIGHTS: true,
   NO_CANDIDATES: true,

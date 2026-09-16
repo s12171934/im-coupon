@@ -7,6 +7,7 @@ import { useStorageHealth } from '../../features/storage/hooks/use-storage-healt
 import { ConsumptionPage } from '../../pages/ConsumptionPage';
 import { IssuePage } from '../../pages/IssuePage/IssuePage';
 import { NotFoundPage } from '../../pages/NotFoundPage/NotFoundPage';
+import { StoreApiPage } from '../../pages/StoreApiPage/StoreApiPage';
 
 export function App() {
   const { state: storage } = useStorageHealth();
@@ -18,6 +19,7 @@ export function App() {
         <Route path={APP_PATHS.issue} element={<IssuePage storage={storage} />} />
         <Route path={APP_PATHS.myCoupons} element={<MyCouponsPage />} />
         <Route path={APP_PATHS.consumption} element={<ConsumptionPage />} />
+        <Route path={APP_PATHS.storeApi} element={<StoreApiPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

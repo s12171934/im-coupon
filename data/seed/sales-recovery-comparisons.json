@@ -1,0 +1,1322 @@
+[
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30110",
+    "districtName": "동구",
+    "categoryCode": "G20405",
+    "categoryName": "편의점",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 57393.44262295082,
+      "currentDailyAmount": 25466.666666666668,
+      "declineRate": 0.5562791583357136
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282901.6393442623,
+      "currentDailyAmount": 288700,
+      "declineRate": -0.0204960305962798
+    },
+    "excessDeclineRate": 0.5767751889319934
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30110",
+    "districtName": "동구",
+    "categoryCode": "I20101",
+    "categoryName": "백반/한정식",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 57442.62295081967,
+      "currentDailyAmount": 38700,
+      "declineRate": 0.3262842465753425
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282885.24590163934,
+      "currentDailyAmount": 287433.3333333333,
+      "declineRate": -0.016077499613660784
+    },
+    "excessDeclineRate": 0.3423617461890033
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30110",
+    "districtName": "동구",
+    "categoryCode": "I20107",
+    "categoryName": "돼지고기 구이/찜",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 57229.50819672131,
+      "currentDailyAmount": 63833.333333333336,
+      "declineRate": -0.11539196027881227
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282606.5573770492,
+      "currentDailyAmount": 288566.6666666667,
+      "declineRate": -0.021089777055900427
+    },
+    "excessDeclineRate": -0.09430218322291184
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30110",
+    "districtName": "동구",
+    "categoryCode": "I20111",
+    "categoryName": "횟집",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 57016.39344262295,
+      "currentDailyAmount": 76000,
+      "declineRate": -0.3329499712478434
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282327.868852459,
+      "currentDailyAmount": 290233.3333333333,
+      "declineRate": -0.028001006464599465
+    },
+    "excessDeclineRate": -0.30494896478324396
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30110",
+    "districtName": "동구",
+    "categoryCode": "I20201",
+    "categoryName": "중국집",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 56803.27868852459,
+      "currentDailyAmount": 87966.66666666667,
+      "declineRate": -0.5486195286195288
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282311.47540983604,
+      "currentDailyAmount": 287366.6666666667,
+      "declineRate": -0.017906432069372924
+    },
+    "excessDeclineRate": -0.5307130965501559
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30110",
+    "districtName": "동구",
+    "categoryCode": "I21002",
+    "categoryName": "떡/한과",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 56590.16393442623,
+      "currentDailyAmount": 25333.333333333332,
+      "declineRate": 0.552336809578988
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282032.7868852459,
+      "currentDailyAmount": 286900,
+      "declineRate": -0.017257614508253916
+    },
+    "excessDeclineRate": 0.5695944240872419
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30110",
+    "districtName": "동구",
+    "categoryCode": "I21003",
+    "categoryName": "피자",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 56377.04918032787,
+      "currentDailyAmount": 37700,
+      "declineRate": 0.33128816516429194
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 281754.0983606557,
+      "currentDailyAmount": 287766.6666666667,
+      "declineRate": -0.021339772308528016
+    },
+    "excessDeclineRate": 0.35262793747281995
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30110",
+    "districtName": "동구",
+    "categoryCode": "I21005",
+    "categoryName": "토스트/샌드위치/샐러드",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 56163.934426229505,
+      "currentDailyAmount": 62166.666666666664,
+      "declineRate": -0.10687877018875258
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 281475.40983606555,
+      "currentDailyAmount": 288900,
+      "declineRate": -0.026377402446126963
+    },
+    "excessDeclineRate": -0.08050136774262562
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30110",
+    "districtName": "동구",
+    "categoryCode": "I21006",
+    "categoryName": "치킨",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 55950.81967213115,
+      "currentDailyAmount": 74000,
+      "declineRate": -0.32259009668912975
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 281459.01639344264,
+      "currentDailyAmount": 285766.6666666667,
+      "declineRate": -0.015304715863863283
+    },
+    "excessDeclineRate": -0.30728538082526646
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30110",
+    "districtName": "동구",
+    "categoryCode": "I21007",
+    "categoryName": "김밥/만두/분식",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 55737.70491803279,
+      "currentDailyAmount": 85633.33333333333,
+      "declineRate": -0.536362745098039
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 281180.3278688525,
+      "currentDailyAmount": 285033.3333333333,
+      "declineRate": -0.013702969527363162
+    },
+    "excessDeclineRate": -0.5226597755706759
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30110",
+    "districtName": "동구",
+    "categoryCode": "I21201",
+    "categoryName": "카페",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 55524.59016393442,
+      "currentDailyAmount": 24666.666666666668,
+      "declineRate": 0.5557523865761244
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 280901.6393442623,
+      "currentDailyAmount": 287233.3333333333,
+      "declineRate": -0.02254060889018561
+    },
+    "excessDeclineRate": 0.57829299546631
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30110",
+    "districtName": "동구",
+    "categoryCode": "S20901",
+    "categoryName": "세탁소",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 55311.475409836065,
+      "currentDailyAmount": 36700,
+      "declineRate": 0.33648488441019564
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 280622.95081967214,
+      "currentDailyAmount": 288100,
+      "declineRate": -0.02664446781166019
+    },
+    "excessDeclineRate": 0.36312935222185583
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30140",
+    "districtName": "중구",
+    "categoryCode": "G20405",
+    "categoryName": "편의점",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 55360.65573770492,
+      "currentDailyAmount": 36500,
+      "declineRate": 0.34068700029612076
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282901.6393442623,
+      "currentDailyAmount": 288700,
+      "declineRate": -0.0204960305962798
+    },
+    "excessDeclineRate": 0.36118303089240056
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30140",
+    "districtName": "중구",
+    "categoryCode": "I20101",
+    "categoryName": "백반/한정식",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 55672.13114754098,
+      "currentDailyAmount": 61766.666666666664,
+      "declineRate": -0.10947192775814685
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282885.24590163934,
+      "currentDailyAmount": 287433.3333333333,
+      "declineRate": -0.016077499613660784
+    },
+    "excessDeclineRate": -0.09339442814448606
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30140",
+    "districtName": "중구",
+    "categoryCode": "I20107",
+    "categoryName": "돼지고기 구이/찜",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 56245.901639344265,
+      "currentDailyAmount": 75333.33333333333,
+      "declineRate": -0.339356844457398
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282606.5573770492,
+      "currentDailyAmount": 288566.6666666667,
+      "declineRate": -0.021089777055900427
+    },
+    "excessDeclineRate": -0.31826706740149757
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30140",
+    "districtName": "중구",
+    "categoryCode": "I20111",
+    "categoryName": "횟집",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 56819.67213114754,
+      "currentDailyAmount": 88700,
+      "declineRate": -0.5610790536641661
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282327.868852459,
+      "currentDailyAmount": 290233.3333333333,
+      "declineRate": -0.028001006464599465
+    },
+    "excessDeclineRate": -0.5330780471995666
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30140",
+    "districtName": "중구",
+    "categoryCode": "I20201",
+    "categoryName": "중국집",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 57393.44262295082,
+      "currentDailyAmount": 25466.666666666668,
+      "declineRate": 0.5562791583357136
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282311.47540983604,
+      "currentDailyAmount": 287366.6666666667,
+      "declineRate": -0.017906432069372924
+    },
+    "excessDeclineRate": 0.5741855904050865
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30140",
+    "districtName": "중구",
+    "categoryCode": "I21002",
+    "categoryName": "떡/한과",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 57442.62295081967,
+      "currentDailyAmount": 38700,
+      "declineRate": 0.3262842465753425
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282032.7868852459,
+      "currentDailyAmount": 286900,
+      "declineRate": -0.017257614508253916
+    },
+    "excessDeclineRate": 0.3435418610835964
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30140",
+    "districtName": "중구",
+    "categoryCode": "I21003",
+    "categoryName": "피자",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 57229.50819672131,
+      "currentDailyAmount": 63833.333333333336,
+      "declineRate": -0.11539196027881227
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 281754.0983606557,
+      "currentDailyAmount": 287766.6666666667,
+      "declineRate": -0.021339772308528016
+    },
+    "excessDeclineRate": -0.09405218797028425
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30140",
+    "districtName": "중구",
+    "categoryCode": "I21005",
+    "categoryName": "토스트/샌드위치/샐러드",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 57016.39344262295,
+      "currentDailyAmount": 76000,
+      "declineRate": -0.3329499712478434
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 281475.40983606555,
+      "currentDailyAmount": 288900,
+      "declineRate": -0.026377402446126963
+    },
+    "excessDeclineRate": -0.30657256880171646
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30140",
+    "districtName": "중구",
+    "categoryCode": "I21006",
+    "categoryName": "치킨",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 56803.27868852459,
+      "currentDailyAmount": 87966.66666666667,
+      "declineRate": -0.5486195286195288
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 281459.01639344264,
+      "currentDailyAmount": 285766.6666666667,
+      "declineRate": -0.015304715863863283
+    },
+    "excessDeclineRate": -0.5333148127556655
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30140",
+    "districtName": "중구",
+    "categoryCode": "I21007",
+    "categoryName": "김밥/만두/분식",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 56590.16393442623,
+      "currentDailyAmount": 25333.333333333332,
+      "declineRate": 0.552336809578988
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 281180.3278688525,
+      "currentDailyAmount": 285033.3333333333,
+      "declineRate": -0.013702969527363162
+    },
+    "excessDeclineRate": 0.5660397791063512
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30140",
+    "districtName": "중구",
+    "categoryCode": "I21201",
+    "categoryName": "카페",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 56377.04918032787,
+      "currentDailyAmount": 37700,
+      "declineRate": 0.33128816516429194
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 280901.6393442623,
+      "currentDailyAmount": 287233.3333333333,
+      "declineRate": -0.02254060889018561
+    },
+    "excessDeclineRate": 0.35382877405447755
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30140",
+    "districtName": "중구",
+    "categoryCode": "S20901",
+    "categoryName": "세탁소",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 56163.934426229505,
+      "currentDailyAmount": 62166.666666666664,
+      "declineRate": -0.10687877018875258
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 280622.95081967214,
+      "currentDailyAmount": 288100,
+      "declineRate": -0.02664446781166019
+    },
+    "excessDeclineRate": -0.08023430237709239
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30170",
+    "districtName": "서구",
+    "categoryCode": "G20405",
+    "categoryName": "편의점",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 55950.81967213115,
+      "currentDailyAmount": 61833.333333333336,
+      "declineRate": -0.10513722043168294
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282901.6393442623,
+      "currentDailyAmount": 288700,
+      "declineRate": -0.0204960305962798
+    },
+    "excessDeclineRate": -0.08464118983540314
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30170",
+    "districtName": "서구",
+    "categoryCode": "I20101",
+    "categoryName": "백반/한정식",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 55737.70491803279,
+      "currentDailyAmount": 73600,
+      "declineRate": -0.32047058823529406
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282885.24590163934,
+      "currentDailyAmount": 287433.3333333333,
+      "declineRate": -0.016077499613660784
+    },
+    "excessDeclineRate": -0.3043930886216333
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30170",
+    "districtName": "서구",
+    "categoryCode": "I20107",
+    "categoryName": "돼지고기 구이/찜",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 55524.59016393442,
+      "currentDailyAmount": 85700,
+      "declineRate": -0.5434602893416003
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282606.5573770492,
+      "currentDailyAmount": 288566.6666666667,
+      "declineRate": -0.021089777055900427
+    },
+    "excessDeclineRate": -0.5223705122856999
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30170",
+    "districtName": "서구",
+    "categoryCode": "I20111",
+    "categoryName": "횟집",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 55311.475409836065,
+      "currentDailyAmount": 24533.333333333332,
+      "declineRate": 0.5564512942106303
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282327.868852459,
+      "currentDailyAmount": 290233.3333333333,
+      "declineRate": -0.028001006464599465
+    },
+    "excessDeclineRate": 0.5844523006752298
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30170",
+    "districtName": "서구",
+    "categoryCode": "I20201",
+    "categoryName": "중국집",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 55360.65573770492,
+      "currentDailyAmount": 36500,
+      "declineRate": 0.34068700029612076
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282311.47540983604,
+      "currentDailyAmount": 287366.6666666667,
+      "declineRate": -0.017906432069372924
+    },
+    "excessDeclineRate": 0.3585934323654937
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30170",
+    "districtName": "서구",
+    "categoryCode": "I21002",
+    "categoryName": "떡/한과",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 55672.13114754098,
+      "currentDailyAmount": 61766.666666666664,
+      "declineRate": -0.10947192775814685
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282032.7868852459,
+      "currentDailyAmount": 286900,
+      "declineRate": -0.017257614508253916
+    },
+    "excessDeclineRate": -0.09221431324989293
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30170",
+    "districtName": "서구",
+    "categoryCode": "I21003",
+    "categoryName": "피자",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 56245.901639344265,
+      "currentDailyAmount": 75333.33333333333,
+      "declineRate": -0.339356844457398
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 281754.0983606557,
+      "currentDailyAmount": 287766.6666666667,
+      "declineRate": -0.021339772308528016
+    },
+    "excessDeclineRate": -0.31801707214887
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30170",
+    "districtName": "서구",
+    "categoryCode": "I21005",
+    "categoryName": "토스트/샌드위치/샐러드",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 56819.67213114754,
+      "currentDailyAmount": 88700,
+      "declineRate": -0.5610790536641661
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 281475.40983606555,
+      "currentDailyAmount": 288900,
+      "declineRate": -0.026377402446126963
+    },
+    "excessDeclineRate": -0.5347016512180391
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30170",
+    "districtName": "서구",
+    "categoryCode": "I21006",
+    "categoryName": "치킨",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 57393.44262295082,
+      "currentDailyAmount": 25466.666666666668,
+      "declineRate": 0.5562791583357136
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 281459.01639344264,
+      "currentDailyAmount": 285766.6666666667,
+      "declineRate": -0.015304715863863283
+    },
+    "excessDeclineRate": 0.5715838741995769
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30170",
+    "districtName": "서구",
+    "categoryCode": "I21007",
+    "categoryName": "김밥/만두/분식",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 57442.62295081967,
+      "currentDailyAmount": 38700,
+      "declineRate": 0.3262842465753425
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 281180.3278688525,
+      "currentDailyAmount": 285033.3333333333,
+      "declineRate": -0.013702969527363162
+    },
+    "excessDeclineRate": 0.33998721610270566
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30170",
+    "districtName": "서구",
+    "categoryCode": "I21201",
+    "categoryName": "카페",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 57229.50819672131,
+      "currentDailyAmount": 63833.333333333336,
+      "declineRate": -0.11539196027881227
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 280901.6393442623,
+      "currentDailyAmount": 287233.3333333333,
+      "declineRate": -0.02254060889018561
+    },
+    "excessDeclineRate": -0.09285135138862666
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30170",
+    "districtName": "서구",
+    "categoryCode": "S20901",
+    "categoryName": "세탁소",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 57016.39344262295,
+      "currentDailyAmount": 76000,
+      "declineRate": -0.3329499712478434
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 280622.95081967214,
+      "currentDailyAmount": 288100,
+      "declineRate": -0.02664446781166019
+    },
+    "excessDeclineRate": -0.30630550343618324
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30200",
+    "districtName": "유성구",
+    "categoryCode": "G20405",
+    "categoryName": "편의점",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 56803.27868852459,
+      "currentDailyAmount": 75600,
+      "declineRate": -0.33090909090909104
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282901.6393442623,
+      "currentDailyAmount": 288700,
+      "declineRate": -0.0204960305962798
+    },
+    "excessDeclineRate": -0.31041306031281124
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30200",
+    "districtName": "유성구",
+    "categoryCode": "I20101",
+    "categoryName": "백반/한정식",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 56590.16393442623,
+      "currentDailyAmount": 87500,
+      "declineRate": -0.5462050984936269
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282885.24590163934,
+      "currentDailyAmount": 287433.3333333333,
+      "declineRate": -0.016077499613660784
+    },
+    "excessDeclineRate": -0.5301275988799661
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30200",
+    "districtName": "유성구",
+    "categoryCode": "I20107",
+    "categoryName": "돼지고기 구이/찜",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 56377.04918032787,
+      "currentDailyAmount": 25200,
+      "declineRate": 0.5530095958127363
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282606.5573770492,
+      "currentDailyAmount": 288566.6666666667,
+      "declineRate": -0.021089777055900427
+    },
+    "excessDeclineRate": 0.5740993728686368
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30200",
+    "districtName": "유성구",
+    "categoryCode": "I20111",
+    "categoryName": "횟집",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 56163.934426229505,
+      "currentDailyAmount": 37500,
+      "declineRate": 0.3323117338003503
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282327.868852459,
+      "currentDailyAmount": 290233.3333333333,
+      "declineRate": -0.028001006464599465
+    },
+    "excessDeclineRate": 0.36031274026494975
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30200",
+    "districtName": "유성구",
+    "categoryCode": "I20201",
+    "categoryName": "중국집",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 55950.81967213115,
+      "currentDailyAmount": 61833.333333333336,
+      "declineRate": -0.10513722043168294
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282311.47540983604,
+      "currentDailyAmount": 287366.6666666667,
+      "declineRate": -0.017906432069372924
+    },
+    "excessDeclineRate": -0.08723078836231002
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30200",
+    "districtName": "유성구",
+    "categoryCode": "I21002",
+    "categoryName": "떡/한과",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 55737.70491803279,
+      "currentDailyAmount": 73600,
+      "declineRate": -0.32047058823529406
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282032.7868852459,
+      "currentDailyAmount": 286900,
+      "declineRate": -0.017257614508253916
+    },
+    "excessDeclineRate": -0.30321297372704015
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30200",
+    "districtName": "유성구",
+    "categoryCode": "I21003",
+    "categoryName": "피자",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 55524.59016393442,
+      "currentDailyAmount": 85700,
+      "declineRate": -0.5434602893416003
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 281754.0983606557,
+      "currentDailyAmount": 287766.6666666667,
+      "declineRate": -0.021339772308528016
+    },
+    "excessDeclineRate": -0.5221205170330723
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30200",
+    "districtName": "유성구",
+    "categoryCode": "I21005",
+    "categoryName": "토스트/샌드위치/샐러드",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 55311.475409836065,
+      "currentDailyAmount": 24533.333333333332,
+      "declineRate": 0.5564512942106303
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 281475.40983606555,
+      "currentDailyAmount": 288900,
+      "declineRate": -0.026377402446126963
+    },
+    "excessDeclineRate": 0.5828286966567573
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30200",
+    "districtName": "유성구",
+    "categoryCode": "I21006",
+    "categoryName": "치킨",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 55360.65573770492,
+      "currentDailyAmount": 36500,
+      "declineRate": 0.34068700029612076
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 281459.01639344264,
+      "currentDailyAmount": 285766.6666666667,
+      "declineRate": -0.015304715863863283
+    },
+    "excessDeclineRate": 0.35599171615998404
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30200",
+    "districtName": "유성구",
+    "categoryCode": "I21007",
+    "categoryName": "김밥/만두/분식",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 55672.13114754098,
+      "currentDailyAmount": 61766.666666666664,
+      "declineRate": -0.10947192775814685
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 281180.3278688525,
+      "currentDailyAmount": 285033.3333333333,
+      "declineRate": -0.013702969527363162
+    },
+    "excessDeclineRate": -0.09576895823078369
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30200",
+    "districtName": "유성구",
+    "categoryCode": "I21201",
+    "categoryName": "카페",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 56245.901639344265,
+      "currentDailyAmount": 75333.33333333333,
+      "declineRate": -0.339356844457398
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 280901.6393442623,
+      "currentDailyAmount": 287233.3333333333,
+      "declineRate": -0.02254060889018561
+    },
+    "excessDeclineRate": -0.3168162355672124
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30200",
+    "districtName": "유성구",
+    "categoryCode": "S20901",
+    "categoryName": "세탁소",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 56819.67213114754,
+      "currentDailyAmount": 88700,
+      "declineRate": -0.5610790536641661
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 280622.95081967214,
+      "currentDailyAmount": 288100,
+      "declineRate": -0.02664446781166019
+    },
+    "excessDeclineRate": -0.5344345858525059
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30230",
+    "districtName": "대덕구",
+    "categoryCode": "G20405",
+    "categoryName": "편의점",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 57393.44262295082,
+      "currentDailyAmount": 89300,
+      "declineRate": -0.5559268780348472
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282901.6393442623,
+      "currentDailyAmount": 288700,
+      "declineRate": -0.0204960305962798
+    },
+    "excessDeclineRate": -0.5354308474385674
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30230",
+    "districtName": "대덕구",
+    "categoryCode": "I20101",
+    "categoryName": "백반/한정식",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 57442.62295081967,
+      "currentDailyAmount": 25866.666666666668,
+      "declineRate": 0.5496955859969559
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282885.24590163934,
+      "currentDailyAmount": 287433.3333333333,
+      "declineRate": -0.016077499613660784
+    },
+    "excessDeclineRate": 0.5657730856106167
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30230",
+    "districtName": "대덕구",
+    "categoryCode": "I20107",
+    "categoryName": "돼지고기 구이/찜",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 57229.50819672131,
+      "currentDailyAmount": 38500,
+      "declineRate": 0.3272701231738757
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282606.5573770492,
+      "currentDailyAmount": 288566.6666666667,
+      "declineRate": -0.021089777055900427
+    },
+    "excessDeclineRate": 0.34835990022977614
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30230",
+    "districtName": "대덕구",
+    "categoryCode": "I20111",
+    "categoryName": "횟집",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 57016.39344262295,
+      "currentDailyAmount": 63500,
+      "declineRate": -0.11371477860839563
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282327.868852459,
+      "currentDailyAmount": 290233.3333333333,
+      "declineRate": -0.028001006464599465
+    },
+    "excessDeclineRate": -0.08571377214379616
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30230",
+    "districtName": "대덕구",
+    "categoryCode": "I20201",
+    "categoryName": "중국집",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 56803.27868852459,
+      "currentDailyAmount": 75600,
+      "declineRate": -0.33090909090909104
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282311.47540983604,
+      "currentDailyAmount": 287366.6666666667,
+      "declineRate": -0.017906432069372924
+    },
+    "excessDeclineRate": -0.3130026588397181
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30230",
+    "districtName": "대덕구",
+    "categoryCode": "I21002",
+    "categoryName": "떡/한과",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 56590.16393442623,
+      "currentDailyAmount": 87500,
+      "declineRate": -0.5462050984936269
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 282032.7868852459,
+      "currentDailyAmount": 286900,
+      "declineRate": -0.017257614508253916
+    },
+    "excessDeclineRate": -0.528947483985373
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30230",
+    "districtName": "대덕구",
+    "categoryCode": "I21003",
+    "categoryName": "피자",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 56377.04918032787,
+      "currentDailyAmount": 25200,
+      "declineRate": 0.5530095958127363
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 281754.0983606557,
+      "currentDailyAmount": 287766.6666666667,
+      "declineRate": -0.021339772308528016
+    },
+    "excessDeclineRate": 0.5743493681212644
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30230",
+    "districtName": "대덕구",
+    "categoryCode": "I21005",
+    "categoryName": "토스트/샌드위치/샐러드",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 56163.934426229505,
+      "currentDailyAmount": 37500,
+      "declineRate": 0.3323117338003503
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 281475.40983606555,
+      "currentDailyAmount": 288900,
+      "declineRate": -0.026377402446126963
+    },
+    "excessDeclineRate": 0.35868913624647725
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30230",
+    "districtName": "대덕구",
+    "categoryCode": "I21006",
+    "categoryName": "치킨",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 55950.81967213115,
+      "currentDailyAmount": 61833.333333333336,
+      "declineRate": -0.10513722043168294
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 281459.01639344264,
+      "currentDailyAmount": 285766.6666666667,
+      "declineRate": -0.015304715863863283
+    },
+    "excessDeclineRate": -0.08983250456781966
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30230",
+    "districtName": "대덕구",
+    "categoryCode": "I21007",
+    "categoryName": "김밥/만두/분식",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 55737.70491803279,
+      "currentDailyAmount": 73600,
+      "declineRate": -0.32047058823529406
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 281180.3278688525,
+      "currentDailyAmount": 285033.3333333333,
+      "declineRate": -0.013702969527363162
+    },
+    "excessDeclineRate": -0.3067676187079309
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30230",
+    "districtName": "대덕구",
+    "categoryCode": "I21201",
+    "categoryName": "카페",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 55524.59016393442,
+      "currentDailyAmount": 85700,
+      "declineRate": -0.5434602893416003
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 280901.6393442623,
+      "currentDailyAmount": 287233.3333333333,
+      "declineRate": -0.02254060889018561
+    },
+    "excessDeclineRate": -0.5209196804514147
+  },
+  {
+    "sourceKind": "mock",
+    "categorySystem": "D1",
+    "districtCode": "30230",
+    "districtName": "대덕구",
+    "categoryCode": "S20901",
+    "categoryName": "세탁소",
+    "referenceMonth": "202606",
+    "local": {
+      "status": "available",
+      "baselineDailyAmount": 55311.475409836065,
+      "currentDailyAmount": 24533.333333333332,
+      "declineRate": 0.5564512942106303
+    },
+    "city": {
+      "status": "available",
+      "baselineDailyAmount": 280622.95081967214,
+      "currentDailyAmount": 288100,
+      "declineRate": -0.02664446781166019
+    },
+    "excessDeclineRate": 0.5830957620222905
+  }
+]

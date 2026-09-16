@@ -12,5 +12,5 @@ import type { IssueTrigger } from '../issue-trigger';
  */
 export const manualTrigger: IssueTrigger<IssuanceRequest | undefined, 'manual'> = {
   type: 'manual',
-  toCommand: (request) => ({ trigger: 'manual', weights: request?.weights }),
+  toCommand: (request) => ({ trigger: 'manual', citizenId: request?.citizenId ?? '', weights: request?.weights }),
 };
