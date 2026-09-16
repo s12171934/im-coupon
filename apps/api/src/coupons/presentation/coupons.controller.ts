@@ -59,6 +59,10 @@ function checkShape(request: IssueRequest): void {
     throw new IssuanceError('INVALID_BODY', '요청 본문이 JSON 으로 파싱되지 않았다');
   }
 
+  if (request.body === null || typeof request.body !== 'object' || Array.isArray(request.body)) {
+    throw new IssuanceError('INVALID_BODY', '요청 본문은 JSON 객체여야 합니다.');
+  }
+
   const weights: unknown = request.body.weights;
   if (weights === undefined) return;
   if (typeof weights !== 'object' || weights === null || Array.isArray(weights)) {

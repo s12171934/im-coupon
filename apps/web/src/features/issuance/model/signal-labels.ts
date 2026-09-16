@@ -9,6 +9,7 @@ import type { SignalWeights } from '@im-coupon/contracts';
  */
 export const SIGNAL_LABELS: Record<keyof SignalWeights, string> = {
   random: '랜덤 신호',
+  personalFit: '행동 이력 개인화 신호',
 };
 
 /** 신호 키 문자열이 흩어지지 않도록 라벨 표 하나에서 끌어온다. */

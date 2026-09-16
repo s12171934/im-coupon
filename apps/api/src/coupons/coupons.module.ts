@@ -1,3 +1,5 @@
+import { PERSONAL_FIT_SOURCE } from './application/ports/personal-fit-source';
+import { JsonPersonalFitSource } from './infrastructure/json-personal-fit-source';
 import { OWNER_DIRECTORY } from './application/ports/owner-directory';
 import { JsonOwnerDirectory } from './infrastructure/json-owner-directory';
 import { COUPON_REPOSITORY } from './application/ports/coupon.repository';
@@ -15,6 +17,7 @@ import { CouponsService, ISSUE_CLOCK, ISSUE_RANDOM } from './application/coupons
   controllers: [CouponsController],
   providers: [
     CouponsService,
+    { provide: PERSONAL_FIT_SOURCE, useClass: JsonPersonalFitSource },
     { provide: OWNER_DIRECTORY, useClass: JsonOwnerDirectory },
     { provide: COUPON_REPOSITORY, useClass: JsonCouponRepository },
     { provide: CANDIDATE_SOURCE, useClass: JsonCandidateSource },

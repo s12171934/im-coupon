@@ -73,7 +73,7 @@ describe(`GET ${CITIZENS_PATH}`, () => {
    * 대신 앱이 읽은 그 디렉터리를 테스트도 직접 읽어 순서까지 같은지 보고, 거기에
    * `TC-01-01` 이 고정한 시드의 성질(5건·`cit-` 접두·`id` 유일)을 얹는다.
    */
-  it('TC-04-04 시드 순서 그대로 시민 5건을 낸다', async () => {
+  it('TC-04-04 시드 순서 그대로 시민 20건을 낸다', async () => {
     await boot();
 
     const response = await listCitizens();
@@ -81,7 +81,7 @@ describe(`GET ${CITIZENS_PATH}`, () => {
     expect(response.status).toBe(200);
     const { citizens } = response.body as ListCitizensResponse;
     expect(citizens).toEqual(await storedCitizens());
-    expect(citizens).toHaveLength(5);
+    expect(citizens).toHaveLength(20);
     expect(citizens.every((citizen) => citizen.id.startsWith('cit-'))).toBe(true);
     expect(new Set(citizens.map((citizen) => citizen.id)).size).toBe(citizens.length);
   });

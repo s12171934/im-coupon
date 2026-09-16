@@ -21,6 +21,11 @@ pnpm dev        # apps/api(:3000) 와 apps/web(:5173) 을 함께 띄운다
 ```
 
 `http://localhost:5173` 을 연다. 화면의 `/api/*` 요청은 Vite 개발 서버가 API 로 프록시한다.
+API 개발 실행은 `im-coupon-source` 조건으로 `contracts`·`db`의 TypeScript 원본을 읽는다.
+공유 패키지에 추가한 함수가 오래된 `dist`에 없어서 `is not a function`이 발생하는 일을 방지한다.
+개발 명령이나 패키지 진입점 설정을 바꾼 뒤에는 실행 중인 `pnpm dev`를 종료하고 다시 실행한다.
+배포 실행은 기존 `dist` 진입점을 사용한다.
+
 API 는 기동할 때 런타임 DB 에 도메인 컬렉션이 없으면 `data/seed` 를 `data/runtime` 으로 복사한다.
 `_meta.json` 만 남아 있는 경우에도 초기화한다.
 

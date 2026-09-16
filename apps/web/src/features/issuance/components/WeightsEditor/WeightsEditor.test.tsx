@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { WeightsEditor, type WeightsDraft } from './WeightsEditor';
 
-const EMPTY: WeightsDraft = { random: '' };
+const EMPTY: WeightsDraft = { random: '', personalFit: '' };
 
 /**
  * 제어 컴포넌트라 값을 스스로 들지 않는다. 여러 글자를 이어 치는 케이스를 위해
@@ -34,7 +34,7 @@ function renderControlled(initial: WeightsDraft = EMPTY, disabled = false) {
 
 describe('WeightsEditor', () => {
   it('신호 라벨과 현재 값을 보여준다', () => {
-    renderControlled({ random: '1' });
+    renderControlled({ random: '1', personalFit: '' });
 
     expect(screen.getByRole('region', { name: '발급 가중치' })).toBeInTheDocument();
     expect(screen.getByLabelText('랜덤 신호')).toHaveValue('1');
@@ -50,7 +50,7 @@ describe('WeightsEditor', () => {
   });
 
   it('값을 지우면 빈 문자열이 그대로 올라온다', async () => {
-    const { lastChange } = renderControlled({ random: '1' });
+    const { lastChange } = renderControlled({ random: '1', personalFit: '' });
 
     await userEvent.clear(screen.getByLabelText('랜덤 신호'));
 
@@ -83,7 +83,7 @@ describe('WeightsEditor', () => {
   });
 
   it('disabled 면 입력이 잠겨 값이 바뀌지 않는다', async () => {
-    const { changes } = renderControlled({ random: '1' }, true);
+    const { changes } = renderControlled({ random: '1', personalFit: '' }, true);
     const input = screen.getByLabelText('랜덤 신호');
 
     expect(input).toBeDisabled();
@@ -93,11 +93,11 @@ describe('WeightsEditor', () => {
     expect(input).toHaveValue('1');
   });
 
-  it('이번 에픽 범위 밖인 네 신호를 안내한다', () => {
+  it('범위 밖인 가맹점 신호를 안내한다', () => {
     renderControlled();
 
     expect(
-      screen.getByText(/사용자 소비 패턴 · 쿠폰 사용 패턴 · 가맹점 매출 · 가맹점 마케팅 수요/),
+      screen.getByText(/가맹점 매출 · 가맹점 마케팅 수요/),
     ).toBeInTheDocument();
   });
 
@@ -109,4 +109,10 @@ describe('WeightsEditor', () => {
     expect(inputs).toHaveLength(Object.keys(EMPTY).length);
     expect(inputs[0]).toHaveAccessibleName('랜덤 신호');
   });
+});
+
+it('개인화 가중치도 편집할 수 있다', async () => {
+  const { lastChange } = renderControlled();
+  await userEvent.type(screen.getByLabelText('행동 이력 개인화 신호'), '0.7');
+  expect(lastChange()).toEqual(['personalFit', '0.7']);
 });
