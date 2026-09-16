@@ -73,7 +73,7 @@ test('TC-07-01 발급한 쿠폰이 그 소유자의 내 쿠폰 화면에 거래�
     시민 id · 표시 텍스트가 이름이다 — id 로 고르려면 화면 밖에서 id 를 다시 캐야 하는데
     그것은 "준비 뒤로는 화면과 HTTP 만"이라는 이 스펙의 규칙을 깬다.
 
-    이름으로 고르는 것이 안전한 근거는 시드 시민의 이름이 서로 달라 이름이 시민을
+    이름으로 고르는 것이 안전한 근거는 시드 시민 5건의 이름이 서로 달라 이름이 시민을
     유일하게 가리킨다는 것이다. 어긋나면 조용히 다른 시민이 골라지는 것이 아니라
     `selectOption` 이 그 선택지를 찾지 못해 실패한다.
   */
@@ -105,12 +105,12 @@ test('TC-07-01 발급한 쿠폰이 그 소유자의 내 쿠폰 화면에 거래�
   // 소비 초기화를 실제 화면에서 실행해도 발급한 쿠폰은 보존된다.
   await page.getByRole('link', { name: '소비 시연' }).click();
   await expect(page).toHaveURL(/\/consumption$/);
-  await expect(page.getByRole('heading', { name: '내 쿠폰 사용' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '내 리워드 미션' })).toBeVisible();
   page.once('dialog', (dialog) => dialog.accept());
   const reset = page.waitForResponse((response) =>
     response.url().endsWith('/api/consumption') && response.request().method() === 'DELETE',
   );
-  await page.getByRole('button', { name: '소비 시연 초기화' }).click();
+  await page.getByRole('button', { name: '전체 소비 데이터 초기화' }).click();
   expect((await reset).ok()).toBe(true);
   await page.getByRole('link', { name: '내 쿠폰' }).click();
   await page.getByRole('combobox', { name: '소유자 선택' }).selectOption({ label: ownerName });

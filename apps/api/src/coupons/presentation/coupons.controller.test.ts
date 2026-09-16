@@ -45,18 +45,14 @@ const COUPON_ID = /^cpn-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 interface BootOptions {
-  now?: () => Date;
   random?: () => number;
   /** 데이터 디렉터리를 채우는 단계. 생략하면 커밋된 시드를 그대로 부트스트랩한다 */
   prepare?: (dataDir: string) => Promise<void>;
 }
 
 /** 기본 준비 — 커밋된 시드를 임시 디렉터리로 부트스트랩한다. */
-async function bootstrapSeed(dir: string): Promise<void> {
-  const db = new JsonFileDb(dir);
-  await db.bootstrapFromSeed(resolveSeedDir());
-  // 기존 HTTP 계약 테스트는 이력 없는 시민의 랜덤 선택을 고정한다.
-  await db.writeCollection('personal-fit-events', []);
+function bootstrapSeed(dir: string): Promise<void> {
+  return new JsonFileDb(dir).bootstrapFromSeed(resolveSeedDir());
 }
 
 /**
@@ -84,7 +80,7 @@ async function boot(options: BootOptions = {}): Promise<void> {
     .overrideProvider(DATA_DIR)
     .useValue(dataDir)
     .overrideProvider(ISSUE_CLOCK)
-    .useValue(options.now ?? (() => ISSUED_AT))
+    .useValue(() => ISSUED_AT)
     .overrideProvider(ISSUE_RANDOM)
     .useValue(options.random ?? (() => SCORE))
     .compile();
@@ -169,8 +165,7 @@ describe(`POST ${ISSUE_COUPON_PATH}`, () => {
     // 응답에 실려 나가도 통과하지 않게, 자리만 보지 말고 값을 못 박는다.
     expect(decision).toEqual({
       candidateCount: merchants.length * citizens.length,
-      scores: { random: SCORE, personalFit: 0 },
-      personalFit: { enabled: false, reason: 'NO_HISTORY' },
+      scores: { random: SCORE },
       total: SCORE * DEFAULT_ISSUANCE_PARAMS.weights.random,
     });
     expect(await storedCoupons()).toEqual([coupon]);
@@ -423,75 +418,4 @@ describe('동시 발급', () => {
       responses.map((response) => (response.body as IssueCouponResponse).coupon.id).sort(),
     );
   });
-});
-
-describe('행동 이력 개인화 점수의 실제 발급 연결', () => {
-  it('개인화 선호가 랜덤 최고점 후보를 바꾸고 가중치를 0으로 바꾸면 랜덤 선택으로 돌아간다', async () => {
-    await boot({
-      random: fixedRng([0.9, 0.1, 0.9, 0.1]),
-      prepare: async (dir) => {
-        await bootstrapSeed(dir);
-        const db = new JsonFileDb(dir);
-        await db.writeCollection('citizens', [{ id: 'cit-fit', name: '개인화 시민' }]);
-        await db.writeCollection('merchants', [
-          { id: 'mer-a', name: '랜덤 가맹점', category: '식당' },
-          { id: 'mer-b', name: '선호 가맹점', category: '서점' },
-        ]);
-        await db.writeCollection('personal-fit-events', [{
-          transactionId: 'history-1', revision: 0, actualUserId: 'cit-fit', merchantId: 'mer-b',
-          usedAt: ISSUED_AT.getTime() - DAY_MS, recordedAt: ISSUED_AT.getTime() - DAY_MS,
-          status: 'confirmed', netAmount: 12000, contentVersion: 'test-v1',
-        }]);
-        await db.writeCollection('merchant-contents', ['mer-a', 'mer-b'].map((merchantId) => ({
-          merchantId, contentVersion: 'test-v1',
-          knownAt: ISSUED_AT.getTime() - 2 * DAY_MS, verifiedAt: ISSUED_AT.getTime() - 2 * DAY_MS,
-        })));
-        await db.writeCollection('merchant-vectors', ['mer-a', 'mer-b'].map((merchantId, index) => ({
-          merchantId, contentVersion: 'test-v1', specId: 'test-2d',
-          knownAt: ISSUED_AT.getTime() - 2 * DAY_MS, verifiedAt: ISSUED_AT.getTime() - 2 * DAY_MS,
-          values: index === 0 ? [1, 0] : [0, 1],
-        })));
-      },
-    });
-    const personalized = await issue();
-    expect(personalized.status).toBe(201);
-    expect(personalized.body.coupon.merchantId).toBe('mer-b');
-    expect(personalized.body.decision.scores).toEqual({ random: 0.1, personalFit: 1 });
-    expect(personalized.body.decision.personalFit).toEqual({ enabled: true, reason: null });
-    expect(personalized.body.decision.total).toBeCloseTo(
-      0.1 * DEFAULT_ISSUANCE_PARAMS.weights.random + DEFAULT_ISSUANCE_PARAMS.weights.personalFit,
-    );
-    const exploratory = await issue().send({ weights: { random: 1, personalFit: 0 } });
-    expect(exploratory.status).toBe(201);
-    expect(exploratory.body.coupon.merchantId).toBe('mer-a');
-    expect(exploratory.body.decision.total).toBeCloseTo(0.9);
-  });
-});
-
-// 실제 E5 산출물로 개인화가 발급 대상을 바꾸는 경로를 고정한다.
-it('384차원 E5 가게 벡터와 소비 이력으로 쿠폰을 발급한다', async () => {
-  await boot({
-    now: () => new Date('2026-09-15T00:00:00Z'),
-    random: () => 0.5,
-    prepare: async (dir) => {
-      await bootstrapSeed(dir);
-      const db = new JsonFileDb(dir);
-      const vectors = await db.readCollection<{ merchantId: string; contentVersion: string; knownAt: number; verifiedAt: number; values: number[] }>('merchant-vectors');
-      const cafe = vectors.find((vector) => vector.merchantId === 'mer-003')!;
-      expect(cafe.values).toHaveLength(384);
-      await db.writeCollection('citizens', [{ id: 'cit-e5', name: '카페 이용 시민' }]);
-      await db.writeCollection('personal-fit-events', [{
-        transactionId: 'e5-history', revision: 0, actualUserId: 'cit-e5', merchantId: cafe.merchantId,
-        contentVersion: cafe.contentVersion, status: 'confirmed', netAmount: 9000,
-        usedAt: Math.max(cafe.knownAt, cafe.verifiedAt) + 1000,
-        recordedAt: Math.max(cafe.knownAt, cafe.verifiedAt) + 2000,
-      }]);
-    },
-  });
-  const response = await issue().send({ weights: { random: 0, personalFit: 1 } });
-  expect(response.status).toBe(201);
-  expect(response.body.coupon.ownerId).toBe('cit-e5');
-  expect(response.body.coupon.merchantId).toBe('mer-003');
-  expect(response.body.decision.personalFit).toEqual({ enabled: true, reason: null });
-  expect(response.body.decision.scores.personalFit).toBeCloseTo(1);
 });

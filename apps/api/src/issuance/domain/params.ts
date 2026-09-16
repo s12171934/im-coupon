@@ -30,5 +30,5 @@ export const DEFAULT_ISSUANCE_PARAMS: IssuanceParams = {
   benefitSplit: { ownerRatio: 0.2, consumerRatio: 0.8 },
   ownerHoldDays: 3,
   openValidDays: 2,
-  weights: { random: 0.3, personalFit: 0.7 },
+  weights: { random: 1 },
 };
